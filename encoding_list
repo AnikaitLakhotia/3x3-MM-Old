@@ -1,0 +1,85 @@
+from even import create_even
+from y_var_list import create_y_var_list
+
+
+def create_encoding_list(dict_list):
+    """
+        Create SAT encoding clauses based on the given dictionaries.
+
+        Args:
+            dict_list (list of dict): List of dictionaries containing variable indices.
+
+        Returns:
+            list: List of SAT encoding clauses(each clause as a list).
+        """
+
+    cumulative_dict = {}  # Initialize an empty dictionary for accumulation
+    for inner_dict in dict_list:
+        for key, value in inner_dict.items():
+            if key in cumulative_dict:
+                cumulative_dict[key] += value
+            else:
+                cumulative_dict[key] = value
+    clause_list = []
+    for key in cumulative_dict:
+        if key.startswith("s"):
+            val_t = key[2]
+            val_1 = key[4]
+            val_2 = key[6]
+            val_3 = key[8]
+            val_4 = key[10]
+            clause_list.append([-cumulative_dict[key], cumulative_dict[f'a_{val_t}_{val_1}_{val_2}']])
+            clause_list.append([-cumulative_dict[key], cumulative_dict[f'b_{val_t}_{val_3}_{val_4}']])
+            clause_list.append([cumulative_dict[key], -cumulative_dict[f'a_{val_t}_{val_1}_{val_2}'],
+                                -cumulative_dict[f'b_{val_t}_{val_3}_{val_4}']])
+    for key in cumulative_dict:
+        if key.startswith("t"):
+            val_t = key[2]
+            val_1 = key[4]
+            val_2 = key[6]
+            val_3 = key[8]
+            val_4 = key[10]
+            val_5 = key[12]
+            val_6 = key[14]
+            clause_list.append([-cumulative_dict[key], cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}']])
+            clause_list.append([-cumulative_dict[key], cumulative_dict[f'g_{val_t}_{val_5}_{val_6}']])
+            clause_list.append([cumulative_dict[key], -cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}'],
+                                -cumulative_dict[f'b_{val_t}_{val_5}_{val_6}']])
+    y_list = create_y_var_list(5, 64, len(cumulative_dict))
+    move = 0
+    for key in cumulative_dict:
+        if key.startswith("t_1"):
+            val_1 = key[4]
+            val_2 = key[6]
+            val_3 = key[8]
+            val_4 = key[10]
+            val_5 = key[12]
+            val_6 = key[14]
+            if val_1 == val_2 and val_3 == val_4 and val_5 == val_6:
+                list = create_even(cumulative_dict[f't_1_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
+                                   cumulative_dict[f't_2_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
+                                   cumulative_dict[f't_3_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
+                                   y_list[move])
+                for inner_list in list:
+                    clause_list.append(inner_list)
+            else:
+                list = create_even(-cumulative_dict[f't_1_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
+                                   cumulative_dict[f't_2_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
+                                   cumulative_dict[f't_3_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
+                                   y_list[move])
+                for inner_list in list:
+                    clause_list.append(inner_list)
+
+            list = create_even(cumulative_dict[f't_4_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
+                               cumulative_dict[f't_5_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
+                               cumulative_dict[f't_6_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
+                               y_list[move + 1])
+            for inner_list in list:
+                clause_list.append(inner_list)
+
+            list = create_even(cumulative_dict[f't_7_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
+                               y_list[move + 2], y_list[move + 3], y_list[move + 4])
+            for inner_list in list:
+                clause_list.append(inner_list)
+            move = move + 5
+    return clause_list
