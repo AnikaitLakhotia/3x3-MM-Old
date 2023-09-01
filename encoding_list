@@ -41,7 +41,7 @@ def create_encoding_list(dict_list):
             clause_list.append([-cumulative_dict[key], cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}']])
             clause_list.append([-cumulative_dict[key], cumulative_dict[f'g_{val_t}_{val_5}_{val_6}']])
             clause_list.append([cumulative_dict[key], -cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}'],
-                                -cumulative_dict[f'b_{val_t}_{val_5}_{val_6}']])
+                                -cumulative_dict[f'g_{val_t}_{val_5}_{val_6}']])
     y_list = create_y_var_list(5, 64, len(cumulative_dict))
     move = 0
     for key in cumulative_dict:
