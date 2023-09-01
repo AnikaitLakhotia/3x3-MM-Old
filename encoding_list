@@ -16,10 +16,7 @@ def create_encoding_list(dict_list):
     cumulative_dict = {}  # Initialize an empty dictionary for accumulation
     for inner_dict in dict_list:
         for key, value in inner_dict.items():
-            if key in cumulative_dict:
-                cumulative_dict[key] += value
-            else:
-                cumulative_dict[key] = value
+            cumulative_dict[key] = value
     clause_list = []
     for key in cumulative_dict:
         if key.startswith("s"):
