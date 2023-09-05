@@ -8,7 +8,7 @@ def encoding(num_t, dim):
         Generate the complete SAT encoding for the given parameters.
 
         Args:
-            num_t (int): Number of 't' variables.
+            num_t (int): Number of 't's.
             dim (int): Dimensions of matrix.
 
         Returns:
@@ -25,9 +25,8 @@ def encoding(num_t, dim):
     dict_b = create_var(num_t, dim, shift, "b")
     shift = shift + len(dict_b)
     dict_g = create_var(num_t, dim, shift, "g")
-    cumulative_list = create_encoding_list([dict_t, dict_s, dict_a, dict_b, dict_g])
-    num_y = 5
-    num_var = len(dict_t) + len(dict_s) + len(dict_a) + len(dict_b) + len(dict_g) + num_y*(int(len(dict_t)/num_t))
+    cumulative_list, cumulative_dict = create_encoding_list([dict_t, dict_s, dict_a, dict_b, dict_g], num_t, dim)
+    num_var = len(dict_t) + len(dict_s) + len(dict_a) + len(dict_b) + len(dict_g) + (num_t - 1)*(dim**6)
     num_clauses = len(cumulative_list)
     encoding_string = f'p cnf {num_var} {num_clauses} \n'
     for innerlist in cumulative_list:
@@ -35,5 +34,4 @@ def encoding(num_t, dim):
         clause = clause[1:-1]
         encoding_string = encoding_string + clause + " 0 \n"
         encoding_string = encoding_string.replace(',', '')
-    return encoding_string
-    
+    return encoding_string, cumulative_dict
