@@ -1,13 +1,15 @@
-from even import create_even
-from y_var_list import create_y_var_list
+from aux_list import create_aux_list
+from odd import create_odd
 
 
-def create_encoding_list(dict_list):
+def create_encoding_list(dict_list, num_t, dim):
     """
         Create SAT encoding clauses based on the given dictionaries.
 
         Args:
             dict_list (list of dict): List of dictionaries containing variable indices.
+            num_t (int): Number of 't's.
+            dim (int): Dimensions of matrix.
 
         Returns:
             list: List of SAT encoding clauses(each clause as a list).
@@ -18,65 +20,49 @@ def create_encoding_list(dict_list):
         for key, value in inner_dict.items():
             cumulative_dict[key] = value
     clause_list = []
+    aux_list = create_aux_list(dim**6, num_t, len(cumulative_dict))
+    move = 0
+    for key in cumulative_dict:
+        if key.startswith("t_1_"):
+            val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")[2:]
+            if val_1 == val_2 and val_3 == val_4 and val_5 == val_6:
+                list_var = []
+                list_aux = []
+                for i in range(1, num_t):
+                    list_var.append(cumulative_dict[f't_{i}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'])
+                    list_aux.append(aux_list[i - 1 + move])
+                list_var.append(cumulative_dict[f't_{num_t}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'])
+                list = create_odd(list_var, list_aux, num_t)
+                move += num_t - 1
+                for inner_list in list:
+                    clause_list.append(inner_list)
+            else:
+                list_var = []
+                list_aux = []
+                for i in range(1, num_t):
+                    if i == 1:
+                        list_var.append(-cumulative_dict[f't_{i}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'])
+                    else:
+                        list_var.append(cumulative_dict[f't_{i}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'])
+                    list_aux.append(aux_list[i - 1 + move])
+                list_var.append(cumulative_dict[f't_{num_t}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'])
+                list = create_odd(list_var, list_aux, num_t)
+                move += num_t - 1
+                for inner_list in list:
+                    clause_list.append(inner_list)
     for key in cumulative_dict:
         if key.startswith("s"):
-            val_t = key[2]
-            val_1 = key[4]
-            val_2 = key[6]
-            val_3 = key[8]
-            val_4 = key[10]
+            val_t, val_1, val_2, val_3, val_4 = key.split("_")[1:]
             clause_list.append([-cumulative_dict[key], cumulative_dict[f'a_{val_t}_{val_1}_{val_2}']])
             clause_list.append([-cumulative_dict[key], cumulative_dict[f'b_{val_t}_{val_3}_{val_4}']])
             clause_list.append([cumulative_dict[key], -cumulative_dict[f'a_{val_t}_{val_1}_{val_2}'],
                                 -cumulative_dict[f'b_{val_t}_{val_3}_{val_4}']])
+
     for key in cumulative_dict:
         if key.startswith("t"):
-            val_t = key[2]
-            val_1 = key[4]
-            val_2 = key[6]
-            val_3 = key[8]
-            val_4 = key[10]
-            val_5 = key[12]
-            val_6 = key[14]
+            val_t, val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")[1:]
             clause_list.append([-cumulative_dict[key], cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}']])
             clause_list.append([-cumulative_dict[key], cumulative_dict[f'g_{val_t}_{val_5}_{val_6}']])
             clause_list.append([cumulative_dict[key], -cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}'],
                                 -cumulative_dict[f'g_{val_t}_{val_5}_{val_6}']])
-    y_list = create_y_var_list(5, 64, len(cumulative_dict))
-    move = 0
-    for key in cumulative_dict:
-        if key.startswith("t_1"):
-            val_1 = key[4]
-            val_2 = key[6]
-            val_3 = key[8]
-            val_4 = key[10]
-            val_5 = key[12]
-            val_6 = key[14]
-            if val_1 == val_2 and val_3 == val_4 and val_5 == val_6:
-                list = create_even(cumulative_dict[f't_1_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
-                                   cumulative_dict[f't_2_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
-                                   cumulative_dict[f't_3_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
-                                   y_list[move])
-                for inner_list in list:
-                    clause_list.append(inner_list)
-            else:
-                list = create_even(-cumulative_dict[f't_1_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
-                                   cumulative_dict[f't_2_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
-                                   cumulative_dict[f't_3_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
-                                   y_list[move])
-                for inner_list in list:
-                    clause_list.append(inner_list)
-
-            list = create_even(cumulative_dict[f't_4_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
-                               cumulative_dict[f't_5_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
-                               cumulative_dict[f't_6_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
-                               y_list[move + 1])
-            for inner_list in list:
-                clause_list.append(inner_list)
-
-            list = create_even(cumulative_dict[f't_7_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'],
-                               y_list[move + 2], y_list[move + 3], y_list[move + 4])
-            for inner_list in list:
-                clause_list.append(inner_list)
-            move = move + 5
-    return clause_list
+    return clause_list, cumulative_dict
