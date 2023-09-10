@@ -2,14 +2,16 @@ from aux_list import create_aux_list
 from odd import create_odd
 
 
-def create_encoding_list(dict_list, num_t, dim):
+def create_encoding_list(dict_list, num_t, num_row_1, num_col_1, num_col_2):
     """
         Create SAT encoding clauses based on the given dictionaries.
 
         Args:
             dict_list (list of dict): List of dictionaries containing variable indices.
             num_t (int): Number of 't's.
-            dim (int): Dimensions of matrix.
+            num_row_1 (int): Number of rows in first matrix.
+            num_col_1 (int): Number of columns in first matrix.
+            num_col_2 (int): Number of columns in second matrix.
 
         Returns:
             list: List of SAT encoding clauses(each clause as a list).
@@ -20,12 +22,12 @@ def create_encoding_list(dict_list, num_t, dim):
         for key, value in inner_dict.items():
             cumulative_dict[key] = value
     clause_list = []
-    aux_list = create_aux_list(dim**6, num_t, len(cumulative_dict))
+    aux_list = create_aux_list((num_row_1**3)*(num_col_2**2)*num_col_1, num_t, len(cumulative_dict))
     move = 0
     for key in cumulative_dict:
         if key.startswith("t_1_"):
             val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")[2:]
-            if val_1 == val_2 and val_3 == val_4 and val_5 == val_6:
+            if val_2 == val_3 and val_1 == val_5 and val_4 == val_6:
                 list_var = []
                 list_aux = []
                 for i in range(1, num_t):
