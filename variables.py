@@ -1,10 +1,11 @@
-def create_var(num_t, dim, shift, var):
+def create_var(num_t, index_1_size, index_2_size, shift, var):
     """
         Create variables representing custom 'var's in the SAT encoding.
 
         Args:
             num_t (int): Number of custom 'var' variables to create.
-            dim (int): Dimensions of matrix.
+            index_1_size (int): Maximum value first index can take.
+            index_2_size (int): Maximum value second index can take.
             shift (int): Current variable index offset.
             var (str): Custom variable prefix.
 
@@ -16,8 +17,8 @@ def create_var(num_t, dim, shift, var):
 
     val_s = f'{var}'
     val_t_range = range(1, num_t + 1)
-    val_1_range = range(1, dim + 1)
-    val_2_range = range(1, dim + 1)
+    val_1_range = range(1, index_1_size + 1)
+    val_2_range = range(1, index_2_size + 1)
 
     index = 1
     for t in val_t_range:
