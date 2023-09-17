@@ -30,7 +30,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2):
     cumulative_list, cumulative_dict = create_encoding_list([dict_t, dict_s, dict_a, dict_b, dict_g],
                                                             num_t, num_row_1, num_col_1, num_col_2)
     num_var = (len(dict_t) + len(dict_s) + len(dict_a) + len(dict_b) + len(dict_g) +
-               (num_t - 1)*((num_row_1**3)*(num_col_2**2)*num_col_1))
+               (num_t - 1)*((num_row_1**2)*(num_col_2**2)*(num_col_1**2)))
     num_clauses = len(cumulative_list)
     encoding_string = f'p cnf {num_var} {num_clauses} \n'
     for innerlist in cumulative_list:
