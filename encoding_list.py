@@ -22,8 +22,12 @@ def create_encoding_list(dict_list, num_t, num_row_1, num_col_1, num_col_2):
         for key, value in inner_dict.items():
             cumulative_dict[key] = value
     clause_list = []
-    aux_list = create_aux_list((num_row_1**3)*(num_col_2**2)*num_col_1, num_t, len(cumulative_dict))
+    aux_list = create_aux_list((num_row_1**2)*(num_col_2**2)*(num_col_1**2), num_t, len(cumulative_dict))
     move = 0
+    test = 0
+    for key in cumulative_dict:
+        if key.startswith("t_1_"):
+            test += 1
     for key in cumulative_dict:
         if key.startswith("t_1_"):
             val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")[2:]
