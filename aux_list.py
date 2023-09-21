@@ -1,3 +1,4 @@
+def create_aux_list(t, num_t, shift):
     """
         Create a list of 'aux' variables for the SAT encoding.
 
