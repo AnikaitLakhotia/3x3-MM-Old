@@ -1,19 +1,30 @@
+import sys
+import os
 from encoding import encoding
 from verifier import verifier
 if __name__ == '__main__':
+    operation = int(sys.argv[1])
+    number_of_operations = int(sys.argv[2])
+    m = int(sys.argv[3])
+    n = int(sys.argv[4])
+    p = int(sys.argv[5])
+    file_path = sys.argv[6]
 
     # Specify parameters of the encoding
-    encoding, cumulative_dict = encoding(6, 2, 2, 4)
+    encoding, cumulative_dict = encoding(number_of_operations, m, n, p)
+    if operation:
+        # Open file and write data to it
+        with open(file_path, "w") as file:
+            file.write(encoding)
+    else:
+        # If solver outputs SAT, insert the SAT assignment
+        assignment_output_string = "assignment.txt"
+        with open(assignment_output_string, 'r') as file:
+            assignment_string = file.read().rstrip('\n')
 
-    # Insert the path to the file where the cnf formula is to be stored
-    file_path = "your_file_path"
+        # removes trailing 0
+        assignment_string = assignment_string[:-1]
 
-    # Open file and write data to it
-    with open(file_path, "w") as file:
-        file.write(encoding)
-
-    # If solver outputs SAT, insert the SAT assignment
-    assignment_string = "insert_assignment_if_sat"
-
-    # Print verification result
-    print(verifier(assignment_string, cumulative_dict, 6))
+        verifier_output = verifier(assignment_string, cumulative_dict, number_of_operations)
+        with open("verifier.txt", "w") as file:
+            file.write(str(verifier_output))
