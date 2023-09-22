@@ -12,8 +12,8 @@
 cnf_path="instance.cnf"
 # path to .drat file
 drat_path="instance.drat"
-# number of operations for multiplication
-number_of_operations=9
+# number of operations for multiplication, the code works only for >= 2 multiplications
+number_of_operations=10
 # number of rows in matrix B
 m=2
 # number of cols in matrix A and rows in matrix B
