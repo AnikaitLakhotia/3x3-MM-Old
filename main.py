@@ -18,7 +18,7 @@ if __name__ == '__main__':
             file.write(encoding)
     else:
         # If solver outputs SAT, insert the SAT assignment
-        assignment_output_string = "assignment.txt"
+        assignment_output_string = f"assignment_{number_of_operations}_{m}_{n}_{p}.txt"
         with open(assignment_output_string, 'r') as file:
             assignment_string = file.read().rstrip('\n')
 
@@ -26,5 +26,5 @@ if __name__ == '__main__':
         assignment_string = assignment_string[:-1]
 
         verifier_output = verifier(assignment_string, cumulative_dict, number_of_operations)
-        with open("verifier.txt", "w") as file:
+        with open(f"verifier_{number_of_operations}_{m}_{n}_{p}.txt", "w") as file:
             file.write(str(verifier_output))
