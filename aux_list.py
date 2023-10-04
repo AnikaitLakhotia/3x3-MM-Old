@@ -1,14 +1,19 @@
 def create_aux_list(t, num_t, shift):
     """
-        Create a list of 'aux' variables for the SAT encoding.
+        Create a list of auxiliary variables.(for enforcing the 'odd' constraint between
+        the cubic terms(t-variables) of the respective Brent equation)
 
         Args:
             t (int): Number of variables of type t_a_b_c_d_e_f.
-            num_t (int): Number of 't' variables.
+            num_t (int): Number of 't's in each Brent equation.
             shift (int): Current variable index offset.
 
         Returns:
-            list_aux: List of 'aux' variable indices.
+            list_aux: List of auxiliary variables.
+
+        Notes:
+            1. Shift is used to ensure the auxiliary variables are unique, not only in their list, but also with respect
+               to values for other variables in the encoding.
         """
 
     count = shift + 1

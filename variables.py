@@ -1,30 +1,38 @@
-def create_var(num_t, index_1_size, index_2_size, shift, var):
+def create_var(num_t, num_row, num_col, shift, var_char):
     """
-        Create variables representing custom 'var's in the SAT encoding.
+    Create all variables (e.g., "b_1_2_1", "b_6_2_3", etc.) starting with the same
+    character ('a' for alpha, 'b' for beta, or 'g' for gamma) representing the respective variables in
+    Brent equations and map them to unique integer values using a dictionary.
 
-        Args:
-            num_t (int): Number of custom 'var' variables to create.
-            index_1_size (int): Maximum value first index can take.
-            index_2_size (int): Maximum value second index can take.
-            shift (int): Current variable index offset.
-            var (str): Custom variable prefix.
+    Args:
+        num_t (int): Number of 't's in each Brent equation.
+        num_row (int): Number of rows in the corresponding matrix.
+        num_col (int): Number of columns in the corresponding matrix.
+        shift (int): Current variable index offset.
+        var_char (str): The character to use for variable names.
 
-        Returns:
-            dict: Dictionary of custom 'var' variables and their corresponding indices.
-        """
+    Returns:
+        dict: Dictionary of custom 'var' variables and their corresponding unique integer values.
 
-    var_dict = {}
+    Notes:
+        1. The function must be run three times in total with 'a', 'b', and 'g'.
+        2. The values corresponding to each variable will act as the variables in the CNF file.
+        3. Shift is used to ensure the values are unique, not only in their dictionary but also with respect
+           to values for other variables in the encoding.
+    """
 
-    val_s = f'{var}'
-    val_t_range = range(1, num_t + 1)
-    val_1_range = range(1, index_1_size + 1)
-    val_2_range = range(1, index_2_size + 1)
+    var_dict = {}  # Initialize an empty dictionary to store variable mappings
 
-    index = 1
+    val_t_range = range(1, num_t + 1)  # Create a range for 't' values
+    val_1_range = range(1, num_row + 1)  # Create a range for the first index
+    val_2_range = range(1, num_col + 1)  # Create a range for the second index
+
+    i = 1  # Initialize a counter for unique integer values
     for t in val_t_range:
-        for var_index_1 in val_1_range:
-            for var_index_2 in val_2_range:
-                key = f"{val_s}_{t}_{var_index_1}_{var_index_2}"
-                var_dict[key] = shift + index
-                index += 1
-    return var_dict
+        for val_1 in val_1_range:
+            for val_2 in val_2_range:
+                key = f"{var_char}_{t}_{val_1}_{val_2}"  # Construct the variable name
+                var_dict[key] = shift + i  # Map the variable name to a unique integer value
+                i += 1  # Increment the counter
+
+    return var_dict  # Return the dictionary of variable mappings
