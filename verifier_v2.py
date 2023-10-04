@@ -11,7 +11,10 @@ def remove_middle_element(input_string):
 
     Returns:
         str: The modified string with middle element removed.
+
+    Note: Input string is of format a_b_c_d, where b,c,d are numbers, and output is of format a_c_d.
     """
+
     # Split the input string using "_" as the delimiter
     parts = input_string.split("_")
 
@@ -21,23 +24,26 @@ def remove_middle_element(input_string):
     return result
 
 
-def scheme_output(matrix_dict, value_string, value_dict, num_t, num_row_1, num_col_2):
+def scheme_output(matrix_dict, sat_assignment, cumulative_dict, num_t, num_row_1, num_col_2):
     """
-    Compute the scheme based matrix multiplication output.
+    Compute the scheme based matrix multiplication output for two matrices.
 
     Args:
         matrix_dict (dict): A dictionary containing the elements of both matrices to be multiplied.
-        value_string (str): SAT assignment.
-        value_dict (dict): A dictionary mapping variable names to their values.
-        num_t (int): Number of 't' variables.
+        sat_assignment (str): A space-separated string that is the output of the SAT Solver
+                              if the instance given to it is satisfiable.
+        cumulative_dict (dict): A dict containing all the variables in the encoding(as keys) and their
+                                corresponding unique integer values.
+        num_t (int): Number of 't's in each Brent equation.
         num_row_1 (int): Number of rows in the first matrix.
         num_col_2 (int): Number of columns in the second matrix.
 
     Returns:
         dict: A dictionary containing the result of matrix multiplication based on the scheme.
     """
+
     # Reverse map variable values from value_string to dictionaries
-    result = reverse_map(value_string, value_dict)
+    result = reverse_map(sat_assignment, cumulative_dict)
     m_dict = {}
     a_dict = {}
     b_dict = {}
@@ -88,6 +94,7 @@ def generate_dicts(variables):
     Returns:
         list: List of dictionaries, each representing a combination of variable values(binary).
     """
+
     # Generate all possible combinations of 0 and 1 for the given variables
     value_combinations = list(itertools.product([0, 1], repeat=len(variables)))
     # Initialize an empty list to store the dictionaries
@@ -103,7 +110,7 @@ def generate_dicts(variables):
 
 def multiply_matrices(matrix_a, matrix_b, num_row_1, num_col_1, num_col_2):
     """
-    Multiply two matrices represented as dictionaries.
+    Multiply two matrices represented as dictionaries using standard algorithm.
 
     Args:
         matrix_a (dict): First matrix represented as a dictionary.
@@ -115,6 +122,7 @@ def multiply_matrices(matrix_a, matrix_b, num_row_1, num_col_1, num_col_2):
     Returns:
         dict: Resulting matrix represented as a dictionary.
     """
+
     result_matrix = {}
 
     for i in range(1, num_row_1 + 1):
@@ -127,14 +135,17 @@ def multiply_matrices(matrix_a, matrix_b, num_row_1, num_col_1, num_col_2):
     return result_matrix
 
 
-def verifier_v2(value_string, value_dict, num_t, num_row_1, num_col_1, num_col_2):
+def verifier_v2(sat_assignment, cumulative_dict, num_t, num_row_1, num_col_1, num_col_2):
     """
-    Verify the correctness of matrix multiplication using the scheme.
+    Verify the correctness of matrix multiplication using the scheme by comparing it to the output of
+    standard matrix multiplication for all possible matrices of orders under consideration.
 
     Args:
-        value_string (str): SAT assignment.
-        value_dict (dict): A dictionary mapping variable names to their values.
-        num_t (int): Number of 't' variables.
+        sat_assignment (str): A space-separated string that is the output of the SAT Solver
+                              if the instance given to it is satisfiable.
+        cumulative_dict (dict): A dict containing all the variables in the encoding(as keys) and their
+                                corresponding unique integer values.
+        num_t (int): Number of 't's in each Brent equation.
         num_row_1 (int): Number of rows in the first matrix.
         num_col_1 (int): Number of columns in the first matrix.
         num_col_2 (int): Number of columns in the second matrix.
@@ -142,6 +153,7 @@ def verifier_v2(value_string, value_dict, num_t, num_row_1, num_col_1, num_col_2
     Returns:
         int: 1 if the scheme output matches the standard output, 0 otherwise.
     """
+
     var_list_a = []
     var_list_b = []
 
@@ -159,13 +171,10 @@ def verifier_v2(value_string, value_dict, num_t, num_row_1, num_col_1, num_col_2
     # Iterate through all combinations of matrix A and matrix B
     for matrix_a in dicts_a:
         for matrix_b in dicts_b:
-            scheme_out = scheme_output({**matrix_a, **matrix_b}, value_string, value_dict, num_t, num_row_1, num_col_2)
+            scheme_out = scheme_output({**matrix_a, **matrix_b}, sat_assignment, cumulative_dict,
+                                       num_t, num_row_1, num_col_2)
             standard_out = multiply_matrices(matrix_a, matrix_b, num_row_1, num_col_1, num_col_2)
             # Compare the scheme output with the standard output
             if scheme_out != standard_out:
-                print(matrix_a)
-                print(matrix_b)
-                print("s", scheme_out)
-                print(standard_out)
                 return 0
     return 1
