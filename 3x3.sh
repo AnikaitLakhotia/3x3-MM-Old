@@ -33,14 +33,14 @@ if grep -q "UNSATISFIABLE" $cadical_result; then
     # If "UNSATISFIABLE" is found, run ./drat-trim
     echo "UNSATISFIABLE"
     drat_output="${directory}drat_output_${number_of_operations}_${m}_${n}_${p}.txt"
-    ../drat-trim/drat-trim $cnf_path $drat_path > $drat_output
+    ./drat-trim/drat-trim $cnf_path $drat_path > $drat_output
     if grep -q "VERIFIED" $drat_output; then
       echo "UNSAT proof is verified by DRAT"
     else
       echo "UNSAT proof cannot not verified by DRAT"
     fi
 else
-    # If "UNSATISFIABLE" (meaning the result is SAT) is not found, run python3 verifier.py
+    # If "UNSATISFIABLE" is not found(meaning the result is SAT), run python3 verifier.py
     v_assignment="${directory}v_assignment_${number_of_operations}_${m}_${n}_${p}.txt"
     assignment="${directory}assignment_${number_of_operations}_${m}_${n}_${p}.txt"
     grep '^v ' $cadical_result  > $v_assignment
@@ -48,9 +48,15 @@ else
     echo "SATISFIABLE"
     python3 main.py 0 $number_of_operations $m $n $p $cnf_path
     verifier="${directory}verifier_${number_of_operations}_${m}_${n}_${p}.txt"
+    verifier_v2="${directory}verifier_v2_${number_of_operations}_${m}_${n}_${p}.txt"
     if grep -q "1" $verifier; then
-      echo "The scheme has been verified."
+      echo "The scheme has been verified by first verifier."
     else
       echo "The scheme cannot be verified."
+    fi
+    if grep -q "1" $verifier_v2; then
+        echo "The scheme has been verified by second verifier."
+      else
+        echo "The scheme cannot be verified by second verifier."
     fi
 fi
