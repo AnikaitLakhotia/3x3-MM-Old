@@ -34,7 +34,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2):
 
     num_var = (len(dict_t) + len(dict_s) + len(dict_a) + len(dict_b) + len(dict_g) +
                (num_t - 1) * ((num_row_1**2) * (num_col_2**2) * (num_col_1**2)))
-    var_list = ["a_1_1_1"]
+    var_list = ["-a_1_1_1", "b_1_1_2", "g_2_2_1", "-s_1_2_2_2_1", "t_2_1_2_2_1_1_1"]
     num_clauses = len(cumulative_list) + len(var_list)
 
     encoding_string = f'p cnf {num_var} {num_clauses} \n'
