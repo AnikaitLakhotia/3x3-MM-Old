@@ -1,5 +1,5 @@
 from variables import create_var
-from tseitin_variables import create_t, create_s
+from auxiliary_variables import create_t, create_s
 from encoding_list import create_encoding_list
 
 
