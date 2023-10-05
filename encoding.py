@@ -45,4 +45,6 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2):
         encoding_string = encoding_string + clause + " 0 \n"
         encoding_string = encoding_string.replace(',', '')
 
+    encoding_string += streamline
+
     return encoding_string, cumulative_dict
