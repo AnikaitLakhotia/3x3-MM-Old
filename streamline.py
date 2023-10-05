@@ -16,6 +16,6 @@ def streamline(streamline_var_list, cumulative_dict):
     # Iterate through the variable indices in 'var_list'
     for var in streamline_var_list:
         # Append the clause string for the current variable to the result string
-        streamline_clause_string += f'{cumulative_dict[var]}\n'
+        streamline_clause_string += f'{cumulative_dict[var]} 0\n'
 
     return streamline_clause_string  # Return the string representation of the clauses
