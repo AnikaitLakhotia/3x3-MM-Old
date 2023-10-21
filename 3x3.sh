@@ -1,5 +1,5 @@
 #!/bin/bash
-# Please run `chmod +x 3x3.sh` before executing the script 
+# Please run `chmod +x 3x3.sh` before executing the script
 # to give it permission on your device
 
 # stucture your directory as follows:

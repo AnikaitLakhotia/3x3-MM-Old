@@ -2,15 +2,15 @@ from aux_list import create_aux_list
 from odd import create_odd
 
 
-def create_encoding_list(dict_list, num_t, num_row_1, num_col_1, num_col_2):
+def create_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2):
     """
     Create a list containing SAT encoding clauses based on the given dictionaries (in dict_list) and
     a dictionary with all variables in the encoding along with their corresponding unique integer values.
     (the values act as the variables in the CNF file)
 
     Args:
-        dict_list (list of dict): List of dictionaries containing variables as keys
-                                  and their corresponding unique integer values.
+        cumulative_dict (dict): A dict containing all the variables in the encoding(as keys) and their
+                                corresponding unique integer values.
         num_t (int): Number of 't's.
         num_row_1 (int): Number of rows in the first matrix.
         num_col_1 (int): Number of columns in the first matrix.
@@ -18,31 +18,11 @@ def create_encoding_list(dict_list, num_t, num_row_1, num_col_1, num_col_2):
 
     Returns:
         list: List of SAT encoding clauses (each clause as a list).
-        dict: Dictionary containing all the variables in the encoding (as keys) and their
-              corresponding unique integer values.
-
-    Notes:
-        1. All the variables in the encoding and their corresponding unique integer values are
-           contained in dict_list as parts of separate dictionaries and are all added up
-           to make cumulative_dict.
     """
-
-    cumulative_dict = {}  # Initialize an empty dictionary to store cumulative variable mappings
-
-    # Combine variable dictionaries from dict_list into cumulative_dict
-    for inner_dict in dict_list:
-        for key, value in inner_dict.items():
-            cumulative_dict[key] = value
 
     clause_list = []  # Initialize an empty list to store clauses
     aux_list = create_aux_list((num_row_1**2) * (num_col_2**2) * (num_col_1**2), num_t, len(cumulative_dict))
     move = 0
-    test = 0
-
-    # Count the number of variables starting with "t_1_"
-    for key in cumulative_dict:
-        if key.startswith("t_1_"):
-            test += 1
 
     for key in cumulative_dict:
         if key.startswith("t_1_"):
@@ -100,4 +80,4 @@ def create_encoding_list(dict_list, num_t, num_row_1, num_col_1, num_col_2):
             clause_list.append([cumulative_dict[key], -cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}'],
                                 -cumulative_dict[f'g_{val_t}_{val_5}_{val_6}']])
 
-    return clause_list, cumulative_dict  # Return the list of clauses and the cumulative dictionary
+    return clause_list  # Return the list of clauses

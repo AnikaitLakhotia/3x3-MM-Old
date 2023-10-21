@@ -12,7 +12,7 @@ if __name__ == '__main__':
     file_path = sys.argv[6]
 
     # Specify parameters of the encoding
-    encoding, cumulative_dict = encoding(number_of_operations, m, n, p)
+    encoding, cumulative_dict = encoding(number_of_operations, m, n, p, 3)
     if operation:
         # Open file and write data to it
         with open(file_path, "w") as file:
