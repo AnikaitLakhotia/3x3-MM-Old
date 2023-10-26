@@ -33,6 +33,6 @@ def create_var(num_t, num_row, num_col, shift, var_char):
             for val_2 in val_2_range:
                 key = f"{var_char}_{t}_{val_1}_{val_2}"  # Construct the variable name
                 var_dict[key] = shift + i  # Map the variable name to a unique integer value
-                i += 1  # Increment the counter
+                i += 1
 
     return var_dict  # Return the dictionary of variable mappings

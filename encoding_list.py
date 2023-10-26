@@ -37,7 +37,7 @@ def create_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2
                     list_aux.append(aux_list[i - 1 + move])
 
                 list_var.append(cumulative_dict[f't_{num_t}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'])
-                odd_clauses = create_odd(list_var, list_aux, num_t)
+                odd_clauses = create_odd(list_var, list_aux)
                 move += num_t - 1
 
                 # Add odd constraint clauses to the clause list
@@ -55,7 +55,7 @@ def create_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2
                     list_aux.append(aux_list[i - 1 + move])
 
                 list_var.append(cumulative_dict[f't_{num_t}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'])
-                odd_clauses = create_odd(list_var, list_aux, num_t)
+                odd_clauses = create_odd(list_var, list_aux)
                 move += num_t - 1
 
                 # Add odd constraint clauses to the clause list

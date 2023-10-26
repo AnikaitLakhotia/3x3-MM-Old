@@ -1,3 +1,6 @@
+import time
+
+
 def reverse_map(sat_assignment, cumulative_dict):
     """
     Reverse map the values in the SAT assignment's variables to their corresponding keys(string form) in
@@ -11,21 +14,25 @@ def reverse_map(sat_assignment, cumulative_dict):
 
     Returns:
         dict: A dictionary mapping keys of cumulative_dict to 1 or 0 based on the signs of
-              their respective integer values in sat_assignment.(0 is sign is '-' and 1 otherwise)
+              their respective integer values in sat_assignment.(0 if sign is '-' and 1 otherwise)
     """
 
     number_list = sat_assignment.split()
+
+    # Reverse the cumulative_dict for faster lookup
+    reverse_cumulative_dict = {v: k for k, v in cumulative_dict.items()}
+
     result_dict = {}
+
     for number in number_list:
-        if number.startswith("-"):
-            number = number[1:]
-            for key, value in cumulative_dict.items():
-                if int(number) == value:
-                    result_dict[key] = 0
-        else:
-            for key, value in cumulative_dict.items():
-                if int(number) == value:
-                    result_dict[key] = 1
+        sign = -1 if number.startswith("-") else 1
+        number = number.lstrip('-')
+        value = int(number)
+
+        if value in reverse_cumulative_dict:
+            key = reverse_cumulative_dict[value]
+            result_dict[key] = 1 if sign == 1 else 0
+
     return result_dict
 
 
@@ -43,8 +50,9 @@ def verifier(sat_assignment, cumulative_dict, num_t):
     """
 
     result = reverse_map(sat_assignment, cumulative_dict)
+
     for key, value in result.items():
-        if key.startswith(f"t_1"):
+        if key.startswith(f"t_1_"):
             sum_val = 0
             val_t, val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")[1:]
             for i in range(1, num_t + 1):

@@ -77,6 +77,6 @@ def create_s(num_t, num_row_1, num_col_1, num_col_2, shift):
                     for j2 in val_j2_range:
                         key = f"s_{val_t}_{i1}_{i2}_{j1}_{j2}"  # Construct the variable name
                         s_dict[key] = shift + index  # Map the variable name to a unique integer value
-                        index += 1  # Increment the counter
+                        index += 1
 
     return s_dict  # Return the dictionary of 's' variables and their mappings
