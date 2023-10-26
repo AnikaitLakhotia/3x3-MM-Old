@@ -2,12 +2,6 @@
 # Please run `chmod +x 3x3.sh` before executing the script
 # to give it permission on your device
 
-# stucture your directory as follows:
-  # ---- 3x3-MM
-  # ---- cadical
-  # ---- drat-trime
-
-
 if [ "$#" -ne 4 ]; then
   echo "Four variables are required"
   exit 1

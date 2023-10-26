@@ -1,5 +1,10 @@
 .PHONY: clean run_script
 
+# stucture your directory as follows:
+  # ---- 3x3-MM
+  # ---- cadical
+  # ---- drat-trim
+
 # op = number of multiplications
 op ?= 8
 # number of rows in matrix A
