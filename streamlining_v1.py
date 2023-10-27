@@ -7,6 +7,13 @@ class SchemeError(Exception):
 
 
 def get_scheme():
+    """
+    Retrieve a random scheme from the 'schemes' directory.
+
+    Returns:
+        str: The contents of a random scheme file.
+    """
+
     try:
         # Navigate to one level above the current directory
         parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
@@ -18,28 +25,28 @@ def get_scheme():
             raise SchemeError("'schemes' doesn't exist in the parent directory.")
 
         # Get a list of subdirectories (folders) inside 'schemes'
-        subfolders = [f for f in os.listdir(schemes_dir) if os.path.isdir(os.path.join(schemes_dir, f))]
+        sub_folders = [f for f in os.listdir(schemes_dir) if os.path.isdir(os.path.join(schemes_dir, f))]
 
-        if not subfolders:
-            raise SchemeError("No subfolders found within 'schemes'.")
+        if not sub_folders:
+            raise SchemeError("No sub folders found within 'schemes'.")
 
-        # Choose a random subfolder within 'schemes'
-        random_subfolder = random.choice(subfolders)
+        # Choose a random sub folder within 'schemes'
+        random_sub_folder = random.choice(sub_folders)
 
-        # Navigate to the randomly chosen subfolder
-        subfolder_path = os.path.join(schemes_dir, random_subfolder)
+        # Navigate to the randomly chosen sub folder
+        sub_folder_path = os.path.join(schemes_dir, random_sub_folder)
 
-        # Get a list of files within the randomly chosen subfolder
-        files = [f for f in os.listdir(subfolder_path) if os.path.isfile(os.path.join(subfolder_path, f))]
+        # Get a list of files within the randomly chosen sub folder
+        files = [f for f in os.listdir(sub_folder_path) if os.path.isfile(os.path.join(sub_folder_path, f))]
 
         if not files:
-            raise SchemeError("No files found in the randomly chosen subfolder.")
+            raise SchemeError("No files found in the randomly chosen sub folder.")
 
-        # Choose a random file from the subfolder
+        # Choose a random file from the sub folder
         random_file = random.choice(files)
 
         # Read the contents of the randomly chosen file into a string
-        file_path = os.path.join(subfolder_path, random_file)
+        file_path = os.path.join(sub_folder_path, random_file)
         with open(file_path, 'r') as file:
             file_contents = file.read()
 
@@ -49,12 +56,24 @@ def get_scheme():
 
 
 def generate_streamlining_v1():
+    """
+    Generate a list of streamlining variables based on streamlining 1.
+
+    Returns:
+        list: List of variables.
+
+    Note:
+        This function generates a list of variables for streamlining based on the contents of a random scheme file.
+    """
 
     file_contents = get_scheme()
     tensors = file_contents.split('---------+---------+----------')
+    tensors = tensors[:-1]
     var_chars = ['a', 'b', 'g']
     var_list = []
     var_value_list = []
+
+    # Process the scheme file
     for tensor in tensors:
         var_lines = tensor.split('\n')
         for var_line in var_lines:
@@ -77,7 +96,5 @@ def generate_streamlining_v1():
                     else:
                         var_list.append(f'-{var_char}_{val_t}_{i}_{j}')
                     shift += 1
+
     return var_list
-
-
-

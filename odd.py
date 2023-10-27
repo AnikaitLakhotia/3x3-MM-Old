@@ -1,4 +1,4 @@
-def create_odd(list_var, list_aux, n):
+def create_odd(list_var, list_aux):
     """
     Create clauses for enforcing the 'odd' constraint (using auxiliary variables from list_aux) between
     the cubic terms (t-variables) of the specific Brent equation that the values in list_var correspond to.
@@ -6,7 +6,6 @@ def create_odd(list_var, list_aux, n):
     Args:
         list_var (list): List of values of t-variables.
         list_aux (list): List of auxiliary variables.
-        n (int): Number of cubic terms in the Brent equation.
 
     Returns:
         list: List of clauses enforcing the 'odd' constraint.
@@ -17,9 +16,6 @@ def create_odd(list_var, list_aux, n):
            value of a t-variable or an auxiliary variable.
         3. The values in list_var corresponding to each t-variable will act as the respective variables in the CNF file.
     """
-
-    assert len(list_var) == n, "Length of list_var not equal to n."
-    assert len(list_aux) == n - 1, "Length of list_aux not equal to n - 1."
 
     clause_list = []  # Initialize an empty list to store clauses
 

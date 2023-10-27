@@ -13,8 +13,14 @@ m ?= 2
 n ?= 2
 # number of cols in matrix B
 p ?= 2
+# Indicates whether to use lex ordering.
+lo ?= True
+# streamlining number.
+s ?= 4
+# streamlining parameter.
+sp ?= 0
 
 run:
 	@echo "Running the provided Bash script..."
-	@./3x3.sh $(op) $(m) $(n) $(p)
+	@./3x3.sh $(op) $(m) $(n) $(p) $(lo) $(s) $(sp)
 	@echo "Script execution complete."

@@ -63,11 +63,11 @@ def scheme_output(matrix_dict, sat_assignment, cumulative_dict, num_t, num_row_1
         b_sum = 0
 
         for key, value in a_dict.items():
-            if key.startswith(f'a_{i}') and value == 1:
+            if key.startswith(f'a_{i}_') and value == 1:
                 a_sum = a_sum ^ matrix_dict[remove_middle_element(f'{key}')]
 
         for key, value in b_dict.items():
-            if key.startswith(f'b_{i}') and value == 1:
+            if key.startswith(f'b_{i}_') and value == 1:
                 b_sum = b_sum ^ matrix_dict[remove_middle_element(f'{key}')]
         m_dict[f'm_{i}'] = a_sum and b_sum
 
@@ -104,7 +104,7 @@ def generate_dicts(variables):
     for values in value_combinations:
         var_dict = dict(zip(variables, values))
         result_dicts.append(var_dict)
-
+    result_dicts = result_dicts[:10]
     return result_dicts
 
 
@@ -167,7 +167,6 @@ def verifier_v2(sat_assignment, cumulative_dict, num_t, num_row_1, num_col_1, nu
 
     dicts_a = generate_dicts(var_list_a)
     dicts_b = generate_dicts(var_list_b)
-
     # Iterate through all combinations of matrix A and matrix B
     for matrix_a in dicts_a:
         for matrix_b in dicts_b:

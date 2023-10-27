@@ -11,6 +11,9 @@ number_of_operations=$1
 m=$2
 n=$3
 p=$4
+lo=$5
+s=$6
+sp=$7
 directory="logs/${number_of_operations}_${m}_${n}_${p}/"
 
 mkdir -p "$directory"
@@ -18,8 +21,8 @@ mkdir -p "$directory"
 cnf_path="${directory}instance_${number_of_operations}_${m}_${n}_${p}.cnf"
 drat_path="${directory}instance_${number_of_operations}_${m}_${n}_${p}.drat"
 cadical_result="${directory}cadical_result_${number_of_operations}_${m}_${n}_${p}.txt"
-echo $1 $2 $3 $4
-python3 main.py 1 $number_of_operations $m $n $p $cnf_path
+echo $1 $2 $3 $4 $5 $6 $7
+python3 main.py 1 $number_of_operations $m $n $p $lo $s $sp $cnf_path
 ../cadical/build/cadical $cnf_path $drat_path > $cadical_result
 
 # Check if "UNSATISFIABLE" is in cadicalResult.txt
@@ -40,7 +43,7 @@ else
     grep '^v ' $cadical_result  > $v_assignment
     sed 's/^v //' $v_assignment > $assignment
     echo "SATISFIABLE"
-    python3 main.py 0 $number_of_operations $m $n $p $cnf_path
+    python3 main.py 0 $number_of_operations $m $n $p $lo $s $sp $cnf_path
     verifier="${directory}verifier_${number_of_operations}_${m}_${n}_${p}.txt"
     verifier_v2="${directory}verifier_v2_${number_of_operations}_${m}_${n}_${p}.txt"
     if grep -q "1" $verifier; then
