@@ -82,6 +82,10 @@ def create_encoding_list_v2(cumulative_dict, num_row_1, num_col_1, num_col_2):
                                 if key.endswith(f'{i1}_{i2}_{j1}_{j2}_{k1}_{k2}'):
                                     list_var.append(value)
 
+                            # Negate first variable in list_var if the RHS of the corresponding Brent Equation is 1.
+                            if i2 == j1 and k1 == i1 and k2 == j2:
+                                list_var[0] = -list_var[0]
+
                             # Generate clauses with one variable negated for all such combinations of variables
                             for i in range(len(list_var)):
                                 negated_list = list_var.copy()
@@ -96,5 +100,24 @@ def create_encoding_list_v2(cumulative_dict, num_row_1, num_col_1, num_col_2):
                             for list_clause in at_most_two_clauses:
                                 for clause in list_clause:
                                     clause_list.append(clause)
+    # Add clauses for 's' variables
+    for key in cumulative_dict:
+        if key.startswith("s"):
+            val_t, val_1, val_2, val_3, val_4 = key.split("_")[1:]
+            clause_list.append([-cumulative_dict[key], cumulative_dict[f'a_{val_t}_{val_1}_{val_2}']])
+            clause_list.append([-cumulative_dict[key], cumulative_dict[f'b_{val_t}_{val_3}_{val_4}']])
+            clause_list.append([cumulative_dict[key], -cumulative_dict[f'a_{val_t}_{val_1}_{val_2}'],
+                                    -cumulative_dict[f'b_{val_t}_{val_3}_{val_4}']])
+
+    # Add clauses for 't' variables
+    for key in cumulative_dict:
+        if key.startswith("t"):
+            val_t, val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")[1:]
+            clause_list.append(
+                [-cumulative_dict[key], cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}']])
+            clause_list.append([-cumulative_dict[key], cumulative_dict[f'g_{val_t}_{val_5}_{val_6}']])
+            clause_list.append(
+                [cumulative_dict[key], -cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}'],
+                 -cumulative_dict[f'g_{val_t}_{val_5}_{val_6}']])
 
     return clause_list, num_aux_var
