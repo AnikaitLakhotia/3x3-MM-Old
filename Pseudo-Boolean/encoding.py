@@ -9,6 +9,11 @@ class PB:
         self.curr_variable += 1
         return self.curr_variable
 
+    def kronecker_delta_values(self, i, j, k, l, m, n):
+        if j == k and i == m and l == n:
+            return 1
+        return 0
+
     def create_encoding(self):
         for i in range(3):
             p_for_alpha = self.get_new_var()
@@ -30,7 +35,8 @@ class PB:
                                         curr_var_constraint)
                                 total_contraint = " ".join(
                                     clause for sub_constaint in total_alpha_beta_gamma_constraint for clause in sub_constaint)
-                                self.opb_file.write(f"{total_contraint} \n")
+                                self.opb_file.write(
+                                    f"{total_contraint} = {self.kronecker_delta_values(i, j, k, l, m, n)}\n")
                                 # print(total_contraint)
                                 # return
 
@@ -59,11 +65,11 @@ class PB:
         # ~z + p >= 1
         for alpha_beta_or_gamma_variable in variables[:-1]:
             self.opb_file.write(
-                f"-1 zx{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 1\n")
+                f"-1 x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 1\n")
 
         # ~p + ~r + ~u + z >= 1
         self.opb_file.write(
-            "-1 {} -1 {} -1 {} 1 {} >= 1 \n".format(*variables))
+            "-1 x{} -1 x{} -1 x{} 1 x{} >= 1 \n".format(*variables))
 
 
 """

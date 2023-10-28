@@ -1,6 +1,6 @@
 from encoding import PB
 
-pb = PB(23)
+pb = PB(1)
 pb.create_encoding()
 
 # for a,b,y
