@@ -31,10 +31,8 @@ if __name__ == '__main__':
 
         # Perform Verifications
         verifier_output = verifier(assignment_string, cumulative_dict, number_of_operations)
-        with (open(f"logs/{number_of_operations}_{m}_{n}_{p}/verifier_{number_of_operations}_{m}_{n}_{p}.txt", "w")
-              as file):
+        with open(f"logs/{number_of_operations}_{m}_{n}_{p}/verifier_{number_of_operations}_{m}_{n}_{p}.txt", "w") as file:
             file.write(str(verifier_output))
         verifier_v2_output = verifier_v2(assignment_string, cumulative_dict, number_of_operations, m, n, p)
-        with (open(f"logs/{number_of_operations}_{m}_{n}_{p}/verifier_v2_{number_of_operations}_{m}_{n}_{p}.txt", "w")
-              as file):
+        with open(f"logs/{number_of_operations}_{m}_{n}_{p}/verifier_v2_{number_of_operations}_{m}_{n}_{p}.txt", "w") as file:
             file.write(str(verifier_v2_output))
