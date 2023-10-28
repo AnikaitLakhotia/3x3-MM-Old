@@ -16,19 +16,19 @@ class PB:
 
     def create_encoding(self):
         for i in range(3):
-            p_for_alpha = self.get_new_var()
             for j in range(3):
-                q_for_alpha = self.get_new_var()
                 for k in range(3):
-                    r_for_beta = self.get_new_var()
                     for l in range(3):
-                        s_for_beta = self.get_new_var()
                         for m in range(3):
-                            u_for_gamma = self.get_new_var()
                             for n in range(3):
-                                v_for_gamma = self.get_new_var()
                                 total_alpha_beta_gamma_constraint = []
                                 for _ in range(self.multiplications):
+                                    p_for_alpha = self.get_new_var()
+                                    q_for_alpha = self.get_new_var()
+                                    r_for_beta = self.get_new_var()
+                                    s_for_beta = self.get_new_var()
+                                    u_for_gamma = self.get_new_var()
+                                    v_for_gamma = self.get_new_var()
                                     curr_var_constraint = self.create_pb_constraints([p_for_alpha, q_for_alpha], [
                                                                                      r_for_beta, s_for_beta], [u_for_gamma, v_for_gamma])
                                     total_alpha_beta_gamma_constraint.append(
@@ -43,6 +43,10 @@ class PB:
     def create_pb_constraints(self, alpha_variables, beta_variables, gamma_variables):
         aux_variables = []
         is_negative = {1, 2, 4}
+        # p + ~p = 1
+        for variables in [alpha_variables, beta_variables, gamma_variables]:
+            for variable in variables:
+                self.opb_file.write(f"-1 x{variable} 1 x{variable} = 1\n")
         for alpha_var in alpha_variables:
             for beta_var in beta_variables:
                 for gamma_var in gamma_variables:
@@ -59,9 +63,6 @@ class PB:
         return complete_aux_var_constaint
 
     def create_aux_variable_constraint(self, variables):
-        # p + ~p = 1
-        for variable in variables:
-            self.opb_file.write(f"-1 x{variable} 1 x{variable} = 1\n")
         # ~z + p >= 1
         for alpha_beta_or_gamma_variable in variables[:-1]:
             self.opb_file.write(
@@ -88,4 +89,4 @@ assume for this i,j,k,l,m,n kronker deltas = 0 (it does not satify)
 """
 # (8*8*23 + 1)(3**6)
 # 729
-# 1073817
+# 1 073 817
