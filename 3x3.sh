@@ -1,11 +1,5 @@
-#!/bin/bash
 # Please run `chmod +x 3x3.sh` before executing the script
 # to give it permission on your device
-
-if [ "$#" -ne 4 ]; then
-  echo "Four variables are required"
-  exit 1
-fi
 
 number_of_operations=$1
 m=$2
@@ -30,7 +24,7 @@ if grep -q "UNSATISFIABLE" $cadical_result; then
     # If "UNSATISFIABLE" is found, run ./drat-trim
     echo "UNSATISFIABLE"
     drat_output="${directory}drat_output_${number_of_operations}_${m}_${n}_${p}.txt"
-    ./drat-trim/drat-trim $cnf_path $drat_path > $drat_output
+    ../drat-trim/drat-trim $cnf_path $drat_path > $drat_output
     if grep -q "VERIFIED" $drat_output; then
       echo "UNSAT proof is verified by DRAT"
     else

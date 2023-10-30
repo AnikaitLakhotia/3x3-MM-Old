@@ -61,5 +61,5 @@ def verifier(sat_assignment, cumulative_dict, num_t):
                 return 0
             elif (val_2 != val_3 or val_1 != val_5 or val_4 != val_6) and sum_val % 2 != 0:
                 return 0
-            else:
-                return 1
+
+    return 1

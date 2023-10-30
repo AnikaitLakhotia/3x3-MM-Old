@@ -1,5 +1,6 @@
 from verifier import reverse_map
 import itertools
+import random
 
 
 def remove_middle_element(input_string):
@@ -76,10 +77,10 @@ def scheme_output(matrix_dict, sat_assignment, cumulative_dict, num_t, num_row_1
         for k in range(1, num_col_2 + 1):
             g_sum = 0
             for key, value in g_dict.items():
-                if key.endswith(f'{k}_{j}') and value == 1:
+                if key.endswith(f'{j}_{k}') and value == 1:
                     parts = key.split("_")
                     g_sum = g_sum ^ m_dict[f'm_{parts[1]}']
-            c_dict[f'g_{k}_{j}'] = g_sum
+            c_dict[f'g_{j}_{k}'] = g_sum
 
     return c_dict
 
@@ -104,6 +105,8 @@ def generate_dicts(variables):
     for values in value_combinations:
         var_dict = dict(zip(variables, values))
         result_dicts.append(var_dict)
+
+    random.shuffle(result_dicts)
     result_dicts = result_dicts[:10]
     return result_dicts
 
@@ -176,4 +179,5 @@ def verifier_v2(sat_assignment, cumulative_dict, num_t, num_row_1, num_col_1, nu
             # Compare the scheme output with the standard output
             if scheme_out != standard_out:
                 return 0
+
     return 1
