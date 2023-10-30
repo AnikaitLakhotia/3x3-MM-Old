@@ -1,3 +1,7 @@
+from aux_list import create_aux_list
+from odd import create_odd
+
+
 def at_most_two(var_list, y):
     """
     Generate at-most-two constraints for a list of variables.
@@ -48,13 +52,14 @@ def at_most_two(var_list, y):
     return clause_list, num_aux_var
 
 
-def create_encoding_list_v2(cumulative_dict, num_row_1, num_col_1, num_col_2):
+def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2):
     """
     Generate a list of clauses for the second version of the encoding of Brent equations.
 
     Args:
         cumulative_dict (dict): A dict containing all the variables in the encoding(as keys) and their
                                 corresponding unique integer values.
+        num_t (int): Number of 't's.
         num_row_1 (int): Number of rows in the first matrix.
         num_col_1 (int): Number of columns in the first matrix.
         num_col_2 (int): Number of columns in the second matrix.
@@ -63,7 +68,13 @@ def create_encoding_list_v2(cumulative_dict, num_row_1, num_col_1, num_col_2):
         tuple: A tuple containing a list of clauses and the number of auxiliary variables added.
     """
 
+    # Auxiliary variables for the cases in which i2 != j1 or k1 != i1 or k2 != j2.
     num_aux_var = 0
+
+    # List of auxiliary variables for the cases in which i2 == j1 and k1 == i1 and k2 == j2.
+    aux_list = create_aux_list(num_row_1 * num_col_2 * num_col_1,
+                               num_t, len(cumulative_dict))
+    move = 0
     clause_list = []
 
     val_i1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1' and 'k1' values
@@ -78,28 +89,43 @@ def create_encoding_list_v2(cumulative_dict, num_row_1, num_col_1, num_col_2):
                         for k2 in val_k2_range:
                             list_var = []
 
-                            for key, value in cumulative_dict.items():
-                                if key.endswith(f'{i1}_{i2}_{j1}_{j2}_{k1}_{k2}'):
-                                    list_var.append(value)
+                            if i2 != j1 or k1 != i1 or k2 != j2:
+                                for key, value in cumulative_dict.items():
+                                    if key.endswith(f'{i1}_{i2}_{j1}_{j2}_{k1}_{k2}'):
+                                        list_var.append(value)
 
-                            # Negate first variable in list_var if the RHS of the corresponding Brent Equation is 1.
-                            if i2 == j1 and k1 == i1 and k2 == j2:
-                                list_var[0] = -list_var[0]
+                                # Generate clauses with one variable negated for all such combinations of variables
+                                for i in range(len(list_var)):
+                                    negated_list = list_var.copy()
+                                    negated_list[i] = -(negated_list[i])
+                                    clause_list.append(negated_list)
 
-                            # Generate clauses with one variable negated for all such combinations of variables
-                            for i in range(len(list_var)):
-                                negated_list = list_var.copy()
-                                negated_list[i] = -(negated_list[i])
-                                clause_list.append(negated_list)
+                                y = len(cumulative_dict) + 1
+                                at_most_two_clauses, num_added_aux_var = at_most_two(list_var, y)
+                                num_aux_var += num_added_aux_var
 
-                            y = len(cumulative_dict) + 1
-                            at_most_two_clauses, num_added_aux_var = at_most_two(list_var, y)
-                            num_aux_var += num_added_aux_var
+                                # Add at most two constraints to the clause list
+                                for list_clause in at_most_two_clauses:
+                                    for clause in list_clause:
+                                        clause_list.append(clause)
 
-                            # Add at most two constraints to the clause list
-                            for list_clause in at_most_two_clauses:
-                                for clause in list_clause:
-                                    clause_list.append(clause)
+                            else:
+                                list_aux = []
+
+                                for i in range(1, num_t):
+                                    list_var.append(
+                                        cumulative_dict[f't_{i}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}'])
+                                    list_aux.append(aux_list[i - 1 + move])
+
+                                list_var.append(
+                                    cumulative_dict[f't_{num_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}'])
+                                odd_clauses = create_odd(list_var, list_aux)
+                                move += num_t - 1
+
+                                # Add odd constraint clauses to the clause list
+                                for inner_list in odd_clauses:
+                                    clause_list.append(inner_list)
+
     # Add clauses for 's' variables
     for key in cumulative_dict:
         if key.startswith("s"):
@@ -107,7 +133,7 @@ def create_encoding_list_v2(cumulative_dict, num_row_1, num_col_1, num_col_2):
             clause_list.append([-cumulative_dict[key], cumulative_dict[f'a_{val_t}_{val_1}_{val_2}']])
             clause_list.append([-cumulative_dict[key], cumulative_dict[f'b_{val_t}_{val_3}_{val_4}']])
             clause_list.append([cumulative_dict[key], -cumulative_dict[f'a_{val_t}_{val_1}_{val_2}'],
-                                    -cumulative_dict[f'b_{val_t}_{val_3}_{val_4}']])
+                                -cumulative_dict[f'b_{val_t}_{val_3}_{val_4}']])
 
     # Add clauses for 't' variables
     for key in cumulative_dict:

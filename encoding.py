@@ -57,8 +57,9 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, lex_order, streamlining, st
 
     else:
         # Create the cumulative list of SAT encoding clauses using alternate scheme.
-        cumulative_list, num_aux_var = create_encoding_list_v2(cumulative_dict, num_row_1, num_col_1, num_col_2)
+        cumulative_list, num_aux_var = create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2)
         num_var += num_aux_var
+        num_var += (num_t - 1) * (num_row_1 * num_col_2 * num_col_1)
         num_clauses = len(cumulative_list)
 
     lex_string = ""
