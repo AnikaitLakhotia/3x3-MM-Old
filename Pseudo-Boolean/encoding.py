@@ -1,9 +1,26 @@
+import collections
+ALPHA = "alpha"
+BETA = "beta"
+GAMMA = "gamma"
+
+
+class Node:
+    def __init__(self, first_variable_value, second_variable_value) -> None:
+        self.first_var = first_variable_value
+        self.second_var = second_variable_value
+
+    def __str__(self) -> str:
+        return f"first_var {self.first_var} second_var {self.second_var}"
+
+
 class PB:
     def __init__(self, multiplications) -> None:
         self.curr_variable = 0
         self.multiplications = multiplications
         self.file_name = f"3x3-{self.multiplications}.opb"
         self.opb_file = open(f"./opb/{self.file_name}", 'w+')
+        # (row, column, iota) -> {alpha: Node, beta: Node, gamma: Node)
+        self.alpha_beta_gamma_to_var_num = collections.defaultdict(dict)
 
     def get_new_var(self):
         self.curr_variable += 1
@@ -14,7 +31,20 @@ class PB:
             return 1
         return 0
 
+    def create_variables(self):
+        for row in range(3):
+            for col in range(3):
+                for iota in range(self.multiplications):
+                    alpha_node = Node(self.get_new_var(), self.get_new_var())
+                    beta_node = Node(self.get_new_var(), self.get_new_var())
+                    gamma_node = Node(self.get_new_var(), self.get_new_var())
+                    row_col_iota_tuple = tuple((row, col, iota))
+                    self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][ALPHA] = alpha_node
+                    self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][BETA] = beta_node
+                    self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][GAMMA] = gamma_node
+
     def create_encoding(self):
+        self.create_variables()
         for i in range(3):
             for j in range(3):
                 for k in range(3):
@@ -22,13 +52,20 @@ class PB:
                         for m in range(3):
                             for n in range(3):
                                 total_alpha_beta_gamma_constraint = []
-                                for _ in range(self.multiplications):
-                                    p_for_alpha = self.get_new_var()
-                                    q_for_alpha = self.get_new_var()
-                                    r_for_beta = self.get_new_var()
-                                    s_for_beta = self.get_new_var()
-                                    u_for_gamma = self.get_new_var()
-                                    v_for_gamma = self.get_new_var()
+                                for iota in range(self.multiplications):
+                                    alpha_coord = (i, j, iota)
+                                    beta_coord = (k, l, iota)
+                                    gamma_coord = (m, n, iota)
+                                    p_for_alpha = self.alpha_beta_gamma_to_var_num[
+                                        alpha_coord][ALPHA].first_var
+                                    q_for_alpha = self.alpha_beta_gamma_to_var_num[
+                                        alpha_coord][ALPHA].second_var
+                                    r_for_beta = self.alpha_beta_gamma_to_var_num[beta_coord][BETA].first_var
+                                    s_for_beta = self.alpha_beta_gamma_to_var_num[beta_coord][BETA].second_var
+                                    u_for_gamma = self.alpha_beta_gamma_to_var_num[
+                                        gamma_coord][GAMMA].first_var
+                                    v_for_gamma = self.alpha_beta_gamma_to_var_num[
+                                        gamma_coord][GAMMA].second_var
                                     curr_var_constraint = self.create_pb_constraints([p_for_alpha, q_for_alpha], [
                                                                                      r_for_beta, s_for_beta], [u_for_gamma, v_for_gamma])
                                     total_alpha_beta_gamma_constraint.append(
@@ -37,8 +74,6 @@ class PB:
                                     clause for sub_constaint in total_alpha_beta_gamma_constraint for clause in sub_constaint)
                                 self.opb_file.write(
                                     f"{total_contraint} = {self.kronecker_delta_values(i, j, k, l, m, n)}\n")
-                                # print(total_contraint)
-                                # return
 
     def create_pb_constraints(self, alpha_variables, beta_variables, gamma_variables):
         aux_variables = []
@@ -51,6 +86,8 @@ class PB:
             for beta_var in beta_variables:
                 for gamma_var in gamma_variables:
                     z_variable = self.get_new_var()
+                    self.opb_file.write(
+                        f"-1 x{z_variable} 1 x{z_variable} = 1\n")
                     self.create_aux_variable_constraint(
                         [alpha_var, beta_var, gamma_var, z_variable])
                     aux_variables.append(z_variable)
@@ -86,6 +123,16 @@ assume for this i,j,k,l,m,n kronker deltas = 0 (it does not satify)
 (z1 - z2 -z3 + z4 - z5 + z6 + z7 + z8) + z9 - z10 ... z_184 = 0
 8 represent the number of aux variables for some a*b*y multiplication
 23 represents the number of multiplications (iota)
+
+
+
+for an alpha beta gamma:
+    6 pqrsuv, and 8 z so
+    6 p + p`
+    for each z, 4 eqs => 8*4 = 32
+    1 summation
+    thus, ((6 + 8 + 32)*2 + 1)*729 = 47
+
 """
 # (8*8*23 + 1)(3**6)
 # 729
