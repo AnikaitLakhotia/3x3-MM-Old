@@ -31,17 +31,23 @@ class PB:
             return 1
         return 0
 
+    def write_to_file(self, constraint):
+        self.opb_file.write(constraint)
+
     def create_variables(self):
         for row in range(3):
             for col in range(3):
                 for iota in range(self.multiplications):
-                    alpha_node = Node(self.get_new_var(), self.get_new_var())
-                    beta_node = Node(self.get_new_var(), self.get_new_var())
-                    gamma_node = Node(self.get_new_var(), self.get_new_var())
                     row_col_iota_tuple = tuple((row, col, iota))
-                    self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][ALPHA] = alpha_node
-                    self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][BETA] = beta_node
-                    self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][GAMMA] = gamma_node
+                    for brent_var in [ALPHA, BETA, GAMMA]:
+                        first_new_var = self.get_new_var()
+                        second_new_var = self.get_new_var()
+                        self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var] = Node(
+                            first_new_var, second_new_var)
+                        self.write_to_file(
+                            f"-1 x{first_new_var} 1 x{first_new_var} = 1\n")
+                        self.write_to_file(
+                            f"-1 x{second_new_var} 1 x{second_new_var} = 1\n")
 
     def create_encoding(self):
         self.create_variables()
@@ -78,10 +84,6 @@ class PB:
     def create_pb_constraints(self, alpha_variables, beta_variables, gamma_variables):
         aux_variables = []
         is_negative = {1, 2, 4}
-        # p + ~p = 1
-        for variables in [alpha_variables, beta_variables, gamma_variables]:
-            for variable in variables:
-                self.opb_file.write(f"-1 x{variable} 1 x{variable} = 1\n")
         for alpha_var in alpha_variables:
             for beta_var in beta_variables:
                 for gamma_var in gamma_variables:
@@ -102,11 +104,11 @@ class PB:
     def create_aux_variable_constraint(self, variables):
         # ~z + p >= 1
         for alpha_beta_or_gamma_variable in variables[:-1]:
-            self.opb_file.write(
+            self.write_to_file(
                 f"-1 x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 1\n")
 
         # ~p + ~r + ~u + z >= 1
-        self.opb_file.write(
+        self.write_to_file(
             "-1 x{} -1 x{} -1 x{} 1 x{} >= 1 \n".format(*variables))
 
 
