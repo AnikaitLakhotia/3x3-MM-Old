@@ -1,6 +1,10 @@
 from encoding import PB
+import sys
 
-pb = PB(23)
+number_of_multiplications = sys.argv[1]
+
+
+pb = PB(int(number_of_multiplications))
 pb.create_encoding()
 
 # for a,b,y
