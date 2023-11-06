@@ -45,12 +45,13 @@ class PB:
                         self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var] = Node(
                             first_new_var, second_new_var)
                         self.write_to_file(
-                            f"-1 x{first_new_var} 1 x{first_new_var} = 1\n")
+                            f"-1 x{first_new_var} 1 x{first_new_var} = 1;\n")
                         self.write_to_file(
-                            f"-1 x{second_new_var} 1 x{second_new_var} = 1\n")
+                            f"-1 x{second_new_var} 1 x{second_new_var} = 1;\n")
 
     def create_encoding(self):
         self.create_variables()
+        self.write_to_file(f"* #variable= {} #constraint= {789507}")
         for i in range(3):
             for j in range(3):
                 for k in range(3):
@@ -89,7 +90,7 @@ class PB:
                 for gamma_var in gamma_variables:
                     z_variable = self.get_new_var()
                     self.opb_file.write(
-                        f"-1 x{z_variable} 1 x{z_variable} = 1\n")
+                        f"-1 x{z_variable} 1 x{z_variable} = 1;\n")
                     self.create_aux_variable_constraint(
                         [alpha_var, beta_var, gamma_var, z_variable])
                     aux_variables.append(z_variable)
@@ -105,11 +106,11 @@ class PB:
         # ~z + p >= 1
         for alpha_beta_or_gamma_variable in variables[:-1]:
             self.write_to_file(
-                f"-1 x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 1\n")
+                f"-1 x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 1;\n")
 
         # ~p + ~r + ~u + z >= 1
         self.write_to_file(
-            "-1 x{} -1 x{} -1 x{} 1 x{} >= 1 \n".format(*variables))
+            "-1 x{} -1 x{} -1 x{} 1 x{} >= 1;\n".format(*variables))
 
 
 """
