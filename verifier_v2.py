@@ -80,7 +80,8 @@ def scheme_output(matrix_dict, sat_assignment, cumulative_dict, num_t, num_row_1
                 if key.endswith(f'{j}_{k}') and value == 1:
                     parts = key.split("_")
                     g_sum = g_sum ^ m_dict[f'm_{parts[1]}']
-            c_dict[f'g_{j}_{k}'] = g_sum
+            # Interchange indices to get transpose of c_dict.
+            c_dict[f'g_{k}_{j}'] = g_sum
 
     return c_dict
 

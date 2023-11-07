@@ -25,7 +25,7 @@ if grep -q "UNSATISFIABLE" $cadical_result; then
     echo "UNSATISFIABLE"
     drat_output="${directory}drat_output_${number_of_operations}_${m}_${n}_${p}.txt"
     ../drat-trim/drat-trim $cnf_path $drat_path > $drat_output
-    if grep -q "VERIFIED" $drat_output; then
+    if grep -q "VERIFIED" $drat_output; then :
       echo "UNSAT proof is verified by DRAT"
     else
       echo "UNSAT proof cannot not verified by DRAT"
@@ -40,12 +40,12 @@ else
     python3 main.py 0 $number_of_operations $m $n $p $lo $s $sp $cnf_path
     verifier="${directory}verifier_${number_of_operations}_${m}_${n}_${p}.txt"
     verifier_v2="${directory}verifier_v2_${number_of_operations}_${m}_${n}_${p}.txt"
-    if grep -q "1" $verifier; then
+    if grep -q "1" $verifier; then :
       echo "The scheme has been verified by first verifier."
     else
       echo "The scheme cannot be verified."
     fi
-    if grep -q "1" $verifier_v2; then
+    if grep -q "1" $verifier_v2; then :
         echo "The scheme has been verified by second verifier."
       else
         echo "The scheme cannot be verified by second verifier."

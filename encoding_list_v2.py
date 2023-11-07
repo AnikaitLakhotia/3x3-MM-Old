@@ -89,7 +89,7 @@ def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_co
                         for k2 in val_k2_range:
                             list_var = []
 
-                            if i2 != j1 or k1 != i1 or k2 != j2:
+                            if i2 != j1 or k2 != i1 or k1 != j2:
                                 for key, value in cumulative_dict.items():
                                     if key.endswith(f'{i1}_{i2}_{j1}_{j2}_{k1}_{k2}'):
                                         list_var.append(value)
