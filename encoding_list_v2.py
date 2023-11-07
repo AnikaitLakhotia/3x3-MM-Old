@@ -46,8 +46,7 @@ def at_most_two(var_list, y):
 
     else:
         # Add clauses for at most two constraints
-        clause_list.append([[-var_list[0], -var_list[1]], [-var_list[0], -var_list[2]],
-                            [-var_list[1], -var_list[2]]])
+        clause_list.append([[-var_list[0], -var_list[1], -var_list[2]]])
 
     return clause_list, num_aux_var
 
@@ -81,6 +80,8 @@ def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_co
     val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
     val_j2_range = val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'j2' and 'k2' values
 
+    y = len(cumulative_dict) + 1
+
     for i1 in val_i1_range:
         for i2 in val_i2_range:
             for j1 in val_j1_range:
@@ -100,8 +101,8 @@ def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_co
                                     negated_list[i] = -(negated_list[i])
                                     clause_list.append(negated_list)
 
-                                y = len(cumulative_dict) + 1
                                 at_most_two_clauses, num_added_aux_var = at_most_two(list_var, y)
+                                y += num_added_aux_var
                                 num_aux_var += num_added_aux_var
 
                                 # Add at most two constraints to the clause list
