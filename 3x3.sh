@@ -20,7 +20,7 @@ python3 main.py 1 $number_of_operations $m $n $p $lo $s $sp $cnf_path
 ../cadical/build/cadical $cnf_path $drat_path > $cadical_result
 
 # Check if "UNSATISFIABLE" is in cadicalResult.txt
-if grep -q "UNSATISFIABLE" $cadical_result; then
+if grep -q "UNSATISFIABLE" $cadical_result; then :
     # If "UNSATISFIABLE" is found, run ./drat-trim
     echo "UNSATISFIABLE"
     drat_output="${directory}drat_output_${number_of_operations}_${m}_${n}_${p}.txt"

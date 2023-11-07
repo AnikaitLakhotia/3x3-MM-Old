@@ -41,15 +41,30 @@ def generate_streamlining_v3(num_t, num_row_1, num_col_1, num_two_terms):
     selected_summands = summand_list[:num_two_terms]  # Select the specified number of summands
     remaining_summands = summand_list[num_two_terms:]  # The remaining summands
 
-    # Randomly sample two variables from each selected summand
+    sampled_indices = []  # List to store sampled indices
+
     for summand in selected_summands:
-        sampled_vars = random.sample(summand, 2)
-        for var in sampled_vars:
-            streamlining_list.append(var)
+        valid_indices = [i for i in range(len(summand)) if i not in sampled_indices]
+        sampled_indices += random.sample(valid_indices, 2)  # Sample two random indices from the remaining valid indices
+        sampled_vars = [summand[i] for i in sampled_indices]
+        streamlining_list.extend(sampled_vars)
 
     # Randomly sample one variable from each remaining summand
     for summand in remaining_summands:
-        sampled_var = random.sample(summand, 1)
-        streamlining_list.append(sampled_var[0])
+        valid_indices = [i for i in range(len(summand)) if i not in sampled_indices]
+        sampled_index = random.choice(valid_indices)  # Choose a random index from the remaining valid indices
+        sampled_var = summand[sampled_index]
+        sampled_indices.append(sampled_index)
+        streamlining_list.append(sampled_var)
+
+    type_3_vars = []
+    for summand in summand_list:
+        for var in summand:
+            type_3_vars.append(var)
+
+    remaining_vars = [x for x in type_3_vars if x not in streamlining_list]
+
+    for var in remaining_vars:
+        streamlining_list.append(f'-{var}')
 
     return streamlining_list
