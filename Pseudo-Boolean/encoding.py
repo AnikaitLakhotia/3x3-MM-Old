@@ -35,6 +35,7 @@ class PB:
         self.opb_file.write(constraint)
 
     def create_variables(self):
+        # number of variables: 3*3*3*multiplications*2
         for row in range(3):
             for col in range(3):
                 for iota in range(self.multiplications):
@@ -50,6 +51,14 @@ class PB:
                             f"-1 x{second_new_var} 1 x{second_new_var} = 1\n")
 
     def create_encoding(self):
+        number_of_variables = 3*3*3*self.multiplications * \
+            2 + 3*3*3*3*3*3*self.multiplications*8
+        number_of_constraints = 3*3*3*self.multiplications * \
+            2 + 3*3*3*3*3*3 + 3 * \
+            3*3*3*3*3*self.multiplications*8*(1+4)
+
+        self.write_to_file(
+            f"* #variable= {number_of_variables} #constraint= {number_of_constraints}\n")
         self.create_variables()
         for i in range(3):
             for j in range(3):
@@ -104,6 +113,7 @@ class PB:
     def create_aux_variable_constraint(self, variables):
         # ~z + p >= 1
         for alpha_beta_or_gamma_variable in variables[:-1]:
+            # pass
             self.write_to_file(
                 f"-1 x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 1\n")
 
