@@ -16,7 +16,7 @@ p ?= 2
 # Indicates whether to use commutative encoding.
 c ?= False
 # Indicates whether to use lex ordering.
-lo ?= True
+lo ?= False
 # streamlining number.
 s ?= 4
 # streamlining parameter.
