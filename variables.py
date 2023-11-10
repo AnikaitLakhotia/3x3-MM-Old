@@ -1,4 +1,4 @@
-def create_var(num_t, num_row, num_col, shift, var_char):
+def create_var(num_t, num_row, num_col, shift, var_str):
     """
     Create all variables (e.g., "b_1_2_1", "b_6_2_3", etc.) starting with the same
     character ('a' for alpha, 'b' for beta, or 'g' for gamma) representing the respective variables in
@@ -9,13 +9,14 @@ def create_var(num_t, num_row, num_col, shift, var_char):
         num_row (int): Number of rows in the corresponding matrix.
         num_col (int): Number of columns in the corresponding matrix.
         shift (int): Current variable index offset.
-        var_char (str): The character to use for variable names.
+        var_str (str): The string to use for variable names.
 
     Returns:
         dict: Dictionary of custom 'var' variables and their corresponding unique integer values.
 
     Notes:
-        1. The function must be run three times in total with 'a', 'b', and 'g'.
+        1. The function must be run three times in total with 'aa', 'bb', and 'g' if commutative is not true.
+            If commutative is true, 'ab' and 'ba' must also be used.
         2. The values corresponding to each variable will act as the variables in the CNF file.
         3. Shift is used to ensure the values are unique, not only in their dictionary but also with respect
            to values for other variables in the encoding.
@@ -31,7 +32,7 @@ def create_var(num_t, num_row, num_col, shift, var_char):
     for t in val_t_range:
         for val_1 in val_1_range:
             for val_2 in val_2_range:
-                key = f"{var_char}_{t}_{val_1}_{val_2}"  # Construct the variable name
+                key = f"{var_str}_{t}_{val_1}_{val_2}"  # Construct the variable name
                 var_dict[key] = shift + i  # Map the variable name to a unique integer value
                 i += 1
 

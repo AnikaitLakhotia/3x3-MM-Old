@@ -9,13 +9,14 @@ if __name__ == '__main__':
     m = int(sys.argv[3])
     n = int(sys.argv[4])
     p = int(sys.argv[5])
-    lo = sys.argv[6].lower() == 'true'
-    s = int(sys.argv[7])
-    sp = float(sys.argv[8])
-    file_path = sys.argv[9]
+    c = sys.argv[6].lower() == 'true'
+    lo = sys.argv[7].lower() == 'true'
+    s = int(sys.argv[8])
+    sp = float(sys.argv[9])
+    file_path = sys.argv[10]
 
     # Specify parameters of the encoding
-    encoding, cumulative_dict = encoding(number_of_operations, m, n, p, lo, s, sp)
+    encoding, cumulative_dict = encoding(number_of_operations, m, n, p, c, lo, s, sp)
     if operation:
         with open(file_path, "w") as file:
             file.write(encoding)

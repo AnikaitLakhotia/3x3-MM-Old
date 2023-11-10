@@ -1,4 +1,4 @@
-def create_t(num_t, num_row_1, num_col_1, num_col_2, shift):
+def create_t(num_t, num_row_1, num_col_1, num_col_2, shift, var_str):
     """
     Create all t-variables (e.g., "t_1_2_1_1_3_1", "t_6_2_3_2_2_1", etc.) representing the
     respective variables in Brent equations and map them to unique integral values using a dictionary.
@@ -9,6 +9,7 @@ def create_t(num_t, num_row_1, num_col_1, num_col_2, shift):
         num_col_1 (int): Number of columns in the first matrix.
         num_col_2 (int): Number of columns in the second matrix.
         shift (int): Current variable index offset.
+        var_str (str): The string to use for variable names.
 
     Returns:
         dict: Dictionary of t-variables and their corresponding unique integer values.
@@ -34,14 +35,14 @@ def create_t(num_t, num_row_1, num_col_1, num_col_2, shift):
                     for j2 in val_j2_range:
                         for k1 in val_k1_range:
                             for k2 in val_k2_range:
-                                key = f"t_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}"  # Construct the variable name
+                                key = f"{var_str}_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}"  # Construct the variable name
                                 t_dict[key] = shift + index  # Map the variable name to a unique integer value
                                 index += 1  # Increment the counter
 
     return t_dict  # Return the dictionary of t-variables and their mappings
 
 
-def create_s(num_t, num_row_1, num_col_1, num_col_2, shift):
+def create_s(num_t, num_row_1, num_col_1, num_col_2, shift, var_str):
     """
     Create all s-variables (e.g., "s_1_2_1_1", "s_6_2_3_2", etc.) representing the
     respective variables in Brent equations and map them to unique integral values using a dictionary.
@@ -52,6 +53,7 @@ def create_s(num_t, num_row_1, num_col_1, num_col_2, shift):
         num_col_1 (int): Number of columns in the first matrix.
         num_col_2 (int): Number of columns in the second matrix.
         shift (int): Current variable index offset.
+        var_str (str): The string to use for variable names.
 
     Returns:
         dict: Dictionary of 's' variables and their corresponding unique integer values.
@@ -75,7 +77,7 @@ def create_s(num_t, num_row_1, num_col_1, num_col_2, shift):
             for i2 in val_i2_range:
                 for j1 in val_j1_range:
                     for j2 in val_j2_range:
-                        key = f"s_{val_t}_{i1}_{i2}_{j1}_{j2}"  # Construct the variable name
+                        key = f"{var_str}_{val_t}_{i1}_{i2}_{j1}_{j2}"  # Construct the variable name
                         s_dict[key] = shift + index  # Map the variable name to a unique integer value
                         index += 1
 

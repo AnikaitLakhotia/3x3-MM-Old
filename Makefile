@@ -13,6 +13,8 @@ m ?= 2
 n ?= 2
 # number of cols in matrix B
 p ?= 2
+# Indicates whether to use commutative encoding.
+c ?= False
 # Indicates whether to use lex ordering.
 lo ?= True
 # streamlining number.
@@ -22,5 +24,5 @@ sp ?= 0
 
 run:
 	@echo "Running the provided Bash script..."
-	@./3x3.sh $(op) $(m) $(n) $(p) $(lo) $(s) $(sp)
+	@./3x3.sh $(op) $(m) $(n) $(p) $(c) $(lo) $(s) $(sp)
 	@echo "Script execution complete."
