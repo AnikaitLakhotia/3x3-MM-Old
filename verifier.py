@@ -33,7 +33,7 @@ def reverse_map(sat_assignment, cumulative_dict):
     return result_dict
 
 
-def verifier(sat_assignment, cumulative_dict, num_t):
+def verifier(sat_assignment, cumulative_dict, num_t, commutative):
     """
     Verify if the sat_assignment obeys the rules of the Brent equations.
 
@@ -41,6 +41,7 @@ def verifier(sat_assignment, cumulative_dict, num_t):
         sat_assignment (str): A space-separated string of values.
         cumulative_dict (dict): A dictionary mapping keys to values.
         num_t (int): Number of 't's in each Brent equation.
+        commutative (bool): Commutative encoding is used if True and non-commutative if False.
 
     Returns:
         int: 1 if the condition is satisfied, 0 otherwise.
@@ -58,5 +59,14 @@ def verifier(sat_assignment, cumulative_dict, num_t):
                 return 0
             elif (val_2 != val_3 or val_1 != val_6 or val_4 != val_5) and sum_val % 2 != 0:
                 return 0
+
+        if commutative:
+            if key.startswith(f"ta_1_") or key.startswith("tb_1_"):
+                sum_val = 0
+                val_t, val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")[1:]
+                for i in range(1, num_t + 1):
+                    sum_val += result[f't_{i}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}']
+                if sum_val % 2 != 0:
+                    return 0
 
     return 1

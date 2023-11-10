@@ -30,7 +30,7 @@ def create_commutative_encoding_list(cumulative_dict, num_t, num_row_1, num_col_
 
                 else:
                     for m in range(1, num_t):
-                        if i == 1:
+                        if m == 1:
                             list_var.append(-cumulative_dict[f't_{m}_{u}_{v}_{x}_{y}_{i}_{j}'])
                         else:
                             list_var.append(cumulative_dict[f't_{m}_{u}_{v}_{x}_{y}_{i}_{j}'])

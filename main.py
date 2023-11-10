@@ -31,7 +31,7 @@ if __name__ == '__main__':
         assignment_string = assignment_string[:-1]
 
         # Perform Verifications
-        verifier_output = verifier(assignment_string, cumulative_dict, number_of_operations)
+        verifier_output = verifier(assignment_string, cumulative_dict, number_of_operations, c)
         with open(f"logs/{number_of_operations}_{m}_{n}_{p}/verifier_{number_of_operations}_{m}_{n}_{p}.txt", "w") as file:
             file.write(str(verifier_output))
         verifier_v2_output = verifier_v2(assignment_string, cumulative_dict, number_of_operations, m, n, p)
