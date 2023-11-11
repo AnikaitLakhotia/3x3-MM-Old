@@ -1,8 +1,7 @@
 from encoding import PB
 import sys
 
-number_of_multiplications = sys.argv[1]
+_, number_of_multiplications, m, n, p = sys.argv
 
-
-pb = PB(int(number_of_multiplications))
+pb = PB(int(number_of_multiplications), int(m), int(n), int(p))
 pb.create_encoding()

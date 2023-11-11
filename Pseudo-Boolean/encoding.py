@@ -13,6 +13,8 @@ Consider an \alpha_{i, j}^{\itoa} = (p - q)
 self.first_var (int): stores variable which represents p 
 self.second_var (int): stores variable which represents q
 """
+
+
 class Node:
     def __init__(self, first_variable_value, second_variable_value) -> None:
         self.first_var = first_variable_value
@@ -20,6 +22,7 @@ class Node:
 
     def __str__(self) -> str:
         return f"first_var {self.first_var} second_var {self.second_var}"
+
 
 """
 The PB class is used to store any associated variables and methods to create the pseudo-boolean encoding representing the Brent equations for 3x3 multiplications
@@ -31,11 +34,16 @@ Class variables:
     self.opb_file (File Pointer): a file pointer to the self.file_name file
     self.alpha_beta_gamma_to_var_num (dictionary: {tuple: {string: Node}}): stores a mapping from a certain (row, column, iota) to the alpha, beta and gamma variables for that given entry. The auxiliary variables (Node) for a given alpha, beta and gamma can be accessed using the global ALPHA, BETA and GAMMA variables.
 """
+
+
 class PB:
-    def __init__(self, multiplications) -> None:
+    def __init__(self, multiplications, m, n, p) -> None:
         self.curr_variable = 0
+        self.m = m
+        self.n = n
+        self.p = p
         self.multiplications = multiplications
-        self.file_name = f"3x3-{self.multiplications}.opb"
+        self.file_name = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}.opb"
         self.opb_file = open(f"./opb/{self.file_name}", 'w+')
         # (row, column, iota) -> {alpha: Node, beta: Node, gamma: Node)
         self.alpha_beta_gamma_to_var_num = collections.defaultdict(dict)
@@ -46,7 +54,7 @@ class PB:
 
         Args:
             N/A
-        
+
         Returns:
             self.curr_variable: an integer which can be used to represent a variable
         """
@@ -64,7 +72,7 @@ class PB:
             l (int): col for beta
             m (int): row for gamma
             n (int): col for gamma
-        
+
         Returns:
             int: 1 if kronecker delta conditions are satsfied else 0
         """
@@ -75,10 +83,10 @@ class PB:
     def write_to_file(self, constraint):
         """
         Writes a constraint to the self.opb_file file pointer.
-        
+
         Args:
             constraint (string): any constraint in opb form
-        
+
         Returns:
             N/A
         """
@@ -90,20 +98,25 @@ class PB:
 
         Args:
             N/A
-        
+
         Returns:
             N/A
         """
         # number of variables: 3*3*3*multiplications*2
-        for row in range(3):
-            for col in range(3):
-                for iota in range(self.multiplications):
-                    row_col_iota_tuple = tuple((row, col, iota))
-                    for brent_var in [ALPHA, BETA, GAMMA]:
+        row_col_multiplications = {
+            ALPHA: [self.m, self.n],
+            BETA: [self.n, self.p],
+            GAMMA: [self.m, self.p]
+        }
+        for brent_var, (rows, cols) in row_col_multiplications.items():
+            for row in range(rows):
+                for col in range(cols):
+                    for iota in range(self.multiplications):
+                        row_col_iota_tuple = tuple((row, col, iota))
                         first_new_var = self.get_new_var()
                         second_new_var = self.get_new_var()
-                        self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var] = Node(
-                            first_new_var, second_new_var)
+                        variable_node = Node(first_new_var, second_new_var)
+                        self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var] = variable_node
 
     def create_encoding(self):
         """
@@ -114,26 +127,28 @@ class PB:
 
         Returns:
             N/A
-        
-        Other functions called:
-            create_variables, create_pb_constraints, kronecker_delta_values
-        """
-        number_of_variables = 3*3*3*self.multiplications * \
-            2 + 3*3*3*3*3*3*self.multiplications*8
-        number_of_constraints = 3*3*3*3*3*3 + 3 * \
-            3*3*3*3*3*self.multiplications*8*4
 
-        self.write_to_file(
-            f"* #variable= {number_of_variables} #constraint= {number_of_constraints}\n")
+        Other functions called:
+            create_variables, create_alpha_beta_gamma_constraints, kronecker_delta_values
+        """
+        # incorrect
+        # number_of_variables = 3*3*3*self.multiplications * \
+        #     2 + 3*3*3*3*3*3*self.multiplications*8
+        # number_of_constraints = 3*3*3*3*3*3 + 3 * \
+        #     3*3*3*3*3*self.multiplications*8*4
+        # self.write_to_file(
+        #     f"* #variable= {number_of_variables} #constraint= {number_of_constraints}\n")
+
         self.create_variables()
-        for i in range(3):
-            for j in range(3):
-                for k in range(3):
-                    for l in range(3):
-                        for m in range(3):
-                            for n in range(3):
+        for i in range(self.m):
+            for j in range(self.n):
+                for k in range(self.n):
+                    for l in range(self.p):
+                        for m in range(self.m):
+                            for n in range(self.p):
                                 total_alpha_beta_gamma_constraint = []
                                 for iota in range(self.multiplications):
+                                    # Gets auxiliary variables for alpha, beta and gamma variables
                                     alpha_coord = (i, j, iota)
                                     beta_coord = (k, l, iota)
                                     gamma_coord = (m, n, iota)
@@ -147,18 +162,32 @@ class PB:
                                         gamma_coord][GAMMA].first_var
                                     v_for_gamma = self.alpha_beta_gamma_to_var_num[
                                         gamma_coord][GAMMA].second_var
-                                    curr_var_constraint = self.create_pb_constraints([p_for_alpha, q_for_alpha], [
-                                                                                     r_for_beta, s_for_beta], [u_for_gamma, v_for_gamma])
+
+                                    curr_var_constraint = self.create_alpha_beta_gamma_constraints([p_for_alpha, q_for_alpha], [
+                                        r_for_beta, s_for_beta], [u_for_gamma, v_for_gamma])
+                                    # Gets alpha*beta*gamma constraint for a given iota
                                     total_alpha_beta_gamma_constraint.append(
                                         curr_var_constraint)
+                                # Creates constraint for the summation of all alpha, beta, gamma products (long list of z) for all iotas
                                 total_contraint = " ".join(
                                     clause for sub_constraint in total_alpha_beta_gamma_constraint for clause in sub_constraint)
                                 self.opb_file.write(
                                     f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};\n")
 
-    def create_pb_constraints(self, alpha_variables, beta_variables, gamma_variables):
+    def create_alpha_beta_gamma_constraints(self, alpha_variables, beta_variables, gamma_variables):
+        """
+        A driver function which calls create_aux_variable_constraint to create the auxiliary variable constraints for a given alpha*beta*gamma expression. Recall, we introduce a z auxiliary variable for the multiplication of an alpha auxiliary variables times a beta auxiliary variable times a gamma auxiliary variables. For example, z = p*r*s. An auxiliary variable is introduced for all combinations of the multiplications of the alpha's, beta's and gamma's auxiliary variables (e.g. z1 = p*r*u, z2 = p*r*v, z3 = p*s*u etc...)
+        Args: 
+            alpha_variables ([String]): stores the two auxiliary variables for the alpha term. E.g [p, q]
+            beta_variables ([String]): stores the two auxiliary variables for the beta term. E.g [r, s]
+            gamma_variables ([String]): stores the two auxiliary variables for the gamma term. E.g [u, v]
+
+        Returns:
+            complete_aux_var_constaint ([String]): Returns a array containing the z auxiliary variables
+        """
         aux_variables = []
-        is_negative = {1, 2, 4}
+        is_negative = {1, 2, 4}  # Used to mark which terms should be negative
+        # Creates all combinations of Brent variable's auxiliary terms
         for alpha_var in alpha_variables:
             for beta_var in beta_variables:
                 for gamma_var in gamma_variables:
@@ -167,6 +196,7 @@ class PB:
                         [alpha_var, beta_var, gamma_var, z_variable])
                     aux_variables.append(z_variable)
         complete_aux_var_constaint = []
+        # Creates summation of the z auxiliary variables
         for aux_variable_idx, aux_variable in enumerate(aux_variables):
             if aux_variable_idx in is_negative:
                 complete_aux_var_constaint.append(f"-1 x{aux_variable}")
