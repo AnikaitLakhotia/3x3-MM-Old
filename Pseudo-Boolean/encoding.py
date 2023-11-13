@@ -131,13 +131,13 @@ class PB:
         Other functions called:
             create_variables, create_alpha_beta_gamma_constraints, kronecker_delta_values
         """
-        # incorrect
-        # number_of_variables = 3*3*3*self.multiplications * \
-        #     2 + 3*3*3*3*3*3*self.multiplications*8
-        # number_of_constraints = 3*3*3*3*3*3 + 3 * \
-        #     3*3*3*3*3*self.multiplications*8*4
-        # self.write_to_file(
-        #     f"* #variable= {number_of_variables} #constraint= {number_of_constraints}\n")
+        # incorrect values but are required for proper formatting of opb file
+        number_of_variables = 3*3*3*self.multiplications * \
+            2 + 3*3*3*3*3*3*self.multiplications*8
+        number_of_constraints = 3*3*3*3*3*3 + 3 * \
+            3*3*3*3*3*self.multiplications*8*4
+        self.write_to_file(
+            f"* #variable= {number_of_variables} #constraint= {number_of_constraints}\n")
 
         self.create_variables()
         for i in range(self.m):
