@@ -22,15 +22,15 @@ s0 ?= False
 # Indicates whether to use streamlining 1.
 s1 ?= False
 # streamlining 1 parameter.
-sp1 ?= 0
+sp1 ?= -1
 # Indicates whether to use streamlining 2.
 s2 ?= False
 # streamlining 2 parameter.
-sp2 ?= 0
+sp2 ?= 0.5
 # Indicates whether to use streamlining 3.
 s3 ?= False
 # streamlining 3 parameter.
-sp3 ?= 0
+sp3 ?= 4
 
 run:
 	@echo "Running the provided Bash script..."
