@@ -17,6 +17,12 @@ n ?= 2
 # number of cols in matrix B
 p ?= 2
 
+path_to_encoding = opb/${m}x${n}_${n}x${p}_${op}/${m}x${n}_${n}x${p}_${op}
+
 run:
-	python3 main.py $(op) $(m) $(n) $(p)
-	../../roundingsat/build/roundingsat opb/${m}x${n}_${n}x${p}_${op}.opb
+	@echo "Running main.py..."
+	@python3 main.py $(op) $(m) $(n) $(p)
+	@echo "Running roundingsat..."
+	@../../roundingsat/build/roundingsat ${path_to_encoding}.opb --print-sol=1 | grep -q "SATISFIABLE" && \
+		(echo "SATISFIABLE. Running verifier.py..."; python3 verifier.py $(op) $(m) $(n) $(p)) || \
+		echo "NOT SATISFIABLE."
