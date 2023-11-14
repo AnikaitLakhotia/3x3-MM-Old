@@ -23,9 +23,16 @@ def create_t(num_t, num_row_1, num_col_1, num_col_2, shift, var_str):
     t_dict = {}  # Initialize an empty dictionary to store variable mappings
 
     val_t_range = range(1, num_t + 1)  # Create a range for 't' values
-    val_i1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1' and 'k1' values
-    val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
-    val_j2_range = val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'j2' and 'k2' values
+
+    if var_str != "ta" and var_str != "tb":
+        val_i1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1' and 'k1' values
+        val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
+        val_j2_range = val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'j2' and 'k2' values
+    else:
+        val_i1_range = val_j1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1',
+        # 'j1' and 'k1' values
+        val_i2_range = val_j2_range = val_k2_range = range(1, num_col_1 + 1)  # Create ranges for 'i2',
+        # 'j2' and 'k2' values
 
     index = 1  # Initialize a counter for unique integer values
     for val_t in val_t_range:
@@ -68,8 +75,14 @@ def create_s(num_t, num_row_1, num_col_1, num_col_2, shift, var_str):
 
     val_t_range = range(1, num_t + 1)  # Create a range for 't' values
     val_i1_range = range(1, num_row_1 + 1)  # Create a range for 'i1' values
-    val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
-    val_j2_range = range(1, num_col_2 + 1)  # Create a range for 'j2' values
+
+    if var_str != "sa" and var_str != "sb":
+        val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
+        val_j2_range = range(1, num_col_2 + 1)  # Create a range for 'j2' values
+
+    else:
+        val_i2_range = val_j2_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j2' values
+        val_j1_range = range(1, num_row_1 + 1)  # Create range for 'j1' values
 
     index = 1  # Initialize a counter for unique integer values
     for val_t in val_t_range:
