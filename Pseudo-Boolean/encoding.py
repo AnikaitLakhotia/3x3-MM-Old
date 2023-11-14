@@ -1,4 +1,5 @@
 import collections
+import os
 """
 Global variables used in self.alpha_beta_gamma_to_var_num to get the Node storing the auxiliary variables for an alpha, beta or gamma variables for a given (row, column, iota)
 """
@@ -43,8 +44,12 @@ class PB:
         self.n = n
         self.p = p
         self.multiplications = multiplications
-        self.file_name = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}.opb"
-        self.opb_file = open(f"./opb/{self.file_name}", 'w+')
+        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}"
+        logs_directory = f"./opb/{encoding_description}"
+        os.makedirs(logs_directory, exist_ok=True)
+        self.file_name = f"{logs_directory}/{encoding_description}.opb"
+        print(self.file_name)
+        self.opb_file = open(f"{self.file_name}", 'w+')
         # (row, column, iota) -> {alpha: Node, beta: Node, gamma: Node)
         self.alpha_beta_gamma_to_var_num = collections.defaultdict(dict)
 
