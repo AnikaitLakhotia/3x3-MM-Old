@@ -19,4 +19,4 @@ p ?= 2
 
 run:
 	python3 main.py $(op) $(m) $(n) $(p)
-	../../roundingsat/build/roundingsat opb/${m}x${n}_${n}x${p}_${op}.opb
+	../../roundingsat/build/roundingsat opb/${m}x${n}_${n}x${p}_${op}/${m}x${n}_${n}x${p}_${op}.opb --print-sol=1
