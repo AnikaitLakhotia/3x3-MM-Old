@@ -48,10 +48,7 @@ class PB:
         logs_directory = f"./opb/{encoding_description}"
         os.makedirs(logs_directory, exist_ok=True)
         self.file_name = f"{logs_directory}/{encoding_description}.opb"
-        print(self.file_name)
         self.opb_file = open(f"{self.file_name}", 'w+')
-        # (row, column, iota) -> {alpha: Node, beta: Node, gamma: Node)
-        self.alpha_beta_gamma_to_var_num = collections.defaultdict(dict)
 
     def get_new_var(self):
         """
@@ -113,6 +110,7 @@ class PB:
             BETA: [self.n, self.p],
             GAMMA: [self.m, self.p]
         }
+        local_alpha_beta_gamma_to_var_num = collections.defaultdict(dict)
         for brent_var, (rows, cols) in row_col_multiplications.items():
             for row in range(rows):
                 for col in range(cols):
@@ -121,7 +119,8 @@ class PB:
                         first_new_var = self.get_new_var()
                         second_new_var = self.get_new_var()
                         variable_node = Node(first_new_var, second_new_var)
-                        self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var] = variable_node
+                        local_alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var] = variable_node
+        return local_alpha_beta_gamma_to_var_num
 
     def create_encoding(self):
         """
@@ -143,8 +142,8 @@ class PB:
             3*3*3*3*3*self.multiplications*8*4
         self.write_to_file(
             f"* #variable= {number_of_variables} #constraint= {number_of_constraints}\n")
-
-        self.create_variables()
+        # (row, column, iota) -> {alpha: Node, beta: Node, gamma: Node)
+        alpha_beta_gamma_to_var_num = self.create_variables()
         for i in range(self.m):
             for j in range(self.n):
                 for k in range(self.n):
@@ -157,15 +156,15 @@ class PB:
                                     alpha_coord = (i, j, iota)
                                     beta_coord = (k, l, iota)
                                     gamma_coord = (m, n, iota)
-                                    p_for_alpha = self.alpha_beta_gamma_to_var_num[
+                                    p_for_alpha = alpha_beta_gamma_to_var_num[
                                         alpha_coord][ALPHA].first_var
-                                    q_for_alpha = self.alpha_beta_gamma_to_var_num[
+                                    q_for_alpha = alpha_beta_gamma_to_var_num[
                                         alpha_coord][ALPHA].second_var
-                                    r_for_beta = self.alpha_beta_gamma_to_var_num[beta_coord][BETA].first_var
-                                    s_for_beta = self.alpha_beta_gamma_to_var_num[beta_coord][BETA].second_var
-                                    u_for_gamma = self.alpha_beta_gamma_to_var_num[
+                                    r_for_beta = alpha_beta_gamma_to_var_num[beta_coord][BETA].first_var
+                                    s_for_beta = alpha_beta_gamma_to_var_num[beta_coord][BETA].second_var
+                                    u_for_gamma = alpha_beta_gamma_to_var_num[
                                         gamma_coord][GAMMA].first_var
-                                    v_for_gamma = self.alpha_beta_gamma_to_var_num[
+                                    v_for_gamma = alpha_beta_gamma_to_var_num[
                                         gamma_coord][GAMMA].second_var
 
                                     curr_var_constraint = self.create_alpha_beta_gamma_constraints([p_for_alpha, q_for_alpha], [
