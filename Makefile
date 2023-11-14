@@ -17,12 +17,22 @@ p ?= 2
 c ?= False
 # Indicates whether to use lex ordering.
 lo ?= False
-# streamlining number.
-s ?= 4
-# streamlining parameter.
-sp ?= 0
+# Indicates whether to use streamlining 0.
+s0 ?= False
+# Indicates whether to use streamlining 1.
+s1 ?= False
+# streamlining 1 parameter.
+sp1 ?= -1
+# Indicates whether to use streamlining 2.
+s2 ?= False
+# streamlining 2 parameter.
+sp2 ?= 0.5
+# Indicates whether to use streamlining 3.
+s3 ?= False
+# streamlining 3 parameter.
+sp3 ?= 4
 
 run:
 	@echo "Running the provided Bash script..."
-	@./3x3.sh $(op) $(m) $(n) $(p) $(c) $(lo) $(s) $(sp)
+	@./3x3.sh $(op) $(m) $(n) $(p) $(c) $(lo) $(s0) $(s1) $(sp1) $(s2) $(sp2) $(s3) $(sp3)
 	@echo "Script execution complete."

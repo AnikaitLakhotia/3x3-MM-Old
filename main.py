@@ -11,19 +11,25 @@ if __name__ == '__main__':
     p = int(sys.argv[5])
     c = sys.argv[6].lower() == 'true'
     lo = sys.argv[7].lower() == 'true'
-    s = int(sys.argv[8])
-    sp = float(sys.argv[9])
-    file_path = sys.argv[10]
+    s0 = sys.argv[8].lower() == 'true'
+    s1 = sys.argv[9].lower() == 'true'
+    sp1 = int(sys.argv[10])
+    s2 = sys.argv[11].lower() == 'true'
+    sp2 = float(sys.argv[12])
+    s3 = sys.argv[13].lower() == 'true'
+    sp3 = int(sys.argv[14])
+    file_path = sys.argv[15]
 
     # Specify parameters of the encoding
-    encoding, cumulative_dict = encoding(number_of_operations, m, n, p, c, lo, s, sp)
+    encoding, cumulative_dict = encoding(number_of_operations, m, n, p, c, lo, s0, s1, sp1, s2, sp2, s3, sp3)
     if operation:
         with open(file_path, "w") as file:
             file.write(encoding)
     else:
         # If solver outputs SAT, insert the SAT assignment
-        assignment_output_string = (f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}_{s}_{sp}/"
-                                    f"assignment_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}_{s}_{sp}.txt")
+        assignment_output_string = (f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}"
+                                    f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}/assignment_{number_of_operations}_"
+                                    f"{m}_{n}_{p}_{c}_{lo}_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}.txt")
         with open(assignment_output_string, 'r') as file:
             assignment_string = file.read().rstrip('\n')
 
@@ -32,10 +38,12 @@ if __name__ == '__main__':
 
         # Perform Verifications
         verifier_output = verifier(assignment_string, cumulative_dict, number_of_operations, c)
-        with open(f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}_{s}_{sp}/"
-                  f"verifier_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}_{s}_{sp}.txt", "w") as file:
+        with open(f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}"
+                  f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}/verifier_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}"
+                  f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}.txt", "w") as file:
             file.write(str(verifier_output))
         verifier_v2_output = verifier_v2(assignment_string, cumulative_dict, number_of_operations, m, n, p)
-        with open(f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}_{s}_{sp}/"
-                  f"verifier_v2_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}_{s}_{sp}.txt", "w") as file:
+        with open(f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}"
+                  f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}/verifier_v2_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}"
+                  f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}.txt", "w") as file:
             file.write(str(verifier_v2_output))

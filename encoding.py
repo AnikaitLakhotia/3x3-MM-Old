@@ -11,7 +11,9 @@ from generate_lex_clauses import generate_lex_encoding, generate_var_list
 import random
 
 
-def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order, streamlining, streamlining_parameter):
+def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
+             streamlining_0, streamlining_1, streamlining_parameter_1, streamlining_2,
+             streamlining_parameter_2, streamlining_3, streamlining_parameter_3):
     """
     Generate the complete SAT encoding for the given parameters.
 
@@ -22,8 +24,13 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order, str
         num_col_2 (int): Number of columns in the second matrix.
         commutative (bool): Commutative encoding is used if True and non-commutative if False.
         lex_order (bool): Lexicographical Ordering Constraints are used if True.
-        streamlining (int): Streamlining number.
-        streamlining_parameter (int or float): The parameter associated with the streamlining.
+        streamlining_0 (bool): Streamlining 0 is used if True.
+        streamlining_1 (bool): Streamlining 1 is used if True.
+        streamlining_parameter_1 (int): The parameter associated with the streamlining 1.
+        streamlining_2 (bool): Streamlining 2 is used if True.
+        streamlining_parameter_2 (float): The parameter associated with the streamlining 2.
+        streamlining_3 (bool): Streamlining 3 is used if True.
+        streamlining_parameter_3 (int): The parameter associated with the streamlining 3.
 
     Returns:
         str: SAT encoding in CNF format.
@@ -54,7 +61,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order, str
 
         num_var = len(cumulative_dict)
 
-        if streamlining != 0:
+        if not streamlining_0:
             # Create the cumulative list of SAT encoding clauses using main scheme.
             cumulative_list = create_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2)
             num_var += (num_t - 1) * ((num_row_1 ** 2) * (num_col_2 ** 2) * (num_col_1 ** 2))
@@ -121,15 +128,16 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order, str
             num_lex_clauses += num_added_clauses
 
     # Add streamlining clauses.
-    if streamlining == 1:
+    if streamlining_1:
         streamlining_var_list = generate_streamlining_v1()
         random.shuffle(streamlining_var_list)
-        streamlining_parameter = int(streamlining_parameter)
+        streamlining_parameter = streamlining_parameter_1
         streamlining_var_list = streamlining_var_list[:streamlining_parameter]
-    elif streamlining == 2:
-        streamlining_var_list = generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, streamlining_parameter)
-    elif streamlining == 3:
-        streamlining_var_list = generate_streamlining_v3(num_t, num_row_1, num_col_1, streamlining_parameter)
+    elif streamlining_2:
+        streamlining_var_list = generate_streamlining_v2(num_t, num_row_1, num_col_1,
+                                                         num_col_2, streamlining_parameter_2)
+    elif streamlining_3:
+        streamlining_var_list = generate_streamlining_v3(num_t, num_row_1, num_col_1, streamlining_parameter_3)
     else:
         streamlining_var_list = []
 
