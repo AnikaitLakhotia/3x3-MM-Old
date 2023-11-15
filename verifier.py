@@ -55,9 +55,9 @@ def verifier(sat_assignment, cumulative_dict, num_t, commutative):
             val_t, val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")[1:]
             for i in range(1, num_t + 1):
                 sum_val += result[f't_{i}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}']
-            if val_2 == val_3 and val_1 == val_6 and val_4 == val_5 and sum_val % 2 == 0:
+            if val_2 == val_3 and val_1 == val_5 and val_4 == val_6 and sum_val % 2 == 0:
                 return 0
-            elif (val_2 != val_3 or val_1 != val_6 or val_4 != val_5) and sum_val % 2 != 0:
+            elif (val_2 != val_3 or val_1 != val_5 or val_4 != val_6) and sum_val % 2 != 0:
                 return 0
 
         if commutative:

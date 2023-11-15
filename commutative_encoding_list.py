@@ -15,7 +15,7 @@ def create_commutative_encoding_list(cumulative_dict, num_t, num_row_1, num_col_
             list_aux = []
 
             if key.startswith("t_1_"):
-                if v == x and u == j and y == i:
+                if v == x and y == j and u == i:
                     for m in range(1, num_t):
                         list_var.append(cumulative_dict[f't_{m}_{u}_{v}_{x}_{y}_{i}_{j}'])
                         list_aux.append(aux_list[m - 1 + move])

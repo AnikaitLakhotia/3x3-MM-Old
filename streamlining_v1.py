@@ -97,4 +97,13 @@ def generate_streamlining_v1():
                         var_list.append(f'-{var_char}_{val_t}_{i}_{j}')
                     shift += 1
 
-    return var_list
+    # Switch indices of gamma variables
+    modified_var_list = []
+    for var in var_list:
+        if var.startswith("g") or var.startswith("-g"):
+            var_str, val_t, i, j = var.split("_")
+            modified_var_list.append(f'{var_str}_{val_t}_{j}_{i}')
+        else:
+            modified_var_list.append(var)
+
+    return modified_var_list

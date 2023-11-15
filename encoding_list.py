@@ -28,7 +28,7 @@ def create_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2
         if key.startswith("t_1_"):
             val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")[2:]
 
-            if val_2 == val_3 and val_1 == val_6 and val_4 == val_5:
+            if val_2 == val_3 and val_1 == val_5 and val_4 == val_6:
                 list_var = []
                 list_aux = []
 
