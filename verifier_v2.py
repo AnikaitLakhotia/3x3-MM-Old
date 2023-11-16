@@ -25,7 +25,7 @@ def remove_middle_element(input_string):
     return result
 
 
-def scheme_output(matrix_dict, sat_assignment, cumulative_dict, num_t, num_row_1, num_col_2):
+def scheme_output(matrix_dict, sat_assignment, cumulative_dict, num_t, num_row_1, num_col_2, commutative):
     """
     Compute the scheme based matrix multiplication output for two matrices.
 
@@ -38,6 +38,7 @@ def scheme_output(matrix_dict, sat_assignment, cumulative_dict, num_t, num_row_1
         num_t (int): Number of 't's in each Brent equation.
         num_row_1 (int): Number of rows in the first matrix.
         num_col_2 (int): Number of columns in the second matrix.
+        commutative (bool): Commutative encoding is used if True and non-commutative if False.
 
     Returns:
         dict: A dictionary containing the result of matrix multiplication based on the scheme.
@@ -45,32 +46,69 @@ def scheme_output(matrix_dict, sat_assignment, cumulative_dict, num_t, num_row_1
 
     # Reverse map variable values from value_string to dictionaries
     result = reverse_map(sat_assignment, cumulative_dict)
-    m_dict = {}
-    a_dict = {}
-    b_dict = {}
+
     g_dict = {}
     c_dict = {}
-    # Separate variables into a, b, and c dictionaries
-    for key, value in result.items():
-        if key.startswith("a"):
-            a_dict[key] = value
-        elif key.startswith("b"):
-            b_dict[key] = value
-        elif key.startswith("g"):
-            g_dict[key] = value
-    # Calculate 'm' values based on matrix multiplication
-    for i in range(1, num_t + 1):
-        a_sum = 0
-        b_sum = 0
+    m_dict = {}
 
-        for key, value in a_dict.items():
-            if key.startswith(f'a_{i}_') and value == 1:
-                a_sum = a_sum ^ matrix_dict[remove_middle_element(f'{key}')]
+    if not commutative:
+        a_dict = {}
+        b_dict = {}
 
-        for key, value in b_dict.items():
-            if key.startswith(f'b_{i}_') and value == 1:
-                b_sum = b_sum ^ matrix_dict[remove_middle_element(f'{key}')]
-        m_dict[f'm_{i}'] = a_sum and b_sum
+        # Separate variables into a, b, and c dictionaries
+        for key, value in result.items():
+            if key.startswith("a"):
+                a_dict[key] = value
+            elif key.startswith("b"):
+                b_dict[key] = value
+            elif key.startswith("g"):
+                g_dict[key] = value
+        # Calculate 'm' values based on matrix multiplication
+        for i in range(1, num_t + 1):
+            a_sum = 0
+            b_sum = 0
+
+            for key, value in a_dict.items():
+                if key.startswith(f'a_{i}_') and value == 1:
+                    a_sum = a_sum ^ matrix_dict[remove_middle_element(f'{key}')]
+
+            for key, value in b_dict.items():
+                if key.startswith(f'b_{i}_') and value == 1:
+                    b_sum = b_sum ^ matrix_dict[remove_middle_element(f'{key}')]
+            m_dict[f'm_{i}'] = a_sum and b_sum
+
+    else:
+        a_dict = {}
+        b_dict = {}
+
+        # Separate variables into a, b, and c dictionaries
+        for key, value in result.items():
+            if key.startswith("aa"):
+                a_dict[key] = value
+            elif key.startswith("bb"):
+                b_dict[key] = value
+            elif key.startswith("ab"):
+                a_dict[key] = value
+            elif key.startswith("ba"):
+                b_dict[key] = value
+            elif key.startswith("g"):
+                g_dict[key] = value
+
+        # Calculate 'm' values based on matrix multiplication
+        for i in range(1, num_t + 1):
+            a_sum = 0
+            b_sum = 0
+
+            for key, value in a_dict.items():
+                if (key.startswith(f'aa_{i}_') or key.startswith(f'ab_{i}_')) and value == 1:
+                    key_without_middle_element = remove_middle_element(f'{key}')
+                    a_sum = a_sum ^ matrix_dict[key_without_middle_element[1:]]
+
+            for key, value in b_dict.items():
+                if (key.startswith(f'bb_{i}_') or key.startswith(f'ba_{i}_')) and value == 1:
+                    key_without_middle_element = remove_middle_element(f'{key}')
+                    b_sum = b_sum ^ matrix_dict[key_without_middle_element[1:]]
+            m_dict[f'm_{i}'] = a_sum and b_sum
 
     # Calculate 'c' values based on matrix multiplication
     for j in range(1, num_row_1 + 1):
@@ -139,7 +177,7 @@ def multiply_matrices(matrix_a, matrix_b, num_row_1, num_col_1, num_col_2):
     return result_matrix
 
 
-def verifier_v2(sat_assignment, cumulative_dict, num_t, num_row_1, num_col_1, num_col_2):
+def verifier_v2(sat_assignment, cumulative_dict, num_t, num_row_1, num_col_1, num_col_2, commutative):
     """
     Verify the correctness of matrix multiplication using the scheme by comparing it to the output of
     standard matrix multiplication for all possible matrices of orders under consideration.
@@ -153,6 +191,8 @@ def verifier_v2(sat_assignment, cumulative_dict, num_t, num_row_1, num_col_1, nu
         num_row_1 (int): Number of rows in the first matrix.
         num_col_1 (int): Number of columns in the first matrix.
         num_col_2 (int): Number of columns in the second matrix.
+        commutative (bool): Commutative encoding is used if True and non-commutative if False.
+
 
     Returns:
         int: 1 if the scheme output matches the standard output, 0 otherwise.
@@ -175,10 +215,11 @@ def verifier_v2(sat_assignment, cumulative_dict, num_t, num_row_1, num_col_1, nu
     for matrix_a in dicts_a:
         for matrix_b in dicts_b:
             scheme_out = scheme_output({**matrix_a, **matrix_b}, sat_assignment, cumulative_dict,
-                                       num_t, num_row_1, num_col_2)
+                                       num_t, num_row_1, num_col_2, commutative)
             standard_out = multiply_matrices(matrix_a, matrix_b, num_row_1, num_col_1, num_col_2)
             # Compare the scheme output with the standard output
             if scheme_out != standard_out:
+                print(scheme_out, standard_out)
                 return 0
 
     return 1

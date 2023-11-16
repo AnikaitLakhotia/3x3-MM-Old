@@ -42,7 +42,7 @@ if __name__ == '__main__':
                   f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}/verifier_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}"
                   f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}.txt", "w") as file:
             file.write(str(verifier_output))
-        verifier_v2_output = verifier_v2(assignment_string, cumulative_dict, number_of_operations, m, n, p)
+        verifier_v2_output = verifier_v2(assignment_string, cumulative_dict, number_of_operations, m, n, p, c)
         with open(f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}"
                   f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}/verifier_v2_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}"
                   f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}.txt", "w") as file:
