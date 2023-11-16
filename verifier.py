@@ -55,8 +55,24 @@ def verifier(sat_assignment, cumulative_dict, num_t, commutative):
             val_t, val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")[1:]
             for i in range(1, num_t + 1):
                 sum_val += result[f't_{i}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}']
+
+                if result[f't_{i}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'] != result[
+                   f's_{i}_{val_1}_{val_2}_{val_3}_{val_4}'] and result[f'g_{i}_{val_5}_{val_6}']:
+                    return 0
+
+                elif not commutative:
+                    if result[f's_{i}_{val_1}_{val_2}_{val_3}_{val_4}'] != (
+                       result[f'a_{i}_{val_1}_{val_2}'] and result[f'b_{i}_{val_3}_{val_4}']):
+                        return 0
+
+                elif result[f's_{i}_{val_1}_{val_2}_{val_3}_{val_4}'] != (
+                     result[f'aa_{i}_{val_1}_{val_2}'] and result[f'bb_{i}_{val_3}_{val_4}']) ^ (
+                     result[f'ab_{i}_{val_3}_{val_4}'] and result[f'ba_{i}_{val_1}_{val_2}']):
+                    return 0
+
             if val_2 == val_3 and val_1 == val_5 and val_4 == val_6 and sum_val % 2 == 0:
                 return 0
+
             elif (val_2 != val_3 or val_1 != val_5 or val_4 != val_6) and sum_val % 2 != 0:
                 return 0
 
@@ -66,6 +82,35 @@ def verifier(sat_assignment, cumulative_dict, num_t, commutative):
                 var_str, val_t, val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")
                 for i in range(1, num_t + 1):
                     sum_val += result[f'{var_str}_{i}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}']
+
+                    if result[f'{var_str}_{i}_{val_1}_{val_2}_{val_3}_{val_4}_{val_5}_{val_6}'] != result[
+                       f's{var_str[1:]}_{i}_{val_1}_{val_2}_{val_3}_{val_4}'] and result[f'g_{i}_{val_5}_{val_6}']:
+                        return 0
+
+                    elif key.startswith(f"ta_1_"):
+                        if val_1 != val_3 or val_2 != val_4:
+                            if result[f's{var_str[1:]}_{i}_{val_1}_{val_2}_{val_3}_{val_4}'] != (
+                               result[f'aa_{i}_{val_1}_{val_2}'] and result[f'ba_{i}_{val_3}_{val_4}']) ^ (
+                               result[f'aa_{i}_{val_3}_{val_4}'] and result[f'ba_{i}_{val_1}_{val_2}']):
+                                return 0
+
+                        else:
+                            if result[f's{var_str[1:]}_{i}_{val_1}_{val_2}_{val_3}_{val_4}'] != (
+                                    result[f'aa_{i}_{val_1}_{val_2}'] and result[f'ba_{i}_{val_3}_{val_4}']):
+                                return 0
+
+                    elif key.startswith("tb_1_"):
+                        if val_1 != val_3 or val_2 != val_4:
+                            if result[f's{var_str[1:]}_{i}_{val_1}_{val_2}_{val_3}_{val_4}'] != (
+                               result[f'ab_{i}_{val_1}_{val_2}'] and result[f'bb_{i}_{val_3}_{val_4}']) ^ (
+                               result[f'ab_{i}_{val_3}_{val_4}'] and result[f'bb_{i}_{val_1}_{val_2}']):
+                                return 0
+
+                        else:
+                            if result[f's{var_str[1:]}_{i}_{val_1}_{val_2}_{val_3}_{val_4}'] != (
+                               result[f'ab_{i}_{val_1}_{val_2}'] and result[f'bb_{i}_{val_3}_{val_4}']):
+                                return 0
+
                 if sum_val % 2 != 0:
                     return 0
 
