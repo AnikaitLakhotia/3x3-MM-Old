@@ -211,15 +211,16 @@ def verifier_v2(sat_assignment, cumulative_dict, num_t, num_row_1, num_col_1, nu
 
     dicts_a = generate_dicts(var_list_a)
     dicts_b = generate_dicts(var_list_b)
+
     # Iterate through all combinations of matrix A and matrix B
     for matrix_a in dicts_a:
         for matrix_b in dicts_b:
             scheme_out = scheme_output({**matrix_a, **matrix_b}, sat_assignment, cumulative_dict,
                                        num_t, num_row_1, num_col_2, commutative)
             standard_out = multiply_matrices(matrix_a, matrix_b, num_row_1, num_col_1, num_col_2)
+
             # Compare the scheme output with the standard output
             if scheme_out != standard_out:
-                print(scheme_out, standard_out)
                 return 0
 
     return 1
