@@ -5,7 +5,9 @@ from odd import create_odd
 def create_commutative_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2):
 
     clause_list = []
-    aux_list = create_aux_list(100000, num_t, len(cumulative_dict))
+    aux_list = create_aux_list(((num_row_1**2) * (num_col_2**2) * (num_col_1**2)) +
+                               ((num_row_1**3) * (num_col_2**2) * num_col_1) +
+                               (num_row_1 * (num_col_2**2) * (num_col_1**3)), num_t, len(cumulative_dict))
     move = 0
 
     for key in cumulative_dict:

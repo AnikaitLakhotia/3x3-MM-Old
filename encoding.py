@@ -70,7 +70,6 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
             cumulative_list, num_aux_var = create_encoding_list_v2(cumulative_dict, num_t, num_row_1,
                                                                    num_col_1, num_col_2)
             num_var += num_aux_var
-            num_var += (num_t - 1) * (num_row_1 * num_col_2 * num_col_1)
 
     else:
         shift = shift + len(dict_g)
@@ -100,7 +99,9 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         num_var = len(cumulative_dict)
         # Create the cumulative list of commutative encoding clauses.
         cumulative_list = create_commutative_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2)
-        num_var += (num_t - 1) * ((num_row_1 ** 2) * (num_col_2 ** 2) * (num_col_1 ** 2)) + 100000
+        num_var += (num_t - 1) * (((num_row_1**2) * (num_col_2**2) * (num_col_1**2)) +
+                        ((num_row_1**3) * (num_col_2**2) * num_col_1) +
+                        (num_row_1 * (num_col_2**2) * (num_col_1**3)))
 
     lex_string = ""
     num_lex_clauses = 0
