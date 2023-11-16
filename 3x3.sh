@@ -21,7 +21,7 @@ mkdir -p "$directory"
 cnf_path="${directory}instance_${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}.cnf"
 drat_path="${directory}instance_${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}.drat"
 cadical_result="${directory}cadical_result_${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}.txt"
-echo $1 $2 $3 $4 $5 $6 $7 $8
+echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13}
 python3 main.py 1 $number_of_operations $m $n $p $c $lo $s0 $s1 $sp1 $s2 $sp2 $s3 $sp3 $cnf_path
 ../cadical/build/cadical $cnf_path $drat_path > $cadical_result
 
