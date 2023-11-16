@@ -1,5 +1,4 @@
 from verifier import reverse_map
-import itertools
 import random
 
 
@@ -135,8 +134,16 @@ def generate_dicts(variables):
         list: List of dictionaries, each representing a combination of variable values(binary).
     """
 
-    # Generate all possible combinations of 0 and 1 for the given variables
-    value_combinations = list(itertools.product([0, 1], repeat=len(variables)))
+    # Generate combinations of 0 and 1 for the given variables
+    value_combinations = []
+
+    for i in range(10):
+        combination = []
+        for j in range(len(variables)):
+            random_value = random.randint(0, 1)
+            combination.append(random_value)
+        value_combinations.append(combination)
+
     # Initialize an empty list to store the dictionaries
     result_dicts = []
 
@@ -146,7 +153,8 @@ def generate_dicts(variables):
         result_dicts.append(var_dict)
 
     random.shuffle(result_dicts)
-    result_dicts = result_dicts[:10]
+    result_dicts = result_dicts
+
     return result_dicts
 
 
