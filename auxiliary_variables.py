@@ -28,11 +28,20 @@ def create_t(num_t, num_row_1, num_col_1, num_col_2, shift, var_str):
         val_i1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1' and 'k1' values
         val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
         val_j2_range = val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'j2' and 'k2' values
-    else:
+
+    elif var_str == "ta":
         val_i1_range = val_j1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1',
         # 'j1' and 'k1' values
-        val_i2_range = val_j2_range = val_k2_range = range(1, num_col_1 + 1)  # Create ranges for 'i2',
+        val_i2_range = val_j2_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and
+        # 'j2' values
+        val_k2_range = range(1, num_col_2) # Create ranges for 'k2' values
+
+    elif var_str == "tb":
+        val_i1_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i1' and
+        # 'j1' values
+        val_i2_range = val_j2_range = val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'i2' and
         # 'j2' and 'k2' values
+        val_k1_range = range(1, num_row_1)  # Create ranges for 'k1' values
 
     index = 1  # Initialize a counter for unique integer values
     for val_t in val_t_range:

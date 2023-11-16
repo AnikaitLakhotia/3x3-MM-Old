@@ -88,7 +88,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         shift = shift + len(dict_sb)
         dict_ta = create_t(num_t, num_row_1, num_col_1, num_col_2, shift, "ta")
         shift = shift + len(dict_ta)
-        dict_tb = create_t(num_t, num_col_1, num_col_2, num_col_2, shift, "tb")
+        dict_tb = create_t(num_t, num_row_1, num_col_1, num_col_2, shift, "tb")
 
         com_dict_list = [dict_t, dict_s, dict_g, dict_aa, dict_bb, dict_ab, dict_ba, dict_sa, dict_sb, dict_ta, dict_tb]
 
