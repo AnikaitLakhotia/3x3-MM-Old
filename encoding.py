@@ -45,7 +45,6 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
     dict_g = create_var(num_t, num_row_1, num_col_2, shift, "g")
     cumulative_dict = {}  # Initialize an empty dictionary to store cumulative variable mappings
 
-
     if not commutative:
         shift = shift + len(dict_g)
         dict_a = create_var(num_t, num_row_1, num_col_1, shift, "a")
@@ -65,7 +64,6 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
             # Create the cumulative list of SAT encoding clauses using main scheme.
             cumulative_list = create_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2)
             num_var += (num_t - 1) * ((num_row_1 ** 2) * (num_col_2 ** 2) * (num_col_1 ** 2))
-            num_clauses = len(cumulative_list)
 
         else:
             # Create the cumulative list of SAT encoding clauses using alternate scheme.
@@ -73,7 +71,6 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
                                                                    num_col_1, num_col_2)
             num_var += num_aux_var
             num_var += (num_t - 1) * (num_row_1 * num_col_2 * num_col_1)
-            num_clauses = len(cumulative_list)
 
     else:
         shift = shift + len(dict_g)
@@ -104,7 +101,6 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         # Create the cumulative list of commutative encoding clauses.
         cumulative_list = create_commutative_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2)
         num_var += (num_t - 1) * ((num_row_1 ** 2) * (num_col_2 ** 2) * (num_col_1 ** 2)) + 100000
-        num_clauses = len(cumulative_list)
 
     lex_string = ""
     num_lex_clauses = 0
@@ -137,14 +133,18 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         streamlining_var_list = generate_streamlining_v2(num_t, num_row_1, num_col_1,
                                                          num_col_2, streamlining_parameter_2)
     elif streamlining_3:
-        streamlining_var_list = generate_streamlining_v3(num_t, num_row_1, num_col_1, streamlining_parameter_3)
+        streamlining_clauses, num_aux_vars = generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1,
+                                                                      num_col_1, streamlining_parameter_3)
+        num_var += num_aux_vars
+        cumulative_list.extend(streamlining_clauses)
+        streamlining_var_list = []
     else:
         streamlining_var_list = []
 
+    num_clauses = len(cumulative_list)
     num_clauses += len(streamlining_var_list) + num_lex_clauses
 
     encoding_string = f'p cnf {num_var} {num_clauses} \n'
-
     # Convert the clauses into CNF format, append them to
     # the encoding string and add streamlining clauses and lex string.
     encoding_string += ''.join([' '.join(map(str, innerlist)) + ' 0 \n' for innerlist in cumulative_list])
