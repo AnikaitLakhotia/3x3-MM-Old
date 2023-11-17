@@ -1,5 +1,6 @@
 import collections
 import os
+import random
 """
 Global variables used in self.alpha_beta_gamma_to_var_num to get the Node storing the auxiliary variables for an alpha, beta or gamma variables for a given (row, column, iota)
 """
@@ -48,7 +49,7 @@ class PB:
         logs_directory = f"./opb/{encoding_description}"
         os.makedirs(logs_directory, exist_ok=True)
         self.file_name = f"{logs_directory}/{encoding_description}.opb"
-        self.opb_file = open(f"{self.file_name}", 'w+')
+        self.opb_file = open(self.file_name, 'a')
 
     def get_new_var(self):
         """
@@ -82,6 +83,31 @@ class PB:
             return 1
         return 0
 
+    def streamlining2(self, alpha_beta_gamma_to_var_num):
+        zero_variables = []
+        for iota in range(self.multiplications):
+            for i in range(self.m):
+                for j in range(self.n):
+                    for k in range(self.n):
+                        for l in range(self.p):
+                            for m in range(self.m):
+                                for n in range(self.p):
+                                    if self.get_kronecker_delta_value(i, j, k, l, m, n) == 0:
+                                        alpha_coord = (i, j, iota)
+                                        beta_coord = (k, l, iota)
+                                        gamma_coord = (m, n, iota)
+                                        alpha_variables = alpha_beta_gamma_to_var_num[alpha_coord][ALPHA]
+                                        beta_variables = alpha_beta_gamma_to_var_num[beta_coord][BETA]
+                                        gamma_variables = alpha_beta_gamma_to_var_num[gamma_coord][GAMMA]
+                                        zero_variables.append(
+                                            [alpha_variables, beta_variables, gamma_variables])
+        random.shuffle(zero_variables)
+
+        for variables in zero_variables:
+            for variable in variables:
+                self.write_to_file(f"1 x{variable.first_var} = 0;\n")
+                self.write_to_file(f"1 x{variable.second_var} = 0;\n")
+
     def write_to_file(self, constraint):
         """
         Writes a constraint to the self.opb_file file pointer.
@@ -92,7 +118,11 @@ class PB:
         Returns:
             N/A
         """
-        self.opb_file.write(constraint)
+        try:
+            self.opb_file.write(constraint)
+
+        except Exception as e:
+            print(f"Error writing to file: {e}")
 
     def create_variables(self):
         """
@@ -177,6 +207,7 @@ class PB:
                                     clause for sub_constraint in total_alpha_beta_gamma_constraint for clause in sub_constraint)
                                 self.opb_file.write(
                                     f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};\n")
+        self.streamlining2(alpha_beta_gamma_to_var_num)
 
     def create_alpha_beta_gamma_constraints(self, alpha_variables, beta_variables, gamma_variables):
         """
