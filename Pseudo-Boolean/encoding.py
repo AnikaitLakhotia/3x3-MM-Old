@@ -207,7 +207,7 @@ class PB:
                                     clause for sub_constraint in total_alpha_beta_gamma_constraint for clause in sub_constraint)
                                 self.opb_file.write(
                                     f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};\n")
-        self.streamlining2(alpha_beta_gamma_to_var_num)
+        # self.streamlining2(alpha_beta_gamma_to_var_num)
 
     def create_alpha_beta_gamma_constraints(self, alpha_variables, beta_variables, gamma_variables):
         """
