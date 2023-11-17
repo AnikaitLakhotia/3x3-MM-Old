@@ -49,7 +49,7 @@ class PB:
         logs_directory = f"./opb/{encoding_description}"
         os.makedirs(logs_directory, exist_ok=True)
         self.file_name = f"{logs_directory}/{encoding_description}.opb"
-        self.opb_file = open(self.file_name, 'a')
+        self.opb_file = open(self.file_name, 'w')
 
     def get_new_var(self):
         """
