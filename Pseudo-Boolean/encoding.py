@@ -99,14 +99,14 @@ class PB:
                                         alpha_variables = alpha_beta_gamma_to_var_num[alpha_coord][ALPHA]
                                         beta_variables = alpha_beta_gamma_to_var_num[beta_coord][BETA]
                                         gamma_variables = alpha_beta_gamma_to_var_num[gamma_coord][GAMMA]
-                                        zero_variables.append(
+                                        zero_variables.extend(
                                             [alpha_variables, beta_variables, gamma_variables])
+
         random.shuffle(zero_variables)
 
-        for variables in zero_variables:
-            for variable in variables:
-                self.write_to_file(f"1 x{variable.first_var} = 0;\n")
-                self.write_to_file(f"1 x{variable.second_var} = 0;\n")
+        for variable in zero_variables:
+            self.write_to_file(f"1 x{variable.first_var} = 0;\n")
+            self.write_to_file(f"1 x{variable.second_var} = 0;\n")
 
     def write_to_file(self, constraint):
         """
