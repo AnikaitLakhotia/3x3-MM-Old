@@ -2,13 +2,13 @@ c RoundingSat 2
 c branch master
 c commit 1365545
 c #variables 4288 #constraints 16512
-c cpu time 0.046119 s
+c cpu time 0.088828 s
 c deterministic time 100222 1.00e+05
-c optimization time 5e-06 s
-c total solve time 0.003696 s
+c optimization time 3.3e-05 s
+c total solve time 0.003648 s
 c core-guided solve time 0 s
-c propagation time 0.013552 s
-c conflict analysis time 0.000446 s
+c propagation time 0.016877 s
+c conflict analysis time 0.001149 s
 c propagations 9127
 c resolve steps 449
 c decisions 1258

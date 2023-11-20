@@ -1,6 +1,7 @@
 import collections
 import os
 import random
+import re
 """
 Global variables used in self.alpha_beta_gamma_to_var_num to get the Node storing the auxiliary variables for an alpha, beta or gamma variables for a given (row, column, iota)
 """
@@ -50,6 +51,7 @@ class PB:
         os.makedirs(logs_directory, exist_ok=True)
         self.file_name = f"{logs_directory}/{encoding_description}.opb"
         self.opb_file = open(self.file_name, 'w')
+        self.schemes_folder = "./schemes"
 
     def get_new_var(self):
         """
@@ -83,7 +85,113 @@ class PB:
             return 1
         return 0
 
+    def streamlining1(self, alpha_beta_gamma_to_var_num):
+        def pick_random_file():
+            if not os.path.isdir(self.schemes_folder):
+                raise ValueError(
+                    f"{self.schemes_folder} is not a valid directory.")
+
+            subfolders = [f for f in os.listdir(self.schemes_folder) if os.path.isdir(
+                os.path.join(self.schemes_folder, f))]
+
+            if not subfolders:
+                raise ValueError(
+                    f"No subfolders found in {self.schemes_folder}.")
+
+            random_subfolder = random.choice(subfolders)
+
+            files_in_subfolder = [f for f in os.listdir(os.path.join(self.schemes_folder, random_subfolder)) if os.path.isfile(
+                os.path.join(self.schemes_folder, random_subfolder, f))]
+
+            if not files_in_subfolder:
+                raise ValueError(
+                    f"No files found in {os.path.join(self.schemes_folder, random_subfolder)}.")
+
+            random_file = random.choice(files_in_subfolder)
+
+            return os.path.join(self.schemes_folder, random_subfolder, random_file)
+
+        def parse_file(file_path):
+            multiplication = 0
+            positive_numbers = set()
+            negative_numbers = set()
+
+            with open(file_path) as file:
+                scheme_brent_variable_assignment = file.readlines()
+
+                for assignment in scheme_brent_variable_assignment:
+                    if not assignment.strip():
+                        continue
+
+                    brent_variables = assignment.split("*")
+
+                    for brent_variable in brent_variables:
+                        matches = re.findall(r'([+-]?\w+)', brent_variable)
+
+                        for match in matches:
+                            if match[0] == '-':
+                                negative_numbers.add(
+                                    (match[1:], multiplication))
+                            else:
+                                positive_numbers.add(
+                                    (match.lstrip('+'), multiplication))
+                    multiplication += 1
+
+            return positive_numbers, negative_numbers
+
+        postitive_variables, negative_variables = parse_file(
+            pick_random_file())
+        variable_assignments = []
+        row_col_multiplications = {
+            ALPHA: [self.m, self.n, "a"],
+            BETA: [self.n, self.p, "b"],
+            GAMMA: [self.m, self.p, "c"]
+        }
+        for brent_var, (rows, cols, schema_var) in row_col_multiplications.items():
+            for row in range(1, rows+1):
+                for col in range(1, cols+1):
+                    for iota in range(self.multiplications):
+                        scheme_key = (schema_var+str(row)+str(col), iota)
+                        row_val = row - 1
+                        col_val = col - 1
+                        if scheme_key in postitive_variables:
+                            postitive_variables.remove(scheme_key)
+                            variable_assignments.append(
+                                (brent_var, row_val, col_val, iota, 1))
+                        elif scheme_key in negative_variables:
+                            negative_variables.remove(scheme_key)
+                            variable_assignments.append(
+                                (brent_var, row_val, col_val, iota, -1))
+                        else:
+                            variable_assignments.append(
+                                (brent_var, row_val, col_val, iota, 0))
+        random.shuffle(variable_assignments)
+        half_of_variables = variable_assignments[:len(variable_assignments)//2]
+
+        for brent_var, row_val, col_val, iota, val in half_of_variables:
+            node_entry = (row_val, col_val, iota)
+            brent_variable = alpha_beta_gamma_to_var_num[node_entry][brent_var]
+
+            if val == -1:
+                self.write_to_file(
+                    f"1 x{brent_variable.first_var} = 0;\n")
+                self.write_to_file(
+                    f"1 x{brent_variable.second_var} = 1;\n")
+            elif val == 1:
+                self.write_to_file(
+                    f"1 x{brent_variable.first_var} = 1;\n")
+                self.write_to_file(
+                    f"1 x{brent_variable.second_var} = 0;\n")
+            else:
+                self.write_to_file(f"1 ~x{brent_var.first_var} 1 x{brent_variable.second_var} >= 1\n;")
+                self.write_to_file(f"1 x{brent_var.first_var} 1 !x{brent_variable.second_var} >= 1\n;")
+
+        # streamling 3: when kron delta are satisfied, 19 summands should contain exactly 1 to be True and 4 should contain exactly 2 to be True
+        # P - q + r -s + u -v. = 1 exactly 1
+        # P - q + r -s + u -v. = 2 exactly 2
+
     def streamlining2(self, alpha_beta_gamma_to_var_num):
+        # create clause which encodes (a-b) = 0 or (c-d) = 0 or (e-f) = 0
         zero_variables = []
         for iota in range(self.multiplications):
             for i in range(self.m):
@@ -99,14 +207,17 @@ class PB:
                                         alpha_variables = alpha_beta_gamma_to_var_num[alpha_coord][ALPHA]
                                         beta_variables = alpha_beta_gamma_to_var_num[beta_coord][BETA]
                                         gamma_variables = alpha_beta_gamma_to_var_num[gamma_coord][GAMMA]
-                                        zero_variables.extend(
+                                        zero_variables.append(
                                             [alpha_variables, beta_variables, gamma_variables])
 
         random.shuffle(zero_variables)
+        half_of_variables = zero_variables[:len(zero_variables)//2]
 
-        for variable in zero_variables:
-            self.write_to_file(f"1 x{variable.first_var} = 0;\n")
-            self.write_to_file(f"1 x{variable.second_var} = 0;\n")
+        for variables in half_of_variables:
+            random_number = int(random.uniform(0, 2))
+            variable = variables[random_number]
+            self.write_to_file(
+                f"1 x{variable.first_var} 1 ~x{variable.second_var} >= 1;\n")
 
     def write_to_file(self, constraint):
         """
@@ -208,6 +319,7 @@ class PB:
                                 self.opb_file.write(
                                     f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};\n")
         # self.streamlining2(alpha_beta_gamma_to_var_num)
+        self.streamlining1()
 
     def create_alpha_beta_gamma_constraints(self, alpha_variables, beta_variables, gamma_variables):
         """

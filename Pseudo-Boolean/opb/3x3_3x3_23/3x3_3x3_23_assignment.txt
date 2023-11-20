@@ -1,0 +1,5 @@
+c RoundingSat 2
+c branch master
+c commit 1365545
+
+*** INTERRUPTED ***
