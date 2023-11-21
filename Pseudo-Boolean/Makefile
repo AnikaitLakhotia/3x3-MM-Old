@@ -9,15 +9,15 @@
   # ---- roundingsat
 
 # op = number of multiplications
-op ?= 8
+op ?= 23
 # number of rows in matrix A
-m ?= 2
+m ?= 3
 # number of cols in matrix A and rows in matrix B
-n ?= 2
+n ?= 3
 # number of cols in matrix B
-p ?= 2
+p ?= 3
 # streamlining
-s ?= 0
+s ?= 2
 
 
 run:

@@ -1,4 +1,3 @@
-# import time
 import collections
 import os
 import random
@@ -11,10 +10,10 @@ BETA = "beta"
 GAMMA = "gamma"
 
 """
-The Node class is a data structure used to represent the auxiliary variables for a specific alpha, beta or gamma. 
+The Node class is a data structure used to represent the auxiliary variables for a specific alpha, beta or gamma.
 
 Consider an \alpha_{i, j}^{\itoa} = (p - q)
-self.first_var (int): stores variable which represents p 
+self.first_var (int): stores variable which represents p
 self.second_var (int): stores variable which represents q
 """
 
@@ -115,13 +114,13 @@ class PB:
             return os.path.join(self.schemes_folder, random_subfolder, random_file)
 
         def parse_file(file_path):
+            file_path = "./schemes/18x2+51x+4y6+6y4+13y3+3z29/i15w221c28ah-000.exp"
             multiplication = 0
             positive_numbers = set()
             negative_numbers = set()
 
             with open(file_path) as file:
                 scheme_brent_variable_assignment = file.readlines()
-
                 for assignment in scheme_brent_variable_assignment:
                     if not assignment.strip():
                         continue
@@ -169,30 +168,21 @@ class PB:
                             variable_assignments.append(
                                 (brent_var, row_val, col_val, iota, 0))
         random.shuffle(variable_assignments)
-        # half_of_variables = variable_assignments[:len(variable_assignments)//2]
 
         for brent_var, row_val, col_val, iota, val in variable_assignments:
             node_entry = (row_val, col_val, iota)
             brent_variable = alpha_beta_gamma_to_var_num[node_entry][brent_var]
-
             if val == -1:
-                self.encoding.append(
-                    f"1 x{brent_variable.first_var} = 0;\n")
-                self.encoding.append(
-                    f"1 x{brent_variable.second_var} = 1;\n")
+                self.write_to_file(
+                    f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = -1;\n")
             elif val == 1:
-                self.encoding.append(
-                    f"1 x{brent_variable.first_var} = 1;\n")
-                self.encoding.append(
-                    f"1 x{brent_variable.second_var} = 0;\n")
+                self.write_to_file(
+                    f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = 1;\n")
             else:
-                self.encoding.append(
-                    f"1 ~x{brent_variable.first_var} 1 x{brent_variable.second_var} >= 1;\n")
-                self.encoding.append(
-                    f"1 x{brent_variable.first_var} 1 ~x{brent_variable.second_var} >= 1;\n")
+                self.write_to_file(
+                    f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = 0;\n")
 
     def streamlining2(self, alpha_beta_gamma_to_var_num):
-        # create clause which encodes (a-b) = 0 or (c-d) = 0 or (e-f) = 0
         zero_variables = []
         for iota in range(self.multiplications):
             for i in range(self.m):
@@ -212,17 +202,13 @@ class PB:
                                             [alpha_variables, beta_variables, gamma_variables])
 
         random.shuffle(zero_variables)
-        half_of_variables = zero_variables[:len(zero_variables)//2]
+        half_of_variables = zero_variables
 
         for variables in half_of_variables:
-            random_number = int(random.uniform(0, 2))
+            random_number = round(random.uniform(0, 2))
             variable = variables[random_number]
-            self.encoding.append(
-                f"1 x{variable.first_var} 1 ~x{variable.second_var} >= 1;\n")
-
-    # streamling 3: when kron delta are satisfied, 19 summands should contain exactly 1 to be True and 4 should contain exactly 2 to be True
-    # P - q + r -s + u -v. = 1 exactly 1
-    # P - q + r -s + u -v. = 2 exactly 2
+            self.write_to_file(
+                f"1 x{variable.first_var} -1 x{variable.second_var} = 0;\n")
 
     def streamlining3(self, alpha_beta_gamma_to_var_num):
         for i in range(self.m):
@@ -252,11 +238,11 @@ class PB:
                                     random.shuffle(summands)
                                     for _ in range(19):
                                         variables = summands.pop()
-                                        self.encoding.append(
+                                        self.write_to_file(
                                             "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 1;\n".format(*variables))
                                     for _ in range(4):
                                         variables = summands.pop()
-                                        self.encoding.append(
+                                        self.write_to_file(
                                             "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 2;\n".format(*variables))
 
     def write_to_file(self, constraint):
@@ -285,7 +271,6 @@ class PB:
         Returns:
             N/A
         """
-        # number of variables: 3*3*3*multiplications*2
         row_col_multiplications = {
             ALPHA: [self.m, self.n],
             BETA: [self.n, self.p],
@@ -316,12 +301,11 @@ class PB:
         Other functions called:
             create_variables, create_alpha_beta_gamma_constraints, kronecker_delta_values
         """
-        # incorrect values but are required for proper formatting of opb file
-        number_of_variables = 3*3*3*self.multiplications * \
-            2 + 3*3*3*3*3*3*self.multiplications*8
-        number_of_constraints = 3*3*3*3*3*3 + 3 * \
-            3*3*3*3*3*self.multiplications*8*4
-        self.encoding.append(
+        number_of_variables = self.multiplications*2*(self.m*self.n + self.n*self.p + self.m*self.p) + \
+            self.m*self.n*self.n*self.p*self.m*self.p*self.multiplications*8
+        number_of_constraints = self.m*self.n*self.n*self.p*self.m*self.p * \
+            self.multiplications*8*4 + self.m*self.n*self.n*self.p*self.m*self.p
+        self.write_to_file(
             f"* #variable= {number_of_variables} #constraint= {number_of_constraints}\n")
         # (row, column, iota) -> {alpha: Node, beta: Node, gamma: Node)
         alpha_beta_gamma_to_var_num = self.create_variables()
@@ -356,7 +340,7 @@ class PB:
                                 # Creates constraint for the summation of all alpha, beta, gamma products (long list of z) for all iotas
                                 total_contraint = " ".join(
                                     clause for sub_constraint in total_alpha_beta_gamma_constraint for clause in sub_constraint)
-                                self.encoding.append(
+                                self.write_to_file(
                                     f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};\n")
         if self.streamlining == 1:
             self.streamlining1(alpha_beta_gamma_to_var_num)
@@ -365,24 +349,22 @@ class PB:
         elif self.streamlining == 3:
             self.streamlining3(alpha_beta_gamma_to_var_num)
 
-        for clause in self.encoding:
-            self.write_to_file(clause)
-        # time.sleep(5)
         self.opb_file.close()
 
     def create_alpha_beta_gamma_constraints(self, alpha_variables, beta_variables, gamma_variables):
         """
         A driver function which calls create_aux_variable_constraint to create the auxiliary variable constraints for a given alpha*beta*gamma expression. Recall, we introduce a z auxiliary variable for the multiplication of an alpha auxiliary variables times a beta auxiliary variable times a gamma auxiliary variables. For example, z = p*r*s. An auxiliary variable is introduced for all combinations of the multiplications of the alpha's, beta's and gamma's auxiliary variables (e.g. z1 = p*r*u, z2 = p*r*v, z3 = p*s*u etc...)
-        Args: 
-            alpha_variables ([String]): stores the two auxiliary variables for the alpha term. E.g [p, q]
-            beta_variables ([String]): stores the two auxiliary variables for the beta term. E.g [r, s]
-            gamma_variables ([String]): stores the two auxiliary variables for the gamma term. E.g [u, v]
+        Args:
+            alpha_variables ([Int]): stores the two auxiliary variables for the alpha term. E.g [p, q]
+            beta_variables ([Int]): stores the two auxiliary variables for the beta term. E.g [r, s]
+            gamma_variables ([Int]): stores the two auxiliary variables for the gamma term. E.g [u, v]
 
         Returns:
             complete_aux_var_constaint ([String]): Returns a array containing the z auxiliary variables
         """
         aux_variables = []
-        is_negative = {1, 2, 4}  # Used to mark which terms should be negative
+        # Used to mark which terms should be negative
+        is_negative = {1, 2, 4, 7}
         # Creates all combinations of Brent variable's auxiliary terms
         for alpha_var in alpha_variables:
             for beta_var in beta_variables:
@@ -415,9 +397,9 @@ class PB:
         """
         # ~z + p >= 1
         for alpha_beta_or_gamma_variable in variables[:-1]:
-            self.encoding.append(
+            self.write_to_file(
                 f"1 ~x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 1;\n")
 
         # ~p + ~r + ~u + z >= 1
-        self.encoding.append(
+        self.write_to_file(
             "1 ~x{} 1 ~x{} 1 ~x{} 1 x{} >= 1;\n".format(*variables))

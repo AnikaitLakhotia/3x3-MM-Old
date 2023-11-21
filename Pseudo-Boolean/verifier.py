@@ -70,6 +70,8 @@ class Verifier:
                                         gamma_coord][GAMMA].second_var
                                     total_sum_of_alpha_beta_gamma += self.verify_alpha_beta_gamma_constraints([p_for_alpha, q_for_alpha], [
                                         r_for_beta, s_for_beta], [u_for_gamma, v_for_gamma])
+                                print("total_sum_of_alpha_beta_gamma",
+                                      total_sum_of_alpha_beta_gamma, i, j, k, l, m, n)
                                 if total_sum_of_alpha_beta_gamma != self.PB.get_kronecker_delta_value(i, j, k, l, m, n):
                                     raise Exception(
                                         "Kronecker delta values are not satisfied")
@@ -77,7 +79,7 @@ class Verifier:
 
     def verify_alpha_beta_gamma_constraints(self, alpha_variables, beta_variables, gamma_variables):
         sum_of_z_variables = 0
-        is_negative = {1, 2, 4}
+        is_negative = {1, 2, 4, 7}
         aux_var_products = []
         for alpha_var in alpha_variables:
             for beta_var in beta_variables:
@@ -153,7 +155,7 @@ class Verifier2:
     def verify_scheme(self):
         self.create_assignment_mapping()
         self.create_scalar_multiplications_dict()
-        need_to_test = min(100, self.m*self.p)
+        need_to_test = 100
         schemes_tested = 0
         while schemes_tested < need_to_test:
             matrix_a, matrix_b = self.randomly_generate_matrix()
