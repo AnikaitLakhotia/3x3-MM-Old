@@ -1,4 +1,0 @@
-Scheme number: 0. Matrix A x Matrix B: [[0, 1], [0, 0]] x [[1, 0], [0, 1]]. Naive scheme result [0, 1, 0, 0]. Brent equations scheme result [0, 1, 0, 0]
-Scheme number: 1. Matrix A x Matrix B: [[1, 1], [0, 0]] x [[0, 1], [1, 1]]. Naive scheme result [1, 0, 0, 0]. Brent equations scheme result [1, 0, 0, 0]
-Scheme number: 2. Matrix A x Matrix B: [[0, 0], [1, 1]] x [[1, 1], [1, 0]]. Naive scheme result [0, 0, 0, 1]. Brent equations scheme result [0, 0, 0, 1]
-Scheme number: 3. Matrix A x Matrix B: [[0, 1], [1, 0]] x [[1, 1], [1, 1]]. Naive scheme result [1, 1, 1, 1]. Brent equations scheme result [1, 1, 1, 1]

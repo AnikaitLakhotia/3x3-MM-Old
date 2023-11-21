@@ -16,7 +16,9 @@ m ?= 2
 n ?= 2
 # number of cols in matrix B
 p ?= 2
+# streamlining
+s ?= 0
 
 
 run:
-	@./pb.sh $(op) $(m) $(n) $(p)
+	@./pb.sh $(op) $(m) $(n) $(p) $(s)

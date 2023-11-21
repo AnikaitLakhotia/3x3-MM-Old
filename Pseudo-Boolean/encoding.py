@@ -40,13 +40,14 @@ Class variables:
 
 
 class PB:
-    def __init__(self, multiplications, m, n, p) -> None:
+    def __init__(self, multiplications, m, n, p, streamlining) -> None:
         self.curr_variable = 0
         self.m = m
         self.n = n
         self.p = p
         self.multiplications = multiplications
-        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}"
+        self.streamlining = streamlining
+        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{self.streamlining}"
         logs_directory = f"./opb/{encoding_description}"
         os.makedirs(logs_directory, exist_ok=True)
         self.file_name = f"{logs_directory}/{encoding_description}.opb"
@@ -183,12 +184,10 @@ class PB:
                 self.write_to_file(
                     f"1 x{brent_variable.second_var} = 0;\n")
             else:
-                self.write_to_file(f"1 ~x{brent_var.first_var} 1 x{brent_variable.second_var} >= 1\n;")
-                self.write_to_file(f"1 x{brent_var.first_var} 1 !x{brent_variable.second_var} >= 1\n;")
-
-        # streamling 3: when kron delta are satisfied, 19 summands should contain exactly 1 to be True and 4 should contain exactly 2 to be True
-        # P - q + r -s + u -v. = 1 exactly 1
-        # P - q + r -s + u -v. = 2 exactly 2
+                self.write_to_file(
+                    f"1 ~x{brent_var.first_var} 1 x{brent_variable.second_var} >= 1\n;")
+                self.write_to_file(
+                    f"1 x{brent_var.first_var} 1 !x{brent_variable.second_var} >= 1\n;")
 
     def streamlining2(self, alpha_beta_gamma_to_var_num):
         # create clause which encodes (a-b) = 0 or (c-d) = 0 or (e-f) = 0
@@ -218,6 +217,45 @@ class PB:
             variable = variables[random_number]
             self.write_to_file(
                 f"1 x{variable.first_var} 1 ~x{variable.second_var} >= 1;\n")
+
+    # streamling 3: when kron delta are satisfied, 19 summands should contain exactly 1 to be True and 4 should contain exactly 2 to be True
+    # P - q + r -s + u -v. = 1 exactly 1
+    # P - q + r -s + u -v. = 2 exactly 2
+
+    def streamlining3(self, alpha_beta_gamma_to_var_num):
+        for i in range(self.m):
+            for j in range(self.n):
+                for k in range(self.n):
+                    for l in range(self.p):
+                        for m in range(self.m):
+                            for n in range(self.p):
+                                if self.get_kronecker_delta_value(i, j, k, l, m, n):
+                                    summands = []
+                                    for iota in range(self.multiplications):
+                                        alpha_coord = (i, j, iota)
+                                        beta_coord = (k, l, iota)
+                                        gamma_coord = (m, n, iota)
+                                        p_for_alpha = alpha_beta_gamma_to_var_num[
+                                            alpha_coord][ALPHA].first_var
+                                        q_for_alpha = alpha_beta_gamma_to_var_num[
+                                            alpha_coord][ALPHA].second_var
+                                        r_for_beta = alpha_beta_gamma_to_var_num[beta_coord][BETA].first_var
+                                        s_for_beta = alpha_beta_gamma_to_var_num[beta_coord][BETA].second_var
+                                        u_for_gamma = alpha_beta_gamma_to_var_num[
+                                            gamma_coord][GAMMA].first_var
+                                        v_for_gamma = alpha_beta_gamma_to_var_num[
+                                            gamma_coord][GAMMA].second_var
+                                        summands.append(
+                                            [p_for_alpha, q_for_alpha, r_for_beta, s_for_beta, u_for_gamma, v_for_gamma])
+                                    random.shuffle(summands)
+                                    for _ in range(19):
+                                        variables = summands.pop()
+                                        self.write_to_file(
+                                            "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 1;\n".format(*variables))
+                                    for _ in range(4):
+                                        variables = summands.pop()
+                                        self.write_to_file(
+                                            "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 2;\n".format(*variables))
 
     def write_to_file(self, constraint):
         """
@@ -318,8 +356,12 @@ class PB:
                                     clause for sub_constraint in total_alpha_beta_gamma_constraint for clause in sub_constraint)
                                 self.opb_file.write(
                                     f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};\n")
-        # self.streamlining2(alpha_beta_gamma_to_var_num)
-        self.streamlining1()
+        if self.streamlining == 1:
+            self.streamlining1(alpha_beta_gamma_to_var_num)
+        elif self.streamlining == 2:
+            self.streamlining2()
+        elif self.streamlining == 3:
+            self.streamlining3(alpha_beta_gamma_to_var_num)
 
     def create_alpha_beta_gamma_constraints(self, alpha_variables, beta_variables, gamma_variables):
         """
