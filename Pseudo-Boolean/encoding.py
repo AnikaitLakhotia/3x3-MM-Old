@@ -1,3 +1,4 @@
+# import time
 import collections
 import os
 import random
@@ -53,6 +54,7 @@ class PB:
         self.file_name = f"{logs_directory}/{encoding_description}.opb"
         self.opb_file = open(self.file_name, 'w')
         self.schemes_folder = "./schemes"
+        self.encoding = []
 
     def get_new_var(self):
         """
@@ -174,20 +176,20 @@ class PB:
             brent_variable = alpha_beta_gamma_to_var_num[node_entry][brent_var]
 
             if val == -1:
-                self.write_to_file(
+                self.encoding.append(
                     f"1 x{brent_variable.first_var} = 0;\n")
-                self.write_to_file(
+                self.encoding.append(
                     f"1 x{brent_variable.second_var} = 1;\n")
             elif val == 1:
-                self.write_to_file(
+                self.encoding.append(
                     f"1 x{brent_variable.first_var} = 1;\n")
-                self.write_to_file(
+                self.encoding.append(
                     f"1 x{brent_variable.second_var} = 0;\n")
             else:
-                self.write_to_file(
-                    f"1 ~x{brent_var.first_var} 1 x{brent_variable.second_var} >= 1\n;")
-                self.write_to_file(
-                    f"1 x{brent_var.first_var} 1 !x{brent_variable.second_var} >= 1\n;")
+                self.encoding.append(
+                    f"1 ~x{brent_variable.first_var} 1 x{brent_variable.second_var} >= 1;\n")
+                self.encoding.append(
+                    f"1 x{brent_variable.first_var} 1 ~x{brent_variable.second_var} >= 1;\n")
 
     def streamlining2(self, alpha_beta_gamma_to_var_num):
         # create clause which encodes (a-b) = 0 or (c-d) = 0 or (e-f) = 0
@@ -215,7 +217,7 @@ class PB:
         for variables in half_of_variables:
             random_number = int(random.uniform(0, 2))
             variable = variables[random_number]
-            self.write_to_file(
+            self.encoding.append(
                 f"1 x{variable.first_var} 1 ~x{variable.second_var} >= 1;\n")
 
     # streamling 3: when kron delta are satisfied, 19 summands should contain exactly 1 to be True and 4 should contain exactly 2 to be True
@@ -250,11 +252,11 @@ class PB:
                                     random.shuffle(summands)
                                     for _ in range(19):
                                         variables = summands.pop()
-                                        self.write_to_file(
+                                        self.encoding.append(
                                             "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 1;\n".format(*variables))
                                     for _ in range(4):
                                         variables = summands.pop()
-                                        self.write_to_file(
+                                        self.encoding.append(
                                             "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 2;\n".format(*variables))
 
     def write_to_file(self, constraint):
@@ -269,7 +271,7 @@ class PB:
         """
         try:
             self.opb_file.write(constraint)
-
+            self.opb_file.flush()
         except Exception as e:
             print(f"Error writing to file: {e}")
 
@@ -319,7 +321,7 @@ class PB:
             2 + 3*3*3*3*3*3*self.multiplications*8
         number_of_constraints = 3*3*3*3*3*3 + 3 * \
             3*3*3*3*3*self.multiplications*8*4
-        self.write_to_file(
+        self.encoding.append(
             f"* #variable= {number_of_variables} #constraint= {number_of_constraints}\n")
         # (row, column, iota) -> {alpha: Node, beta: Node, gamma: Node)
         alpha_beta_gamma_to_var_num = self.create_variables()
@@ -354,7 +356,7 @@ class PB:
                                 # Creates constraint for the summation of all alpha, beta, gamma products (long list of z) for all iotas
                                 total_contraint = " ".join(
                                     clause for sub_constraint in total_alpha_beta_gamma_constraint for clause in sub_constraint)
-                                self.opb_file.write(
+                                self.encoding.append(
                                     f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};\n")
         if self.streamlining == 1:
             self.streamlining1(alpha_beta_gamma_to_var_num)
@@ -362,6 +364,11 @@ class PB:
             self.streamlining2(alpha_beta_gamma_to_var_num)
         elif self.streamlining == 3:
             self.streamlining3(alpha_beta_gamma_to_var_num)
+
+        for clause in self.encoding:
+            self.write_to_file(clause)
+        # time.sleep(5)
+        self.opb_file.close()
 
     def create_alpha_beta_gamma_constraints(self, alpha_variables, beta_variables, gamma_variables):
         """
@@ -408,9 +415,9 @@ class PB:
         """
         # ~z + p >= 1
         for alpha_beta_or_gamma_variable in variables[:-1]:
-            self.write_to_file(
+            self.encoding.append(
                 f"1 ~x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 1;\n")
 
         # ~p + ~r + ~u + z >= 1
-        self.write_to_file(
+        self.encoding.append(
             "1 ~x{} 1 ~x{} 1 ~x{} 1 x{} >= 1;\n".format(*variables))
