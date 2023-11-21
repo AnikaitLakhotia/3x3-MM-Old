@@ -167,9 +167,9 @@ class PB:
                             variable_assignments.append(
                                 (brent_var, row_val, col_val, iota, 0))
         random.shuffle(variable_assignments)
-        half_of_variables = variable_assignments[:len(variable_assignments)//2]
+        # half_of_variables = variable_assignments[:len(variable_assignments)//2]
 
-        for brent_var, row_val, col_val, iota, val in half_of_variables:
+        for brent_var, row_val, col_val, iota, val in variable_assignments:
             node_entry = (row_val, col_val, iota)
             brent_variable = alpha_beta_gamma_to_var_num[node_entry][brent_var]
 
@@ -359,7 +359,7 @@ class PB:
         if self.streamlining == 1:
             self.streamlining1(alpha_beta_gamma_to_var_num)
         elif self.streamlining == 2:
-            self.streamlining2()
+            self.streamlining2(alpha_beta_gamma_to_var_num)
         elif self.streamlining == 3:
             self.streamlining3(alpha_beta_gamma_to_var_num)
 
