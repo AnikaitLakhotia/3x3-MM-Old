@@ -114,7 +114,6 @@ class PB:
             return os.path.join(self.schemes_folder, random_subfolder, random_file)
 
         def parse_file(file_path):
-            file_path = "./schemes/18x2+51x+4y6+6y4+13y3+3z29/i15w221c28ah-000.exp"
             multiplication = 0
             positive_numbers = set()
             negative_numbers = set()
@@ -156,6 +155,8 @@ class PB:
                         scheme_key = (schema_var+str(row)+str(col), iota)
                         row_val = row - 1
                         col_val = col - 1
+                        if brent_var == GAMMA:
+                            row_val, col_val = col_val, row_val
                         if scheme_key in postitive_variables:
                             postitive_variables.remove(scheme_key)
                             variable_assignments.append(

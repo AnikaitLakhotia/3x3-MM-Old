@@ -10,7 +10,7 @@ echo "Running main.py..."
 python3 main.py "$op" "$m" "$n" "$p" "$s"
 
 echo "Running roundingsat..."
-../../roundingsat/build/roundingsat "${path_to_encoding}.opb" --print-sol=1 --proof-log="${path_to_encoding}" > "${path_to_encoding}_assignment.txt"
+../../roundingsat/build/roundingsat "${path_to_encoding}.opb" --print-sol=1 > "${path_to_encoding}_assignment.txt"
 
 echo "Checking if satisfiable..."
 if grep -q "UNSATISFIABLE" "${path_to_encoding}_assignment.txt"; then

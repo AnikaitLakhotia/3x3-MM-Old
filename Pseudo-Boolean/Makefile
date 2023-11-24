@@ -16,8 +16,8 @@ m ?= 3
 n ?= 3
 # number of cols in matrix B
 p ?= 3
-# streamlining
-s ?= 2
+# streamlining 
+s ?= 0
 
 
 run:

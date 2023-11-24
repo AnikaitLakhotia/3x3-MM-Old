@@ -26,6 +26,9 @@ class Verifier:
         return 0
 
     def get_variable_value(self, curr_variable):
+        if curr_variable not in self.assignment_mapping:
+            raise Exception(
+                f"{curr_variable} does not exist in assignment mapping")
         return self.assignment_mapping[curr_variable]
 
     def create_assignment_mapping(self):
@@ -70,8 +73,6 @@ class Verifier:
                                         gamma_coord][GAMMA].second_var
                                     total_sum_of_alpha_beta_gamma += self.verify_alpha_beta_gamma_constraints([p_for_alpha, q_for_alpha], [
                                         r_for_beta, s_for_beta], [u_for_gamma, v_for_gamma])
-                                print("total_sum_of_alpha_beta_gamma",
-                                      total_sum_of_alpha_beta_gamma, i, j, k, l, m, n)
                                 if total_sum_of_alpha_beta_gamma != self.PB.get_kronecker_delta_value(i, j, k, l, m, n):
                                     raise Exception(
                                         "Kronecker delta values are not satisfied")
