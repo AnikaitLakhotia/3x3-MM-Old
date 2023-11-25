@@ -8,17 +8,17 @@ GAMMA = "gamma"
 
 
 class Verifier:
-    def __init__(self, multiplications, m, n, p, streamlining) -> None:
+    def __init__(self, multiplications, m, n, p, streamlining, percentage) -> None:
         self.m = m
         self.n = n
         self.p = p
         self.multiplications = multiplications
-        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{streamlining}"
+        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{streamlining}_{percentage}"
         logs_directory = f"./opb/{encoding_description}"
         self.assignment_file = f"{logs_directory}/{encoding_description}_assignment.txt"
         self.assignment_mapping = collections.defaultdict(int)
         self.PB = PB(self.multiplications, self.m,
-                     self.n, self.p, streamlining)
+                     self.n, self.p, streamlining, percentage)
 
     def get_compliment(self, curr_variable):
         if curr_variable == 0:
@@ -114,12 +114,12 @@ class Verifier:
 
 
 class Verifier2:
-    def __init__(self, multiplications, m, n, p, streamlining) -> None:
+    def __init__(self, multiplications, m, n, p, streamlining, percentage) -> None:
         self.m = m
         self.n = n
         self.p = p
         self.multiplications = multiplications
-        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{streamlining}"
+        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{streamlining}_{percentage}"
         logs_directory = f"./opb/{encoding_description}"
         self.assignment_file = f"{logs_directory}/{encoding_description}_assignment.txt"
         self.multiplication_verification_file = f"{logs_directory}/{encoding_description}_verifier2.txt"
@@ -127,7 +127,7 @@ class Verifier2:
             f"{self.multiplication_verification_file}", 'w+')
         self.assignment_mapping = collections.defaultdict(int)
         self.PB = PB(self.multiplications, self.m,
-                     self.n, self.p, streamlining)
+                     self.n, self.p, streamlining, percentage)
         self.scalar_multiplication = collections.defaultdict(dict)
         self.alpha_beta_gamma_to_var_num = self.PB.create_variables()
 
@@ -257,16 +257,16 @@ class Verifier2:
 
 
 if __name__ == "__main__":
-    _, number_of_multiplications, m, n, p, s = sys.argv
+    _, number_of_multiplications, m, n, p, s, c = sys.argv
     verifier = Verifier(int(number_of_multiplications),
-                        int(m), int(n), int(p), int(s))
+                        int(m), int(n), int(p), int(s), int(c))
     print("Running verifier 1!")
     if not verifier.verify_against_brent_equations():
         raise Exception("Could not verify PB encoding against Brent equations")
     print("Verifier 1 has verifier SAT assignment against the Brent equations!")
     print("Running verifier 2!")
     verifier2 = Verifier2(int(number_of_multiplications),
-                          int(m), int(n), int(p), int(s))
+                          int(m), int(n), int(p), int(s), int(c))
     if not verifier2.verify_scheme():
         raise Exception("Could not verify multiplication scheme")
     print("Verifier 2 has verified scheme against naive method!")

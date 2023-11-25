@@ -40,14 +40,15 @@ Class variables:
 
 
 class PB:
-    def __init__(self, multiplications, m, n, p, streamlining) -> None:
+    def __init__(self, multiplications, m, n, p, streamlining, percentage) -> None:
         self.curr_variable = 0
         self.m = m
         self.n = n
         self.p = p
         self.multiplications = multiplications
         self.streamlining = streamlining
-        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{self.streamlining}"
+        self.percentage_of_variables_changed = percentage
+        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{self.streamlining}_{self.percentage_of_variables_changed}"
         logs_directory = f"./opb/{encoding_description}"
         os.makedirs(logs_directory, exist_ok=True)
         self.file_name = f"{logs_directory}/{encoding_description}.opb"
@@ -170,6 +171,9 @@ class PB:
                                 (brent_var, row_val, col_val, iota, 0))
         random.shuffle(variable_assignments)
 
+        variable_assignments = variable_assignments[:(
+            len(variable_assignments)*self.percentage_of_variables_changed)]
+
         for brent_var, row_val, col_val, iota, val in variable_assignments:
             node_entry = (row_val, col_val, iota)
             brent_variable = alpha_beta_gamma_to_var_num[node_entry][brent_var]
@@ -203,9 +207,10 @@ class PB:
                                             [alpha_variables, beta_variables, gamma_variables])
 
         random.shuffle(zero_variables)
-        half_of_variables = zero_variables
+        zero_variables = zero_variables[:(
+            len(zero_variables)*self.percentage_of_variables_changed)]
 
-        for variables in half_of_variables:
+        for variables in zero_variables:
             random_number = round(random.uniform(0, 2))
             variable = variables[random_number]
             self.write_to_file(

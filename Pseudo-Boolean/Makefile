@@ -9,7 +9,7 @@
   # ---- roundingsat
 
 # op = number of multiplications
-op ?= 23
+op ?= 27
 # number of rows in matrix A
 m ?= 3
 # number of cols in matrix A and rows in matrix B
@@ -18,7 +18,9 @@ n ?= 3
 p ?= 3
 # streamlining 
 s ?= 0
+# percentage of changes from streamlining
+c ?= 1
 
 
 run:
-	@./pb.sh $(op) $(m) $(n) $(p) $(s)
+	@./pb.sh $(op) $(m) $(n) $(p) $(s) $(c)

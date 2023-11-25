@@ -5,8 +5,10 @@ function run_experiment {
     local m=$2
     local n=$3
     local p=$4
+    local s=$5
+    local c=$6
 
-    timeout 10m make op=$op m=$m n=$n p=$p
+    timeout 10m make op=$op m=$m n=$n p=$p s=$s c=$c
     result=$?
 
     if [ $result -eq 124 ]; then
@@ -18,7 +20,7 @@ function run_experiment {
     fi
 }
 
-run_experiment 9 3 1 3
+run_experiment 9 3 1 3 0 1
 run_experiment 10 2 1 5
 run_experiment 11 1 1 11
 run_experiment 2 2 1 1
