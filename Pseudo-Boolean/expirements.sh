@@ -20,11 +20,24 @@ function run_experiment {
     fi
 }
 
-run_experiment 9 3 1 3 0 1
-run_experiment 10 2 1 5
-run_experiment 11 1 1 11
-run_experiment 2 2 1 1
-run_experiment 3 1 3 1
-run_experiment 4 2 2 1
-run_experiment 5 1 5 1
-run_experiment 6 2 3 1
+function miscellaneous_matrix_sizes {
+    run_experiment 9 3 1 3 0 0
+    run_experiment 10 2 1 5 0 0
+    run_experiment 11 1 1 11 0 0
+    run_experiment 2 2 1 1 0 0
+    run_experiment 3 1 3 1 0 0
+    run_experiment 4 2 2 1 0 0
+    run_experiment 5 1 5 1 0 0
+    run_experiment 6 2 3 1 0 0
+}
+
+function 3x3_23_multiplications {
+    run_experiment 23 3 3 3 1 1
+    run_experiment 23 3 3 3 1 0.9
+    run_experiment 23 3 3 3 1 0.8
+    run_experiment 23 3 3 3 1 0.7
+    run_experiment 23 3 3 3 1 0.6
+    run_experiment 23 3 3 3 1 0.5
+}
+
+3x3_23_multiplications
