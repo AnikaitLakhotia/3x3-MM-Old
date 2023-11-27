@@ -132,6 +132,8 @@ class Verifier2:
         self.alpha_beta_gamma_to_var_num = self.PB.create_variables()
 
     def get_variable_value(self, curr_variable):
+        if curr_variable not in self.assignment_mapping:
+            raise Exception(f"{curr_variable} does not exist in assignment mapping")
         return self.assignment_mapping[curr_variable]
 
     def create_assignment_mapping(self):

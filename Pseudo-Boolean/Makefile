@@ -4,12 +4,13 @@
 
 # Please clone roundingsat [from here](https://gitlab.com/MIAOresearch/software/roundingsat) and follow the regular build process (non-debug build) in the README.md of roundingsat
 
-# Stucture your directory as follows:
-  # ---- 3x3-MM
-  # ---- roundingsat
+# Structure your directory as follows:
+# ---- 3x3-MM
+#   ---- Pseudo-Boolean
+#   ---- roundingsat
 
 # op = number of multiplications
-op ?= 27
+op ?= 23
 # number of rows in matrix A
 m ?= 3
 # number of cols in matrix A and rows in matrix B
@@ -19,8 +20,9 @@ p ?= 3
 # streamlining 
 s ?= 0
 # percentage of changes from streamlining
-c ?= 1
+c ?= 0
 
+# ./minisat+_64-bit_static Examples/garden9x9.opb -cnf=tex.txt
 
 run:
 	@./pb.sh $(op) $(m) $(n) $(p) $(s) $(c)

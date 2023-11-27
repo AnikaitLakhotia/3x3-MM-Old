@@ -171,8 +171,10 @@ class PB:
                                 (brent_var, row_val, col_val, iota, 0))
         random.shuffle(variable_assignments)
 
+        percentage_of_variables = self.percentage_of_variables_changed / 100
+
         variable_assignments = variable_assignments[:(
-            len(variable_assignments)*self.percentage_of_variables_changed)]
+            round(len(variable_assignments)*percentage_of_variables))]
 
         for brent_var, row_val, col_val, iota, val in variable_assignments:
             node_entry = (row_val, col_val, iota)
@@ -208,7 +210,7 @@ class PB:
 
         random.shuffle(zero_variables)
         zero_variables = zero_variables[:(
-            len(zero_variables)*self.percentage_of_variables_changed)]
+            round(len(zero_variables)*self.percentage_of_variables_changed))]
 
         for variables in zero_variables:
             random_number = round(random.uniform(0, 2))

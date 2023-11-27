@@ -39,5 +39,3 @@ function 3x3_23_multiplications {
     run_experiment 23 3 3 3 1 0.6
     run_experiment 23 3 3 3 1 0.5
 }
-
-3x3_23_multiplications
