@@ -36,8 +36,8 @@ if grep -q "UNSATISFIABLE" $cadical_result; then :
     else
       echo "UNSAT proof cannot not verified by DRAT"
     fi
-else
-    # If "UNSATISFIABLE" is not found(meaning the result is SAT), run python3 verifier.py
+elif grep -q "SATISFIABLE" $cadical_result; then :
+    # If "SATISFIABLE" is found, run python3 verifier.py
     v_assignment="${directory}v_assignment_${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}.txt"
     assignment="${directory}assignment_${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}.txt"
     grep '^v ' $cadical_result  > $v_assignment
@@ -56,4 +56,6 @@ else
       else
         echo "The scheme cannot be verified by second verifier."
     fi
+    else :
+    echo "Error: neither SAT nor UNSAT found in cadicalResult.txt."
 fi
