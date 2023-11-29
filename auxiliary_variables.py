@@ -20,42 +20,67 @@ def create_t(num_t, num_row_1, num_col_1, num_col_2, shift, var_str):
            to values for other variables in the encoding.
     """
 
-    t_dict = {}  # Initialize an empty dictionary to store variable mappings
+    try:
+        # Input validation and value checks
+        # Check integer arguments and their minimum values
+        for arg_name, arg_value, min_value in zip(('num_t', 'num_row_1', 'num_col_1', 'num_col_2', 'shift'),
+                                                  (num_t, num_row_1, num_col_1, num_col_2, shift),
+                                                  (2, 1, 1, 1, 0)):
+            if not isinstance(arg_value, int):
+                raise TypeError(f'The {arg_name} argument must be an integer.')
 
-    # Create ranges for 't' values
-    val_t_range = range(1, num_t + 1)
+            if arg_value < min_value:
+                raise ValueError(f'Invalid value for {arg_name}. It must be greater than or equal to {min_value}.')
 
-    # Create ranges based on the variable string
-    if var_str != "ta" and var_str != "tb":
-        val_i1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1' and 'k1' values
-        val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
-        val_j2_range = val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'j2' and 'k2' values
+        # Check the type of the 'var_str' argument
+        if not isinstance(var_str, str):
+            raise TypeError(f'The var_str argument must be a string.')
 
-    elif var_str == "ta":
-        val_i1_range = val_j1_range = val_k1_range = range(1,
-                                                           num_row_1 + 1)  # Create ranges for 'i1', 'j1', and 'k1' values
-        val_i2_range = val_j2_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j2' values
-        val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'k2' values
+        # Check the allowed values for 'var_str'
+        if var_str not in ["t", "ta", "tb"]:
+            raise ValueError(f'Invalid value of var_str. It must be t, ta, or tb.')
 
-    elif var_str == "tb":
-        val_i1_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i1' and 'j1' values
-        val_i2_range = val_j2_range = val_k2_range = range(1,
-                                                           num_col_2 + 1)  # Create ranges for 'i2', 'j2', and 'k2' values
-        val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'k1' values
+        t_dict = {}  # Initialize an empty dictionary to store variable mappings
 
-    index = 1  # Initialize a counter for unique integer values
+        # Create ranges for 't' values
+        val_t_range = range(1, num_t + 1)
 
-    # Loop to generate t-variables and their mappings
-    for val_t in val_t_range:
-        for i1 in val_i1_range:
-            for i2 in val_i2_range:
-                for j1 in val_j1_range:
-                    for j2 in val_j2_range:
-                        for k1 in val_k1_range:
-                            for k2 in val_k2_range:
-                                key = f"{var_str}_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}"  # Construct the variable name
-                                t_dict[key] = shift + index  # Map the variable name to a unique integer value
-                                index += 1  # Increment the counter
+        # Create ranges based on the variable string
+        if var_str != "ta" and var_str != "tb":
+            val_i1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1' and 'k1' values
+            val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
+            val_j2_range = val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'j2' and 'k2' values
+
+        elif var_str == "ta":
+            val_i1_range = val_j1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for
+            # 'i1', 'j1', and 'k1' values
+            val_i2_range = val_j2_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j2' values
+            val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'k2' values
+
+        elif var_str == "tb":
+            val_i1_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i1' and 'j1' values
+            val_i2_range = val_j2_range = val_k2_range = range(1, num_col_2 + 1)  # Create ranges for
+            # 'i2', 'j2', and 'k2' values
+            val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'k1' values
+
+        index = 1  # Initialize a counter for unique integer values
+
+        # Loop to generate t-variables and their mappings
+        for val_t in val_t_range:
+            for i1 in val_i1_range:
+                for i2 in val_i2_range:
+                    for j1 in val_j1_range:
+                        for j2 in val_j2_range:
+                            for k1 in val_k1_range:
+                                for k2 in val_k2_range:
+                                    key = f"{var_str}_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}"  # Construct the
+                                    # variable name
+                                    t_dict[key] = shift + index  # Map the variable name to a unique integer value
+                                    index += 1  # Increment the counter
+
+    except Exception as e:
+        # Handle any unexpected exceptions
+        raise RuntimeError(f"An error occurred while running 'create_t': {e}")
 
     return t_dict  # Return the dictionary of t-variables and their mappings
 
@@ -82,31 +107,55 @@ def create_s(num_t, num_row_1, num_col_1, num_col_2, shift, var_str):
            to values for other variables in the encoding.
     """
 
-    s_dict = {}  # Initialize an empty dictionary to store variable mappings
+    try:
+        # Input validation and value checks
+        # Check integer arguments and their minimum values
+        for arg_name, arg_value, min_value in zip(('num_t', 'num_row_1', 'num_col_1', 'num_col_2', 'shift'),
+                                                  (num_t, num_row_1, num_col_1, num_col_2, shift),
+                                                  (2, 1, 1, 1, 0)):
+            if not isinstance(arg_value, int):
+                raise TypeError(f'The {arg_name} argument must be an integer.')
 
-    # Create ranges for 't' and 'i1' values
-    val_t_range = range(1, num_t + 1)
-    val_i1_range = range(1, num_row_1 + 1)
+            if arg_value < min_value:
+                raise ValueError(f'Invalid value for {arg_name}. It must be greater than or equal to {min_value}.')
 
-    # Create ranges based on the variable string
-    if var_str != "sa" and var_str != "sb":
-        val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
-        val_j2_range = range(1, num_col_2 + 1)  # Create a range for 'j2' values
+        # Check the type of the 'var_str' argument
+        if not isinstance(var_str, str):
+            raise TypeError(f'The var_str argument must be a string.')
 
-    else:
-        val_i2_range = val_j2_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j2' values
-        val_j1_range = range(1, num_row_1 + 1)  # Create range for 'j1' values
+        # Check the allowed values for 'var_str'
+        if var_str not in ["s", "sa", "sb"]:
+            raise ValueError(f'Invalid value of var_str. It must be s, sa, or sb.')
 
-    index = 1  # Initialize a counter for unique integer values
+        s_dict = {}  # Initialize an empty dictionary to store variable mappings
 
-    # Loop to generate s-variables and their mappings
-    for val_t in val_t_range:
-        for i1 in val_i1_range:
-            for i2 in val_i2_range:
-                for j1 in val_j1_range:
-                    for j2 in val_j2_range:
-                        key = f"{var_str}_{val_t}_{i1}_{i2}_{j1}_{j2}"  # Construct the variable name
-                        s_dict[key] = shift + index  # Map the variable name to a unique integer value
-                        index += 1  # Increment the counter
+        # Create ranges for 't' and 'i1' values
+        val_t_range = range(1, num_t + 1)
+        val_i1_range = range(1, num_row_1 + 1)
+
+        # Create ranges based on the variable string
+        if var_str != "sa" and var_str != "sb":
+            val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
+            val_j2_range = range(1, num_col_2 + 1)  # Create a range for 'j2' values
+
+        else:
+            val_i2_range = val_j2_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j2' values
+            val_j1_range = range(1, num_row_1 + 1)  # Create range for 'j1' values
+
+        index = 1  # Initialize a counter for unique integer values
+
+        # Loop to generate s-variables and their mappings
+        for val_t in val_t_range:
+            for i1 in val_i1_range:
+                for i2 in val_i2_range:
+                    for j1 in val_j1_range:
+                        for j2 in val_j2_range:
+                            key = f"{var_str}_{val_t}_{i1}_{i2}_{j1}_{j2}"  # Construct the variable name
+                            s_dict[key] = shift + index  # Map the variable name to a unique integer value
+                            index += 1  # Increment the counter
+
+    except Exception as e:
+        # Handle any unexpected exceptions
+        raise RuntimeError(f"An error occurred while running create_s: {e}")
 
     return s_dict  # Return the dictionary of 's' variables and their mappings
