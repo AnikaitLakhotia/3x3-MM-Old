@@ -66,7 +66,7 @@ def at_most_two(var_list, y):
             clause_list.append([[-var_list[0], -var_list[1], -var_list[2]], [-var_list[0], -var_list[1], -var_list[3]],
                                 [-var_list[0], -var_list[2], -var_list[3]], [-var_list[1], -var_list[2], -var_list[3]]])
 
-        else:
+        elif num_var == 3:
             # Add clauses for at most two constraints
             clause_list.append([[-var_list[0], -var_list[1], -var_list[2]]])
 
