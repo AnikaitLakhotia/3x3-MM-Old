@@ -44,7 +44,7 @@ def verifier(sat_assignment, cumulative_dict, num_t, commutative):
         commutative (bool): Commutative encoding is used if True and non-commutative if False.
 
     Returns:
-        int: 1 if the condition is satisfied, 0 otherwise.
+        int: 1 if the conditions are satisfied, 0 otherwise.
     """
 
     result = reverse_map(sat_assignment, cumulative_dict)

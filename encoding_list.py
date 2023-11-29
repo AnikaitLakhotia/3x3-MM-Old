@@ -4,9 +4,9 @@ from odd import create_odd
 
 def create_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2):
     """
-    Create a list containing SAT encoding clauses based on the given dictionaries (in dict_list) and
-    a dictionary with all variables in the encoding along with their corresponding unique integer values.
-    (the values act as the variables in the CNF file)
+    Create a list containing SAT encoding clauses for the first version of Brent equations using a
+    dictionary with all named variables in the encoding along with their corresponding unique
+    integer values. (the values act as the variables in the CNF file)
 
     Args:
         cumulative_dict (dict): A dict containing all the variables in the encoding(as keys) and their

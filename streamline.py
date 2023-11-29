@@ -3,12 +3,12 @@ def streamline(streamline_var_list, cumulative_dict):
     Create a string representation of the set of clauses to be added to the cnf file for streamlining.
 
     Args:
-        streamline_var_list (list): List of variable names with symbols(str, format: -a_1_2_1, b_2_1_1, etc.) to streamline.
+        streamline_var_list (list): List of variable names with symbols (str, format: -a_1_2_1, b_2_1_1, etc.) to streamline.
         cumulative_dict (dict): Dictionary containing all the variables in the encoding (as keys) and their
                                 corresponding unique integer values.
 
     Returns:
-        str: A string representing of the set of clauses to be added to the cnf file for streamlining.
+        str: A string representing the set of clauses to be added to the cnf file for streamlining.
     """
 
     streamline_clause_list = []  # Initialize an empty string to store the clause representation

@@ -40,6 +40,7 @@ def at_most_one(var_list, y):
         clause_list.append([-var_list[0], -var_list[1]])
     return clause_list, num_aux_var
 
+
 def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col_1, num_two_terms):
     """
     Generate a list of streamlining variables based on streamlining 3.

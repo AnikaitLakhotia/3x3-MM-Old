@@ -37,6 +37,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         dict: A dict containing all the variables in the encoding(as keys) and their
               corresponding unique integer values.
     """
+
     shift = 0  # Initialize the shift value for variable indices
     dict_t = create_t(num_t, num_row_1, num_col_1, num_col_2, shift, "t")
     shift = shift + len(dict_t)

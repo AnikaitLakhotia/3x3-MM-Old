@@ -29,6 +29,8 @@ def create_var(num_t, num_row, num_col, shift, var_str):
     val_2_range = range(1, num_col + 1)  # Create a range for the second index
 
     i = 1  # Initialize a counter for unique integer values
+
+    # Generate variables and map them to unique integer values
     for t in val_t_range:
         for val_1 in val_1_range:
             for val_2 in val_2_range:

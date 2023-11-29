@@ -53,7 +53,9 @@ def at_most_two(var_list, y):
 
 def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2):
     """
-    Generate a list of clauses for the second version of the encoding of Brent equations.
+    Generate a list of SAT encoding clauses for the second version of Brent equations using a
+    dictionary with all named variables in the encoding along with their corresponding unique
+    integer values. (the values act as the variables in the CNF file).
 
     Args:
         cumulative_dict (dict): A dict containing all the variables in the encoding(as keys) and their
@@ -64,7 +66,7 @@ def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_co
         num_col_2 (int): Number of columns in the second matrix.
 
     Returns:
-        tuple: A tuple containing a list of clauses and the number of auxiliary variables added.
+        tuple: A tuple containing a list of clauses (each clause as a list) and the number of auxiliary variables added.
     """
 
     # Auxiliary variables for the cases in which i2 != j1 or k1 != i1 or k2 != j2.
