@@ -28,31 +28,31 @@ def create_commutative_encoding_list(cumulative_dict, num_t, num_row_1, num_col_
             if not isinstance(arg_value, int):
                 raise TypeError(f'The {arg_name} argument must be an integer.')
 
-            if arg_value < min_value:
+            elif arg_value < min_value:
                 raise ValueError(f'Invalid value for {arg_name}. It must be greater than or equal to {min_value}.')
 
             # Check the type of the 'cumulative_dict' argument
-            if not isinstance(cumulative_dict, dict):
+            elif not isinstance(cumulative_dict, dict):
                 raise TypeError(f'The var_str argument must be a string.')
 
             # Check length of 'cumulative_dict' argument
-            if len(cumulative_dict) < 1:
+            elif len(cumulative_dict) < 1:
                 raise ValueError(f'Invalid length for cumulative_dict argument. It must be greater than or equal to 1.')
 
             # Check the allowed values for keys and values in 'cumulative_dict' argument
             for key, value in cumulative_dict.items():
+                var_str = key[:2]
                 if not isinstance(key, str):
                     raise TypeError(f'All keys in cumulative dict argument must be strings, found: {key}.')
-                if not isinstance(value, int):
+                elif not isinstance(value, int):
                     raise TypeError(f'All keys in cumulative dict argument must be integers, found: {value}.')
-                var_str = key[:2]
-                if var_str not in ["aa", "bb", "ab", "ba", "g_", "s_", "sa", "sb", "t_", "ta", "tb"]:
+                elif var_str not in ["aa", "bb", "ab", "ba", "g_", "s_", "sa", "sb", "t_", "ta", "tb"]:
                     raise ValueError(f'Invalid key({key}) in cumulative_dict argument. It must start with'
                                      f'be aa, bb, ab, ba, s, sa, sb, t, ta, or tb.')
-                if value < 1:
+                elif value < 1:
                     raise ValueError(f'Invalid value({value}) in cumulative_dict argument. '
                                      f'It must be greater than or equal to 1')
-                if len(cumulative_dict.values()) != len(set(cumulative_dict.values())):
+                elif len(cumulative_dict.values()) != len(set(cumulative_dict.values())):
                     raise ValueError("Duplicate values found in the cumulative_dict argument.")
 
         # Create an empty list to store the generated clauses

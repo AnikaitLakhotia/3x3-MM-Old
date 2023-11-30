@@ -29,7 +29,7 @@ def create_t(num_t, num_row_1, num_col_1, num_col_2, shift, var_str):
             if not isinstance(arg_value, int):
                 raise TypeError(f'The {arg_name} argument must be an integer.')
 
-            if arg_value < min_value:
+            elif arg_value < min_value:
                 raise ValueError(f'Invalid value for {arg_name}. It must be greater than or equal to {min_value}.')
 
         # Check the type of the 'var_str' argument
@@ -37,7 +37,7 @@ def create_t(num_t, num_row_1, num_col_1, num_col_2, shift, var_str):
             raise TypeError(f'The var_str argument must be a string.')
 
         # Check the allowed values for 'var_str'
-        if var_str not in ["t", "ta", "tb"]:
+        elif var_str not in ["t", "ta", "tb"]:
             raise ValueError(f'Invalid value of var_str. It must be t, ta, or tb.')
 
         t_dict = {}  # Initialize an empty dictionary to store variable mappings
@@ -116,7 +116,7 @@ def create_s(num_t, num_row_1, num_col_1, num_col_2, shift, var_str):
             if not isinstance(arg_value, int):
                 raise TypeError(f'The {arg_name} argument must be an integer.')
 
-            if arg_value < min_value:
+            elif arg_value < min_value:
                 raise ValueError(f'Invalid value for {arg_name}. It must be greater than or equal to {min_value}.')
 
         # Check the type of the 'var_str' argument
@@ -124,7 +124,7 @@ def create_s(num_t, num_row_1, num_col_1, num_col_2, shift, var_str):
             raise TypeError(f'The var_str argument must be a string.')
 
         # Check the allowed values for 'var_str'
-        if var_str not in ["s", "sa", "sb"]:
+        elif var_str not in ["s", "sa", "sb"]:
             raise ValueError(f'Invalid value of var_str. It must be s, sa, or sb.')
 
         s_dict = {}  # Initialize an empty dictionary to store variable mappings

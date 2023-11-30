@@ -22,7 +22,7 @@ def create_aux_list(t, num_t, shift):
             if not isinstance(arg_value, int):
                 raise TypeError(f'The {arg_name} argument must be an integer.')
 
-            if arg_value < min_value:
+            elif arg_value < min_value:
                 raise ValueError(f'Invalid value for {arg_name}. It must be greater than {min_value}.')
 
         # Initialize count based on the shift

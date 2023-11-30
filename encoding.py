@@ -46,7 +46,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
             if not isinstance(arg_value, int):
                 raise TypeError(f'The {arg_name} argument must be an integer.')
 
-            if arg_value < min_value:
+            elif arg_value < min_value:
                 raise ValueError(f'Invalid value for {arg_name}. It must be greater than or equal to {min_value}.')
 
         # Input validation for boolean arguments
@@ -64,14 +64,14 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
                 raise TypeError(f'The {arg_name} argument must be an int.')
 
             # Value checks for streamlining_parameter_1
-            if (streamlining_3 and arg_name == 'streamlining_parameter_1' and
+            elif (streamlining_3 and arg_name == 'streamlining_parameter_1' and
                     (arg_value > (num_t * num_row_1 * num_col_2 - 1) or arg_value < -num_t * num_row_1 * num_col_2)):
                 raise ValueError(f'Invalid value for {arg_name}. It must be greater than or equal to '
                                  f'{-num_t * num_row_1 * num_col_2} and less than or equal to '
                                  f'{num_t * num_row_1 * num_col_2 - 1}')
 
             # Value checks for streamlining_parameter_3
-            if arg_name == 'streamlining_parameter_3' and streamlining_3 and arg_value + num_t != num_row_1 * num_col_1 * num_col_2:
+            elif arg_name == 'streamlining_parameter_3' and streamlining_3 and arg_value + num_t != num_row_1 * num_col_1 * num_col_2:
                 raise ValueError(f'Invalid value for {arg_name}. {arg_name} + {num_t} must be equal to '
                                  f'{num_row_1 * num_col_1 * num_col_2}')
 
@@ -80,7 +80,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
             raise TypeError('The streamlining_parameter_2 argument must be a float.')
 
         # Value check for streamlining_parameter_2
-        if streamlining_2 and (streamlining_parameter_2 < 0 or streamlining_parameter_2 > 1):
+        elif streamlining_2 and (streamlining_parameter_2 < 0 or streamlining_parameter_2 > 1):
             raise ValueError('The streamlining_parameter_2 argument must be less than or equal to 1 '
                              'and greater than or equal to 0.')
 
