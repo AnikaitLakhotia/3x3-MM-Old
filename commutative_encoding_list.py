@@ -64,9 +64,9 @@ def create_commutative_encoding_list(cumulative_dict, num_t, num_row_1, num_col_
         clause_list = []
 
         # Generate auxiliary variables based on the dimensions of matrices
-        aux_list = create_aux_list(((num_row_1**2) * (num_col_2**2) * (num_col_1**2)) +
-                                   ((num_row_1**3) * (num_col_1**2) * num_col_2) +
-                                   (num_row_1 * (num_col_1**2) * (num_col_2**3)), num_t, len(cumulative_dict))
+        aux_list = create_aux_list(((num_row_1 ** 2) * (num_col_2 ** 2) * (num_col_1 ** 2)) +
+                                   ((num_row_1 ** 3) * (num_col_1 ** 2) * num_col_2) +
+                                   (num_row_1 * (num_col_1 ** 2) * (num_col_2 ** 3)), num_t, len(cumulative_dict))
         move = 0  # Variable to track the move index for auxiliary variables
 
         # Iterate over the keys in cumulative_dict
@@ -153,39 +153,131 @@ def create_commutative_encoding_list(cumulative_dict, num_t, num_row_1, num_col_
                 # Check if the key starts with "s_"
                 if key.startswith("s_"):
                     # Generate clauses for the commutative encoding constraints
-                    clause_list.append([-cumulative_dict[key], cumulative_dict[f'ab_{val_t}_{x}_{y}']])
-                    clause_list.append([-cumulative_dict[key], cumulative_dict[f'ba_{val_t}_{u}_{v}']])
-                    clause_list.append([-cumulative_dict[key], cumulative_dict[f'aa_{val_t}_{u}_{v}']])
-                    clause_list.append([-cumulative_dict[key], cumulative_dict[f'bb_{val_t}_{x}_{y}']])
-                    clause_list.append([-cumulative_dict[key]])
+                    clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                        -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                        -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                        -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                        -cumulative_dict[key]])
+                    clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                        -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                        cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                        cumulative_dict[key]])
+                    clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                        -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                        cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                        cumulative_dict[key]])
+                    clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                        -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                        -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                        cumulative_dict[key]])
+                    clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                        cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                        -cumulative_dict[key]])
+                    clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                        cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                        -cumulative_dict[key]])
+                    clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                        -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                        -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                        cumulative_dict[key]])
+                    clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                        cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                        -cumulative_dict[key]])
+                    clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                        cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                        -cumulative_dict[key]])
 
                 # Check if the key starts with "sa_"
                 elif key.startswith("sa_"):
                     # Generate clauses for the commutative encoding constraints
                     if u != x or v != y:
-                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'aa_{val_t}_{x}_{y}']])
-                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'ba_{val_t}_{u}_{v}']])
-                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'aa_{val_t}_{u}_{v}']])
-                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'ba_{val_t}_{x}_{y}']])
-                        clause_list.append([-cumulative_dict[key]])
-
+                        clause_list.append([-cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([-cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([-cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                            cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                            cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[key]])
                     else:
-                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'aa_{val_t}_{u}_{v}']])
-                        clause_list.append([-cumulative_dict[key]])
+                        clause_list.append([-cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[key]])
 
                 # Check if the key starts with "sb_"
                 elif key.startswith("sb_"):
                     # Generate clauses for the commutative encoding constraints
                     if u != x or v != y:
-                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'ab_{val_t}_{x}_{y}']])
-                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'bb_{val_t}_{u}_{v}']])
-                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'ab_{val_t}_{u}_{v}']])
-                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'bb_{val_t}_{x}_{y}']])
-                        clause_list.append([-cumulative_dict[key]])
-
+                        clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[key]])
                     else:
-                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'ab_{val_t}_{u}_{v}']])
-                        clause_list.append([-cumulative_dict[key]])
+                        clause_list.append([-cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[key]])
 
         # Iterate over the keys in cumulative_dict again
         for key in cumulative_dict:
@@ -215,6 +307,7 @@ def create_commutative_encoding_list(cumulative_dict, num_t, num_row_1, num_col_
                     clause_list.append([-cumulative_dict[key], cumulative_dict[f'g_{val_t}_{i}_{j}']])
                     clause_list.append([cumulative_dict[key], -cumulative_dict[f'sb_{val_t}_{u}_{v}_{x}_{y}'],
                                         -cumulative_dict[f'g_{val_t}_{i}_{j}']])
+
     except Exception as e:
         # Handle any unexpected exceptions
         raise RuntimeError(f'An error occurred wile running create_commutative_encoding_list: {e}')
