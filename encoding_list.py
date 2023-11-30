@@ -49,7 +49,7 @@ def create_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2
                 raise TypeError(f'All keys in cumulative dict argument must be integers, found: {value}.')
             elif var_str not in ["a", "b", "g", "s", "t"]:
                 raise ValueError(f'Invalid key({key}) in cumulative_dict argument. It must start with'
-                                 f'be a, b, g, s or t.')
+                                 f' a, b, g, s or t.')
             elif value < 1:
                 raise ValueError(f'Invalid value({value}) in cumulative_dict argument. '
                                  f'It must be greater than or equal to 1')

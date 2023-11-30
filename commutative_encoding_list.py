@@ -48,7 +48,7 @@ def create_commutative_encoding_list(cumulative_dict, num_t, num_row_1, num_col_
                     raise TypeError(f'All keys in cumulative dict argument must be integers, found: {value}.')
                 elif var_str not in ["aa", "bb", "ab", "ba", "g_", "s_", "sa", "sb", "t_", "ta", "tb"]:
                     raise ValueError(f'Invalid key({key}) in cumulative_dict argument. It must start with'
-                                     f'be aa, bb, ab, ba, s, sa, sb, t, ta, or tb.')
+                                     f' aa, bb, ab, ba, s, sa, sb, t, ta, or tb.')
                 elif value < 1:
                     raise ValueError(f'Invalid value({value}) in cumulative_dict argument. '
                                      f'It must be greater than or equal to 1')
