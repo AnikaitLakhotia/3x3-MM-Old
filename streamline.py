@@ -39,7 +39,7 @@ def streamline(streamline_var_list, cumulative_dict):
 
         # Check the type of the 'cumulative_dict' argument
         if not isinstance(cumulative_dict, dict):
-            raise TypeError(f'The var_str argument must be a string.')
+            raise TypeError(f'The cumulative_dict argument must be a string.')
 
         # Check length of 'cumulative_dict' argument
         elif len(cumulative_dict) < 1:

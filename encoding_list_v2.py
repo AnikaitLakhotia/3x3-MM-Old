@@ -109,7 +109,7 @@ def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_co
 
         # Check the type of the 'cumulative_dict' argument
         if not isinstance(cumulative_dict, dict):
-            raise TypeError(f'The var_str argument must be a string.')
+            raise TypeError(f'The cumulative_dict argument must be a string.')
 
         # Check length of 'cumulative_dict' argument
         if len(cumulative_dict) < 1:

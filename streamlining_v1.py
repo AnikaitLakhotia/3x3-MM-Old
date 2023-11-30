@@ -50,9 +50,11 @@ def get_scheme():
         with open(file_path, 'r') as file:
             file_contents = file.read()
 
-        return file_contents
-    except SchemeError as e:
-        return str(e)
+    except Exception as e:
+        # Handle any unexpected exceptions
+        raise RuntimeError(f'An error occurred while running get_scheme: {e}')
+
+    return file_contents
 
 
 def generate_streamlining_v1():
