@@ -112,7 +112,7 @@ def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict):
 
             # Check the type of the 'cumulative_dict' argument
             elif not isinstance(cumulative_dict, dict):
-                raise TypeError(f'The cumulative_dict argument must be a string.')
+                raise TypeError(f'The cumulative_dict argument must be a dict.')
 
         # Check length of 'cumulative_dict' argument
         if len(cumulative_dict) < 1:

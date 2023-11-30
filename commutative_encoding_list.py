@@ -33,7 +33,7 @@ def create_commutative_encoding_list(cumulative_dict, num_t, num_row_1, num_col_
 
         # Check the type of the 'cumulative_dict' argument
         if not isinstance(cumulative_dict, dict):
-            raise TypeError(f'The cumulative_dict argument must be a string.')
+            raise TypeError(f'The cumulative_dict argument must be a dict.')
 
         # Check length of 'cumulative_dict' argument
         elif len(cumulative_dict) < 1:

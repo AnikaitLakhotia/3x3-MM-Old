@@ -3,7 +3,8 @@ def streamline(streamline_var_list, cumulative_dict):
     Create a string representation of the set of clauses to be added to the cnf file for streamlining.
 
     Args:
-        streamline_var_list (list): List of variable names with symbols (str, format: -a_1_2_1, b_2_1_1, etc.) to streamline.
+        streamline_var_list (list): List of variable names with symbols (str, format: -a_1_2_1, b_2_1_1, etc.)
+        to streamline.
         cumulative_dict (dict): Dictionary containing all the variables in the encoding (as keys) and their
                                 corresponding unique integer values.
 
@@ -39,7 +40,7 @@ def streamline(streamline_var_list, cumulative_dict):
 
         # Check the type of the 'cumulative_dict' argument
         if not isinstance(cumulative_dict, dict):
-            raise TypeError(f'The cumulative_dict argument must be a string.')
+            raise TypeError(f'The cumulative_dict argument must be a dict.')
 
         # Check length of 'cumulative_dict' argument
         elif len(cumulative_dict) < 1:

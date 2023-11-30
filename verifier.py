@@ -91,19 +91,19 @@ def verifier(sat_assignment, cumulative_dict, num_t, commutative):
             raise TypeError(f'The cumulative_dict argument must be a dict.')
 
         # Check the type of the 'num_t' argument
-        if not isinstance(num_t, int):
+        elif not isinstance(num_t, int):
             raise TypeError(f'The num_t argument must be an int.')
 
         # Check the type of the 'commutative' argument
-        if not isinstance(commutative, bool):
+        elif not isinstance(commutative, bool):
             raise TypeError(f'The commutative argument must be a bool.')
 
         # Check the type of the 'sat_assignment' argument
-        if not isinstance(sat_assignment, str):
+        elif not isinstance(sat_assignment, str):
             raise TypeError(f'The sat_assignment argument must be a string.')
 
         # Check value of the 'num_t' argument
-        if num_t < 2:
+        elif num_t < 2:
             raise ValueError(f'Invalid value for num_t argument. It must be greater than or equal to 2.')
 
         # Check length of 'cumulative_dict' argument

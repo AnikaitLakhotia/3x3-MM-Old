@@ -33,7 +33,7 @@ def create_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2
 
         # Check the type of the 'cumulative_dict' argument
         if not isinstance(cumulative_dict, dict):
-            raise TypeError(f'The cumulative_dict argument must be a string.')
+            raise TypeError(f'The cumulative_dict argument must be a dict.')
 
         # Check length of 'cumulative_dict' argument
         elif len(cumulative_dict) < 1:
@@ -114,9 +114,11 @@ def create_encoding_list(cumulative_dict, num_t, num_row_1, num_col_1, num_col_2
             # Add clauses for 't' variables
             elif key.startswith("t"):
                 val_t, val_1, val_2, val_3, val_4, val_5, val_6 = key.split("_")[1:]
-                clause_list.append([-cumulative_dict[key], cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}']])
+                clause_list.append([-cumulative_dict[key],
+                                    cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}']])
                 clause_list.append([-cumulative_dict[key], cumulative_dict[f'g_{val_t}_{val_5}_{val_6}']])
-                clause_list.append([cumulative_dict[key], -cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}'],
+                clause_list.append([cumulative_dict[key],
+                                    -cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}'],
                                     -cumulative_dict[f'g_{val_t}_{val_5}_{val_6}']])
 
     except Exception as e:

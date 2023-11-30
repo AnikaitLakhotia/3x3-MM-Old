@@ -64,14 +64,15 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
                 raise TypeError(f'The {arg_name} argument must be an int.')
 
             # Value checks for streamlining_parameter_1
-            elif (streamlining_3 and arg_name == 'streamlining_parameter_1' and
+            elif (streamlining_1 and arg_name == 'streamlining_parameter_1' and
                     (arg_value > (num_t * num_row_1 * num_col_2 - 1) or arg_value < -num_t * num_row_1 * num_col_2)):
                 raise ValueError(f'Invalid value for {arg_name}. It must be greater than or equal to '
                                  f'{-num_t * num_row_1 * num_col_2} and less than or equal to '
                                  f'{num_t * num_row_1 * num_col_2 - 1}')
 
             # Value checks for streamlining_parameter_3
-            elif arg_name == 'streamlining_parameter_3' and streamlining_3 and arg_value + num_t != num_row_1 * num_col_1 * num_col_2:
+            elif (arg_name == 'streamlining_parameter_3' and streamlining_3 and arg_value + num_t != num_row_1
+                  * num_col_1 * num_col_2):
                 raise ValueError(f'Invalid value for {arg_name}. {arg_name} + {num_t} must be equal to '
                                  f'{num_row_1 * num_col_1 * num_col_2}')
 

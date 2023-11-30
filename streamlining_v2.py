@@ -31,7 +31,7 @@ def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob):
                 raise ValueError(f'Invalid value for {arg_name}. It must be greater than or equal to {min_value}.')
 
             # Input validation for zero_prob argument
-            if not isinstance(zero_prob, float):
+            elif not isinstance(zero_prob, float):
                 raise TypeError('The zero_prob argument must be a float.')
 
             # Value check for zero_prob argument
