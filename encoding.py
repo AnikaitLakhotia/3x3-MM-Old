@@ -183,8 +183,9 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
             streamlining_var_list = generate_streamlining_v2(num_t, num_row_1, num_col_1,
                                                              num_col_2, streamlining_parameter_2)
         elif streamlining_3:
-            streamlining_clauses, num_aux_vars = generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1,
-                                                                          num_col_1, streamlining_parameter_3)
+            streamlining_clauses, num_aux_vars = generate_streamlining_v3(cumulative_dict, num_var, num_t,
+                                                                          num_row_1, num_col_1, num_col_2,
+                                                                          streamlining_parameter_3)
             num_var += num_aux_vars
             cumulative_list.extend(streamlining_clauses)
             streamlining_var_list = []

@@ -54,7 +54,7 @@ def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob):
                         for j2 in val_j2_range:
                             for k1 in val_k1_range:
                                 for k2 in val_k2_range:
-                                    if i2 != j1 and j2 != k1 and k2 != i1:
+                                    if i2 != j1 and j2 != k2 and k1 != i1:
                                         streamlining_list.append(f'-t_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')
 
         random.shuffle(streamlining_list)  # Shuffle the list of streamlining variables

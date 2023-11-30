@@ -15,7 +15,7 @@ def at_most_one(var_list, y):
     """
 
     num_var = len(var_list)
-    num_aux_var = 1  # Initialize the number of auxiliary variables to 1y
+    num_aux_var = 1  # Initialize the number of auxiliary variables to y
     clause_list = []
 
     if num_var > 2:
@@ -41,7 +41,7 @@ def at_most_one(var_list, y):
     return clause_list, num_aux_var
 
 
-def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col_1, num_two_terms):
+def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col_1, num_col_2, num_two_terms):
     """
     Generate a list of streamlining variables based on streamlining 3.
 
@@ -52,6 +52,7 @@ def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col
         num_t (int): Number of 't' values.
         num_row_1 (int): Number of rows in the first matrix.
         num_col_1 (int): Number of columns in the first matrix.
+        num_col_2 (int): Number of columns in the second matrix.
         num_two_terms (int): Number of two-term summands to select.
 
     Returns:
@@ -63,8 +64,9 @@ def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col
     """
 
     val_t_range = range(1, num_t + 1)  # Create a range for 't' values
-    val_i1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1' and 'k1' values
-    val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
+    val_i1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1' values
+    val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'j1' values
+    val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'k2' values
 
     num_aux_vars = 1
     summand_list = []
@@ -75,8 +77,8 @@ def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col
         summand = []
         for i1 in val_i1_range:
             for j1 in val_j1_range:
-                for k1 in val_k1_range:
-                    summand.append(cumulative_dict[f't_{val_t}_{i1}_{j1}_{j1}_{k1}_{k1}_{i1}'])
+                for k2 in val_k2_range:
+                    summand.append(cumulative_dict[f't_{val_t}_{i1}_{j1}_{j1}_{k2}_{i1}_{k2}'])
         summand_list.append(summand)
 
     clause_list = []
