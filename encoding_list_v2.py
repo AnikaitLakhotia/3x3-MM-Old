@@ -107,6 +107,10 @@ def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_co
             elif arg_value < min_value:
                 raise ValueError(f'Invalid value for {arg_name}. It must be greater than or equal to {min_value}.')
 
+        # Check the type of the 'cumulative_dict' argument
+        if not isinstance(cumulative_dict, dict):
+            raise TypeError(f'The var_str argument must be a string.')
+
         # Check length of 'cumulative_dict' argument
         if len(cumulative_dict) < 1:
             raise ValueError(f'Invalid length for cumulative_dict argument. It must be greater than or equal to 1.')
@@ -114,18 +118,23 @@ def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_co
         # Check the allowed values for keys and values in 'cumulative_dict' argument
         for key, value in cumulative_dict.items():
             var_str = key[0]
+
             if not isinstance(key, str):
-                raise TypeError(f'All keys in cumulative dict argument must be strings, found: {key}.')
+                raise TypeError(f'All keys in cumulative_dict argument must be strings, found: {key}.')
+
             elif not isinstance(value, int):
-                raise TypeError(f'All keys in cumulative dict argument must be integers, found: {value}.')
+                raise TypeError(f'All keys in cumulative_dict argument must be integers, found: {value}.')
+
             elif var_str not in ["a", "b", "g", "s", "t"]:
                 raise ValueError(f'Invalid key({key}) in cumulative_dict argument. It must start with'
                                  f' a, b, g, s or t.')
+
             elif value < 1:
                 raise ValueError(f'Invalid value({value}) in cumulative_dict argument. '
                                  f'It must be greater than or equal to 1')
-            elif len(cumulative_dict.values()) != len(set(cumulative_dict.values())):
-                raise ValueError("Duplicate values found in the cumulative_dict argument.")
+
+        if len(cumulative_dict.values()) != len(set(cumulative_dict.values())):
+            raise ValueError("Duplicate values found in the cumulative_dict argument.")
 
         # Auxiliary variables for the cases in which i2 != j1 or k1 != i1 or k2 != j2.
         num_aux_var = 0
