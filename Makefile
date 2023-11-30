@@ -31,8 +31,10 @@ sp2 ?= 0.5
 s3 ?= False
 # streamlining 3 parameter.
 sp3 ?= 4
+# SAT solver
+solver ?= cadical
 
 run:
 	@echo "Running the provided Bash script..."
-	@./3x3.sh $(op) $(m) $(n) $(p) $(c) $(lo) $(s0) $(s1) $(sp1) $(s2) $(sp2) $(s3) $(sp3)
+	@./3x3.sh $(op) $(m) $(n) $(p) $(c) $(lo) $(s0) $(s1) $(sp1) $(s2) $(sp2) $(s3) $(sp3) $(solver)
 	@echo "Script execution complete."

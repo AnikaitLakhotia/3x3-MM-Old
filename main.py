@@ -6,9 +6,9 @@ from verifier_v2 import verifier_v2
 if __name__ == '__main__':
     try:
         # Input validation and value checks
-        if len(sys.argv) != 16:
-            raise ValueError("Incorrect number or format of arguments. Usage: make op= m= "
-                             "n= p= c= lo= s0= s1= sp1= s2= sp2= s3= sp3=")
+        if len(sys.argv) != 17:
+            raise ValueError("Incorrect number of arguments. Usage: make op= m= "
+                             "n= p= c= lo= s0= s1= sp1= s2= sp2= s3= sp3= solver=")
 
         # Indices of command line arguments that should be integers
         int_arg_indices = [1, 2, 3, 4, 5, 10, 14]
@@ -41,6 +41,7 @@ if __name__ == '__main__':
         operation, number_of_operations, m, n, p, sp1, sp3 = map(int, (sys.argv[1], sys.argv[2], sys.argv[3],
                                                                        sys.argv[4], sys.argv[5], sys.argv[10],
                                                                        sys.argv[14]))
+
         c = sys.argv[6].lower() == 'true'
         lo = sys.argv[7].lower() == 'true'
         s0 = sys.argv[8].lower() == 'true'
@@ -48,7 +49,8 @@ if __name__ == '__main__':
         s2 = sys.argv[11].lower() == 'true'
         s3 = sys.argv[13].lower() == 'true'
         sp2 = float(sys.argv[12])
-        file_path = sys.argv[15]
+        solver = sys.argv[15]
+        file_path = sys.argv[16]
 
         # Value check for operation
         if operation != 1 and operation != 0:
@@ -68,11 +70,14 @@ if __name__ == '__main__':
         else:
             # If solver outputs SAT, insert the SAT assignment
             assignment_output_string = f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" \
-                                       f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}/assignment_{number_of_operations}_" \
-                                       f"{m}_{n}_{p}_{c}_{lo}_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}.txt"
+                                       f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}/"\
+                                       f"assignment_{number_of_operations}_" \
+                                       f"{m}_{n}_{p}_{c}_{lo}_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}.txt"
 
             with open(assignment_output_string, 'r') as file:
                 assignment_string = file.read().rstrip('\n')
+                if solver == "maplesat":
+                    assignment_string = assignment_string[3:]
 
             # Removes trailing 0
             assignment_string = assignment_string[:-1]
@@ -91,13 +96,15 @@ if __name__ == '__main__':
                 raise ValueError("No output by verifier 2")
 
             with open(f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}/verifier_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}.txt", "w") as file:
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}/"
+                      f"verifier_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}.txt", "w") as file:
                 file.write(str(verifier_output))
 
             with open(f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}/verifier_v2_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}.txt", "w") as file:
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}/"
+                      f"verifier_v2_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}.txt", "w") as file:
                 file.write(str(verifier_v2_output))
 
     except Exception as e:
