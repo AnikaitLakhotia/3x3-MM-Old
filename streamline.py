@@ -16,8 +16,8 @@ def streamline(streamline_var_list, cumulative_dict):
         if not isinstance(streamline_var_list, list):
             raise TypeError(f'The streamline_var_list argument must be a list')
 
-        elif len(streamline_var_list) < 1:
-            raise ValueError(f'Invalid length for streamline_var_list argument. It must be greater than or equal to 1.')
+        elif len(streamline_var_list) < 0:
+            raise ValueError(f'Invalid length for streamline_var_list argument. It must be greater than or equal to 0.')
 
         elif len(streamline_var_list) != len(set(streamline_var_list)):
             raise ValueError(f'Duplicate values found in the streamline_var_list argument.')
@@ -82,6 +82,6 @@ def streamline(streamline_var_list, cumulative_dict):
 
     except Exception as e:
         # Handle any unexpected exceptions
-        raise RuntimeError(f'An error occurred while running create_encoding_list: {e}')
+        raise RuntimeError(f'An error occurred while running streamline: {e}')
 
     return streamline_clause_string  # Return the string representation of the clauses

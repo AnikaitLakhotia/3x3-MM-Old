@@ -58,6 +58,6 @@ def create_odd(list_var, list_aux):
 
     except Exception as e:
         # Handle any unexpected exceptions
-        raise RuntimeError(f'An error occurred while running create_encoding_list: {e}')
+        raise RuntimeError(f'An error occurred while running create_odd: {e}')
 
     return clause_list  # Return the list of clauses enforcing the 'odd' constraint

@@ -74,7 +74,7 @@ def generate_lex_encoding(vector_1, vector_2, num_var):
 
     except Exception as e:
         # Handle any unexpected exceptions
-        raise RuntimeError(f'An error occurred while running create_encoding_list: {e}')
+        raise RuntimeError(f'An error occurred while running generate_lex_encoding: {e}')
 
     return encoding_string, num_aux_var, num_clauses
 
@@ -168,6 +168,6 @@ def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict):
 
     except Exception as e:
         # Handle any unexpected exceptions
-        raise RuntimeError(f'An error occurred while running create_encoding_list: {e}')
+        raise RuntimeError(f'An error occurred while running generate_var_list: {e}')
 
     return vectors_col_wise, vectors_row_wise

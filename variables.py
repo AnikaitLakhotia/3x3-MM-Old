@@ -22,20 +22,44 @@ def create_var(num_t, num_row, num_col, shift, var_str):
            to values for other variables in the encoding.
     """
 
-    var_dict = {}  # Initialize an empty dictionary to store variable mappings
+    try:
+        # Input validation and value checks
+        # Check integer arguments and their minimum values
+        for arg_name, arg_value, min_value in zip(('num_t', 'num_row', 'num_col', 'shift'),
+                                                  (num_t, num_row, num_col, shift),
+                                                  (2, 1, 1, 0)):
+            if not isinstance(arg_value, int):
+                raise TypeError(f'The {arg_name} argument must be an integer.')
 
-    val_t_range = range(1, num_t + 1)  # Create a range for 't' values
-    val_1_range = range(1, num_row + 1)  # Create a range for the first index
-    val_2_range = range(1, num_col + 1)  # Create a range for the second index
+            elif arg_value < min_value:
+                raise ValueError(f'Invalid value for {arg_name}. It must be greater than or equal to {min_value}.')
 
-    i = 1  # Initialize a counter for unique integer values
+        # Check the type of the 'var_str' argument
+        if not isinstance(var_str, str):
+            raise TypeError(f'The var_str argument must be a string.')
 
-    # Generate variables and map them to unique integer values
-    for t in val_t_range:
-        for val_1 in val_1_range:
-            for val_2 in val_2_range:
-                key = f"{var_str}_{t}_{val_1}_{val_2}"  # Construct the variable name
-                var_dict[key] = shift + i  # Map the variable name to a unique integer value
-                i += 1
+        # Check the allowed values for 'var_str'
+        elif var_str not in ["a", "aa", "ab", "b", "bb", "ba", "g"]:
+            raise ValueError(f'Invalid value of var_str. It must be a, aa, ab, b, bb, ba, g.')
+
+        var_dict = {}  # Initialize an empty dictionary to store variable mappings
+
+        val_t_range = range(1, num_t + 1)  # Create a range for 't' values
+        val_1_range = range(1, num_row + 1)  # Create a range for the first index
+        val_2_range = range(1, num_col + 1)  # Create a range for the second index
+
+        i = 1  # Initialize a counter for unique integer values
+
+        # Generate variables and map them to unique integer values
+        for t in val_t_range:
+            for val_1 in val_1_range:
+                for val_2 in val_2_range:
+                    key = f"{var_str}_{t}_{val_1}_{val_2}"  # Construct the variable name
+                    var_dict[key] = shift + i  # Map the variable name to a unique integer value
+                    i += 1
+
+    except Exception as e:
+        # Handle any unexpected exceptions
+        raise RuntimeError(f"An error occurred while running create_s: {e}")
 
     return var_dict  # Return the dictionary of variable mappings
