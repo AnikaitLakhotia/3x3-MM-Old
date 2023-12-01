@@ -29,14 +29,22 @@ def streamline(streamline_var_list, cumulative_dict):
                 raise TypeError(f'All elements in streamline_var_list argument must be strings, found: {element}.')
 
         for element in streamline_var_list:
-            var_str = element[:2]
+            var_str = element[:3]
 
             if not isinstance(element, str):
                 raise TypeError(f'All elements in streamline_var_list argument must be strings, found: {element}.')
 
-            elif var_str not in ["a_", "b_", "aa", "bb", "ab", "ba", "g_", "s_", "sa", "sb", "t_", "ta", "tb"]:
-                raise ValueError(f'Invalid key({element}) in cumulative_dict argument. It must start with'
-                                 f' a_, b_, aa, bb, ab, ba, g_, sa, sb, s_, t_, ta or tb.')
+            elif not var_str.startswith("-") and var_str[:2] not in ["a_", "b_", "aa", "bb", "ab", "ba", "g_",
+                                                                     "s_", "sa", "sb", "t_", "ta", "tb"]:
+                raise ValueError(f'Invalid key({element}) in streamline_var_list argument. It must start with'
+                                 f' a_, b_, aa, bb, ab, ba, g_, sa, sb, s_, t_, ta, tb, '
+                                 f'-a_, -b_, -aa, -bb, -ab, -ba, -g_, -sa, -sb, -s_, -t_, -ta or -tb.')
+
+            elif var_str.startswith("-") and var_str[1:] not in ["a_", "b_", "aa", "bb", "ab", "ba", "g_",
+                                                                 "s_", "sa", "sb", "t_", "ta", "tb"]:
+                raise ValueError(f'Invalid key({element}) in streamline_var_list argument. It must start with'
+                                 f' a_, b_, aa, bb, ab, ba, g_, sa, sb, s_, t_, ta, tb, '
+                                 f'-a_, -b_, -aa, -bb, -ab, -ba, -g_, -sa, -sb, -s_, -t_, -ta or -tb.')
 
         # Check the type of the 'cumulative_dict' argument
         if not isinstance(cumulative_dict, dict):
