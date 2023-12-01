@@ -37,10 +37,11 @@ def at_most_two(var_list, y):
             raise ValueError("Duplicate values found in the cumulative_dict argument.")
 
         num_var = len(var_list)
-        num_aux_var = 2  # Initialize the number of auxiliary variables to 2
+        num_aux_var = 0  # Initialize the number of auxiliary variables to 0
         clause_list = []
 
         if num_var > 4:
+            num_aux_var += 2
             z = y + 1
 
             # Add clauses for at most two constraints
@@ -216,8 +217,6 @@ def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_co
                 clause_list.append(
                     [cumulative_dict[key], -cumulative_dict[f's_{val_t}_{val_1}_{val_2}_{val_3}_{val_4}'],
                      -cumulative_dict[f'g_{val_t}_{val_5}_{val_6}']])
-
-        num_aux_var += len(aux_list)
 
     except Exception as e:
         # Handle any unexpected exceptions
