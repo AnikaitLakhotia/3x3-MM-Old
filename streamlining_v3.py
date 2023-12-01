@@ -37,10 +37,12 @@ def at_most_one(var_list, y):
             raise ValueError("Duplicate values found in the cumulative_dict argument.")
 
         num_var = len(var_list)
-        num_aux_var = 1  # Initialize the number of auxiliary variables to y
+        num_aux_var = 0  # Initialize the number of auxiliary variables to y
         clause_list = []
 
         if num_var > 2:
+
+            num_aux_var += 1
 
             # Add clauses for at most two constraints
             clause_list.extend([[-var_list[0], -var_list[1]], [-var_list[0], y], [-var_list[1], y]])
@@ -152,9 +154,9 @@ def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col
         val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'j1' values
         val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'k2' values
 
-        num_aux_vars = 1
+        num_aux_vars = 0
         summand_list = []
-        y = num_var
+        y = num_var + 1
 
         # Generate summands
         for val_t in val_t_range:
