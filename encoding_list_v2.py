@@ -191,12 +191,24 @@ def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_co
 
                                     list_var.append(
                                         cumulative_dict[f't_{num_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}'])
-                                    odd_clauses = create_odd(list_var, list_aux)
-                                    move += num_t - 1
 
-                                    # Add odd constraint clauses to the clause list
-                                    for inner_list in odd_clauses:
-                                        clause_list.append(inner_list)
+                                    list_var[0] = -list_var[0]
+
+                                    # Generate clauses with one variable negated for all such
+                                    # combinations of variables
+                                    for i in range(len(list_var)):
+                                        negated_list = list_var.copy()
+                                        negated_list[i] = -(negated_list[i])
+                                        clause_list.append(negated_list)
+
+                                    at_most_two_clauses, num_added_aux_var = at_most_two(list_var, y)
+                                    y += num_added_aux_var
+                                    num_aux_var += num_added_aux_var
+
+                                    # Add at most two constraints to the clause list
+                                    for list_clause in at_most_two_clauses:
+                                        for clause in list_clause:
+                                            clause_list.append(clause)
 
         # Add clauses for 's' variables
         for key in cumulative_dict:
