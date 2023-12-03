@@ -1,7 +1,7 @@
 import random
 
 
-def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob):
+def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob, commutative):
     """
     Generate a list of streamlining variables based on streamlining 2.
 
@@ -11,6 +11,7 @@ def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob):
         num_col_1 (int): Number of columns in the first matrix.
         num_col_2 (int): Number of columns in the second matrix.
         zero_prob (float): Probability of a variable being zero.
+        commutative (bool): Commutative encoding is used if True and non-commutative if False.
 
     Returns:
         list: List of streamlining variables.
@@ -54,19 +55,51 @@ def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob):
                         for j2 in val_j2_range:
                             for k1 in val_k1_range:
                                 for k2 in val_k2_range:
-                                    if i2 != j1 and j2 != k2 and k1 != i1:
+                                    if i2 != j1 or j2 != k2 or k1 != i1:
                                         streamlining_list.append(f'-t_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')
+        if commutative:
+            vala_i1_range = vala_j1_range = vala_k1_range = range(1, num_row_1 + 1)  # Create ranges for
+            # 'i1', 'j1', and 'k1' values
+            vala_i2_range = vala_j2_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j2' values
+            vala_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'k2' values
+
+            # Generate streamlining variables
+            for val_t in val_t_range:
+                for i1 in vala_i1_range:
+                    for i2 in vala_i2_range:
+                        for j1 in vala_j1_range:
+                            for j2 in vala_j2_range:
+                                for k1 in vala_k1_range:
+                                    for k2 in vala_k2_range:
+                                        if i2 != j1 or j2 != k2 or k1 != i1:
+                                            streamlining_list.append(f'-ta_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')
+
+            valb_i1_range = valb_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i1' and 'j1' values
+            valb_i2_range = valb_j2_range = valb_k2_range = range(1, num_col_2 + 1)  # Create ranges for
+            # 'i2', 'j2', and 'k2' values
+            valb_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'k1' values
+
+            for val_t in val_t_range:
+                for i1 in valb_i1_range:
+                    for i2 in valb_i2_range:
+                        for j1 in valb_j1_range:
+                            for j2 in valb_j2_range:
+                                for k1 in valb_k1_range:
+                                    for k2 in valb_k2_range:
+                                        if i2 != j1 or j2 != k2 or k1 != i1:
+                                            streamlining_list.append(f'-tb_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')
+
 
         random.shuffle(streamlining_list)  # Shuffle the list of streamlining variables
         modified_list = streamlining_list.copy()  # Create a copy of the shuffled list
 
         # Modify the list based on the zero probability
         for variable in streamlining_list:
-            if random.random() > zero_prob:
+            y = random.random()
+            if y > zero_prob:
                 modified_list.remove(variable)
 
     except Exception as e:
         # Handle any unexpected exceptions
         raise RuntimeError(f'An error occurred while running generate_streamlining_v2: {e}')
-
     return modified_list
