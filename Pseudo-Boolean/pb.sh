@@ -17,9 +17,17 @@ path_to_encoding="opb/${m}x${n}_${n}x${p}_${op}_${s}_${c}/${m}x${n}_${n}x${p}_${
 echo "Running main.py..."
 python3 main.py "$op" "$m" "$n" "$p" "$s" "$c"
 
-echo "Running roundingsat..."
+echo "Running minisat+..."
+./minisatp/build/release/bin/minisatp "${path_to_encoding}.opb" -cnf="${path_to_encoding}.cnf" > "${path_to_encoding}_minisat_plus_output.txt"
 
-./roundingsat/build/roundingsat "${path_to_encoding}.opb" --print-sol=1 > "${path_to_encoding}_assignment.txt"
+echo "Running cadical..."
+./cadical/build/cadical "${path_to_encoding}.cnf" > "${path_to_encoding}_solver_result.txt"
+
+exit 1
+
+# echo "Running roundingsat..."
+
+# ./roundingsat/build/roundingsat "${path_to_encoding}.opb" --print-sol=1 > "${path_to_encoding}_assignment.txt"
 
 echo "Checking if satisfiable..."
 if grep -q "UNSATISFIABLE" "${path_to_encoding}_assignment.txt"; then

@@ -22,7 +22,5 @@ s ?= 0
 # percentage of changes from streamlining
 c ?= 0
 
-# ./minisat+_64-bit_static Examples/garden9x9.opb -cnf=tex.txt
-
 run:
 	@./pb.sh $(op) $(m) $(n) $(p) $(s) $(c)

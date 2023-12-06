@@ -1,0 +1,134 @@
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL SAT Solver
+c Copyright (c) 2016-2023 A. Biere, M. Fleury, N. Froleyks, K. Fazekas, F. Pollitt
+c 
+c Version 1.9.1 56f667c858dd7d9da1cc98ce0fb4030713881914
+c g++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0 -Wall -Wextra -O3 -DNDEBUG
+c Wed Dec 6 16:02:00 EST 2023 Linux localhost.localdomain 6.5.0-1009-apple-arm aarch64
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from 'opb/3x3_3x3_23_2_100/3x3_3x3_23_2_100.cnf'
+c opening file to read 'opb/3x3_3x3_23_2_100/3x3_3x3_23_2_100.cnf'
+c found 'p cnf 391986 2338416' header
+c parsed 2338416 clauses in 0.48 seconds process time
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c all options are set to their default value
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds   reductions  redundant   irredundant
+c          MB    restarts       trail        variables
+c           level   conflicts       glue           remaining
+c 
+c *  0.48 317  0 0   0    0    0  0% 0 2338416 391986 100%
+c {  0.51 322  0 0   0    0    0  0% 0 2338416 391986 100%
+c i  0.51 322 14 0   0    7    6  0% 2 2338416 391985 100%
+c i  0.52 322 28 0   0   14   12  0% 2 2338416 391984 100%
+c i  0.52 322 97 0   0   45   42  0% 2 2338416 391983 100%
+c i  0.53 322 193 0   0   98   92  0% 2 2338416 391982 100%
+c i  0.54 322 272 0   0  147  138  0% 2 2338416 391981 100%
+c i  0.54 322 351 0   0  196  184  0% 2 2338416 391980 100%
+c i  0.54 322 430 0   0  245  230  0% 2 2338416 391979 100%
+c i  0.54 322 509 0   0  294  276  0% 2 2338416 391978 100%
+c -  0.62 322 519 1   0  300  282  0% 2 2338352 391978 100%
+c i  0.63 322 588 1   0  343  322  0% 2 2338352 391977 100%
+c i  0.63 322 667 1   0  392  368  0% 2 2338352 391976 100%
+c i  0.63 322 745 1   0  441  414  0% 2 2338352 391975 100%
+c i  0.63 322 829 1   0  493  463  1% 2 2338352 391974 100%
+c i  0.63 322 840 1   0  500  469  1% 2 2338352 391973 100%
+c i  0.63 322 882 1   0  525  493  1% 2 2338352 391972 100%
+c i  0.63 322 941 1   0  559  526  1% 2 2338352 391971 100%
+c i  0.64 322 1003 1   0  593  559  1% 2 2338352 391970 100%
+c i  0.65 322 1066 1   0  627  592  1% 2 2338352 391969 100%
+c 
+c  seconds     reductions  redundant   irredundant
+c          MB      restarts       trail        variables
+c            level    conflicts       glue           remaining
+c 
+c i  0.66 322 1131 1   0  661  625  1% 2 2338352 391968 100%
+c i  0.67 322 1196 1   0  695  658  1% 2 2338352 391967 100%
+c i  0.68 322 1263 1   0  729  691  1% 2 2338352 391966 100%
+c i  0.68 322 1331 1   0  763  724  1% 2 2338352 391965 100%
+c i  0.69 322 1427 1   0  812  770  1% 2 2338352 391964 100%
+c i  0.69 322 1500 1   0  849  806  1% 2 2338352 391963 100%
+c i  0.69 322 1514 1   0  856  812  1% 2 2338352 391962 100%
+c i  0.70 322 1564 1   0  881  836  1% 2 2338352 391961 100%
+c i  0.70 322 1633 1   0  915  869  1% 2 2338352 391960 100%
+c i  0.71 322 1703 1   0  949  902  1% 2 2338352 391959 100%
+c i  0.72 322 1773 1   0  983  935  1% 2 2338352 391958 100%
+c }  0.72 322 1808 1   0 1000  952  1% 2 2338352 391958 100%
+c [  0.72 322  0 1   0 1000  952  0% 0 2338352 391958 100%
+c O  0.72 322 2916 1   0 1004  956  2% 3 2338352 391958 100%
+c i  0.74 322 64 1   0 1313 1138  1% 2 2338352 391957 100%
+c i  0.74 322 64 1   0 1314 1138  1% 2 2338352 391956 100%
+c i  0.74 322 64 1   0 1315 1138  1% 2 2338352 391955 100%
+c i  0.74 322 61 1   0 1330 1150  1% 2 2338352 391954 100%
+c i  0.74 322 61 1   0 1333 1152  1% 2 2338352 391953 100%
+c i  0.74 322 59 1   0 1345 1158  1% 2 2338352 391946 100%
+c 
+c  seconds   reductions  redundant   irredundant
+c          MB    restarts       trail        variables
+c           level   conflicts       glue           remaining
+c 
+c i  0.74 322 58 1   0 1349 1158  1% 2 2338352 391938 100%
+c i  0.74 322 58 1   0 1352 1159  1% 2 2338352 391915 100%
+c ]  0.74 322 58 1   0 1354 1159  1% 2 2338352 391902 100%
+c 0  0.74 322 58 1   0 1354 1159  1% 2 2338352 391902 100%
+c 
+c --- [ result ] -------------------------------------------------------------
+c 
+s UNSATISFIABLE
+c 
+c --- [ run-time profiling ] -------------------------------------------------
+c 
+c process time taken by individual solving procedures
+c (percentage relative to process time for solving)
+c 
+c         0.48  189.10% parse
+c         0.26   99.98% search
+c         0.21   80.54% unstable
+c         0.03   10.91% lucky
+c         0.02    8.52% stable
+c         0.00    0.00% simplify
+c   =================================
+c         0.26   34.58% solve
+c 
+c last line shows process time for solving
+c (percentage relative to total process time)
+c 
+c --- [ statistics ] ---------------------------------------------------------
+c 
+c chronological:               771        56.94 %  of conflicts
+c conflicts:                  1354      5293.69    per second
+c decisions:                  6754     26405.92    per second
+c fixed:                        84         0.02 %  of all variables
+c learned:                    1319        97.42 %  per conflict
+c learned_lits:               4731       100.00 %  learned literals
+c minimized:                     0         0.00 %  learned literals
+c shrunken:                    243         5.14 %  learned literals
+c minishrunken:                 45         0.95 %  learned literals
+c otfs:                        153        11.30 %  of conflict
+c propagations:             183146         0.72 M  per second
+c rephased:                      1      1354.00    interval
+c stabilizing:                   1        25.26 %  of conflicts
+c subsumed:                    135         0.00 %  of all clauses
+c strengthened:                141         0.00 %  of all clauses
+c trail reuses:                  0         0.00 %  of incremental calls
+c 
+c seconds are measured in process time for solving
+c 
+c --- [ resources ] ----------------------------------------------------------
+c 
+c total process time since initialization:         0.74    seconds
+c total real time since initialization:            0.74    seconds
+c maximum resident set size of process:          340.02    MB
+c 
+c --- [ shutting down ] ------------------------------------------------------
+c 
+c exit 20

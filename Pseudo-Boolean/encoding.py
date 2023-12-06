@@ -350,6 +350,7 @@ class PB:
                                     clause for sub_constraint in total_alpha_beta_gamma_constraint for clause in sub_constraint)
                                 self.write_to_file(
                                     f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};\n")
+                                # return
         if self.streamlining == 1:
             self.streamlining1(alpha_beta_gamma_to_var_num)
         elif self.streamlining == 2:
@@ -406,8 +407,9 @@ class PB:
         # ~z + p >= 1
         for alpha_beta_or_gamma_variable in variables[:-1]:
             self.write_to_file(
-                f"1 ~x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 1;\n")
+                f"-1 x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 0;\n")
 
         # ~p + ~r + ~u + z >= 1
         self.write_to_file(
-            "1 ~x{} 1 ~x{} 1 ~x{} 1 x{} >= 1;\n".format(*variables))
+            "-1 x{} -1 x{} -1 x{} 1 x{} >= -2;\n".format(*variables))
+        return
