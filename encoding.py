@@ -84,8 +84,8 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
 
         # Value check for streamlining_parameter_2
         elif streamlining_2 and (streamlining_parameter_2 < 0 or streamlining_parameter_2 > 1):
-            raise ValueError('The streamlining_parameter_2 argument must be less than or equal to 1 '
-                             'and greater than or equal to 0.')
+            raise ValueError('The streamlining_parameter_2 argument must be less than or equal to 1.0 '
+                             'and greater than or equal to 0.0')
 
         # Input validation and value check for seed
         if seed is not None:
@@ -197,10 +197,10 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
 
             streamlining_parameter = streamlining_parameter_1
             streamlining_var_list = streamlining_var_list[:streamlining_parameter]
-        elif streamlining_2:
+        if streamlining_2:
             streamlining_var_list = generate_streamlining_v2(num_t, num_row_1, num_col_1,
                                                              num_col_2, streamlining_parameter_2, commutative, seed)
-        elif streamlining_3:
+        if streamlining_3:
             streamlining_clauses, num_aux_vars = generate_streamlining_v3(cumulative_dict, num_var, num_t,
                                                                           num_row_1, num_col_1, num_col_2,
                                                                           streamlining_parameter_3, seed)
