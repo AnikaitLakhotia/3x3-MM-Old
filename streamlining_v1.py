@@ -6,15 +6,26 @@ class SchemeError(Exception):
     pass
 
 
-def get_scheme():
+def get_scheme(seed):
     """
     Retrieve a random scheme from the 'schemes' directory.
+
+    Args:
+        seed (None or int): Seed for random() function.
 
     Returns:
         str: The contents of a random scheme file.
     """
 
     try:
+        # Input validation and value check for seed
+        if seed is not None:
+            try:
+                int(seed)
+            except ValueError:
+                # Raise an exception if the conversion fails
+                raise ValueError(f'Invalid value for seed. It must be None or an integer.')
+
         # Navigate to one level above the current directory
         parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 
@@ -42,8 +53,14 @@ def get_scheme():
         if not files:
             raise SchemeError("No files found in the randomly chosen sub folder.")
 
+        #Set seed for random() function
+        random.seed(seed)
+
         # Choose a random file from the sub folder
         random_file = random.choice(files)
+
+        # Revert back to None(default) seed
+        random.seed(None)
 
         # Read the contents of the randomly chosen file into a string
         file_path = os.path.join(sub_folder_path, random_file)
@@ -57,9 +74,12 @@ def get_scheme():
     return file_contents
 
 
-def generate_streamlining_v1():
+def generate_streamlining_v1(seed):
     """
     Generate a list of streamlining variables based on streamlining 1.
+
+    Args:
+        seed (None or int): Seed for random() function.
 
     Returns:
         list: List of variables.
@@ -68,7 +88,15 @@ def generate_streamlining_v1():
         This function generates a list of variables for streamlining based on the contents of a random scheme file.
     """
 
-    file_contents = get_scheme()
+    # Input validation and value check for seed
+    if seed is not None:
+        try:
+            int(seed)
+        except ValueError:
+            # Raise an exception if the conversion fails
+            raise ValueError(f'Invalid value for seed. It must be None or an integer.')
+
+    file_contents = get_scheme(seed)
     tensors = file_contents.split('---------+---------+----------')
     tensors = tensors[:-1]
     var_chars = ['a', 'b', 'g']
