@@ -13,7 +13,7 @@ import random
 
 def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
              streamlining_0, streamlining_1, streamlining_parameter_1, streamlining_2,
-             streamlining_parameter_2, streamlining_3, streamlining_parameter_3):
+             streamlining_parameter_2, streamlining_3, streamlining_parameter_3, seed):
     """
     Generate the complete SAT encoding for the given parameters.
 
@@ -31,6 +31,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         streamlining_parameter_2 (float): The parameter associated with the streamlining 2.
         streamlining_3 (bool): Streamlining 3 is used if True.
         streamlining_parameter_3 (int): The parameter associated with the streamlining 3.
+        seed (None or int): Seed for random() function.
 
     Returns:
         str: SAT encoding in CNF format.
@@ -85,6 +86,14 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         elif streamlining_2 and (streamlining_parameter_2 < 0 or streamlining_parameter_2 > 1):
             raise ValueError('The streamlining_parameter_2 argument must be less than or equal to 1 '
                              'and greater than or equal to 0.')
+
+        # Input validation and value check for seed
+        if seed is not None:
+            try:
+                int(seed)
+            except ValueError:
+                # Raise an exception if the conversion fails
+                raise ValueError(f'Invalid value for seed. It must be None or an integer.')
 
         shift = 0  # Initialize the shift value for variable indices
         dict_t = create_t(num_t, num_row_1, num_col_1, num_col_2, shift, "t")
@@ -177,17 +186,24 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
 
         # Add streamlining clauses.
         if streamlining_1:
-            streamlining_var_list = generate_streamlining_v1()
+            streamlining_var_list = generate_streamlining_v1(seed)
+
+            # Set seed for random() function
+            random.seed(seed)
             random.shuffle(streamlining_var_list)
+
+            # Revert back to None(default) seed
+            random.seed(None)
+
             streamlining_parameter = streamlining_parameter_1
             streamlining_var_list = streamlining_var_list[:streamlining_parameter]
         elif streamlining_2:
             streamlining_var_list = generate_streamlining_v2(num_t, num_row_1, num_col_1,
-                                                             num_col_2, streamlining_parameter_2, commutative)
+                                                             num_col_2, streamlining_parameter_2, commutative, seed)
         elif streamlining_3:
             streamlining_clauses, num_aux_vars = generate_streamlining_v3(cumulative_dict, num_var, num_t,
                                                                           num_row_1, num_col_1, num_col_2,
-                                                                          streamlining_parameter_3)
+                                                                          streamlining_parameter_3, seed)
             num_var += num_aux_vars
             cumulative_list.extend(streamlining_clauses)
             streamlining_var_list = []

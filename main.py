@@ -6,9 +6,9 @@ from verifier_v2 import verifier_v2
 if __name__ == '__main__':
     try:
         # Input validation and value checks
-        if len(sys.argv) != 17:
+        if len(sys.argv) != 18:
             raise ValueError("Incorrect number of arguments. Usage: make op= m= "
-                             "n= p= c= lo= s0= s1= sp1= s2= sp2= s3= sp3= solver=")
+                             "n= p= c= lo= s0= s1= sp1= s2= sp2= s3= sp3= solver= seed=")
 
         # Indices of command line arguments that should be integers
         int_arg_indices = [1, 2, 3, 4, 5, 10, 14]
@@ -50,14 +50,27 @@ if __name__ == '__main__':
         s3 = sys.argv[13].lower() == 'true'
         sp2 = float(sys.argv[12])
         solver = sys.argv[15]
-        file_path = sys.argv[16]
+        seed = sys.argv[16]
+        file_path = sys.argv[17]
 
         # Value check for operation
         if operation != 1 and operation != 0:
             raise ValueError(f'Invalid value for operation. It must be equal to 1 or 0.')
 
+        # Value check for seed
+        if seed != "None":
+            try:
+                int(seed)
+            except ValueError:
+                # Raise an exception if the conversion fails
+                raise ValueError(f'Invalid value for seed. It must be None or an integer.')
+
+        if seed == "None":
+            seed = None
+
         # Specify parameters of the encoding
-        encoding_str, cumulative_dict = encoding(number_of_operations, m, n, p, c, lo, s0, s1, sp1, s2, sp2, s3, sp3)
+        encoding_str, cumulative_dict = encoding(number_of_operations, m, n, p, c, lo, s0, s1,
+                                                 sp1, s2, sp2, s3, sp3, seed)
 
         # Value check for encoding_str
         if len(encoding_str) < 1:
@@ -70,9 +83,9 @@ if __name__ == '__main__':
         else:
             # If solver outputs SAT, insert the SAT assignment
             assignment_output_string = f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" \
-                                       f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}/"\
+                                       f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}/"\
                                        f"assignment_{number_of_operations}_" \
-                                       f"{m}_{n}_{p}_{c}_{lo}_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}.txt"
+                                       f"{m}_{n}_{p}_{c}_{lo}_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}.txt"
 
             with open(assignment_output_string, 'r') as file:
                 assignment_string = file.read().rstrip('\n')
@@ -96,15 +109,15 @@ if __name__ == '__main__':
                 raise ValueError("No output by verifier 2")
 
             with open(f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}/"
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}/"
                       f"verifier_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}.txt", "w") as file:
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}.txt", "w") as file:
                 file.write(str(verifier_output))
 
             with open(f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}/"
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}/"
                       f"verifier_v2_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}.txt", "w") as file:
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}.txt", "w") as file:
                 file.write(str(verifier_v2_output))
 
     except Exception as e:

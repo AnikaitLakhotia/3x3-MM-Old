@@ -1,7 +1,7 @@
 import random
 
 
-def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob, commutative):
+def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob, commutative, seed):
     """
     Generate a list of streamlining variables based on streamlining 2.
 
@@ -12,6 +12,7 @@ def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob, 
         num_col_2 (int): Number of columns in the second matrix.
         zero_prob (float): Probability of a variable being zero.
         commutative (bool): Commutative encoding is used if True and non-commutative if False.
+        seed (None or int): Seed for random() function.
 
     Returns:
         list: List of streamlining variables.
@@ -39,6 +40,13 @@ def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob, 
             elif zero_prob < 0 or zero_prob > 1:
                 raise ValueError('The zero_prob argument must be less than or equal to 1 '
                                  'and greater than or equal to 0.')
+        # Input validation and value check for seed
+        if seed is not None:
+            try:
+                int(seed)
+            except ValueError:
+                # Raise an exception if the conversion fails
+                raise ValueError(f'Invalid value for seed. It must be None or an integer.')
 
         val_t_range = range(1, num_t + 1)  # Create a range for 't' values
         val_i1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1' and 'k1' values
@@ -89,15 +97,29 @@ def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob, 
                                         if i2 != j1 or j2 != k2 or k1 != i1:
                                             streamlining_list.append(f'-tb_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')
 
-
+        random.seed(seed)
         random.shuffle(streamlining_list)  # Shuffle the list of streamlining variables
         modified_list = streamlining_list.copy()  # Create a copy of the shuffled list
 
+        # Set seed for random() function
+        y_seed = seed
         # Modify the list based on the zero probability
         for variable in streamlining_list:
+            # Set seed for random() function
+            random.seed(y_seed)
             y = random.random()
+
+            # Change seed deterministically if it's not None
+            if seed is not None:
+                y_seed += 1
+            else:
+                y_seed = None
+
             if y > zero_prob:
                 modified_list.remove(variable)
+
+        # Revert back to None(default) seed
+        random.seed(None)
 
     except Exception as e:
         # Handle any unexpected exceptions

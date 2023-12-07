@@ -70,7 +70,7 @@ def at_most_one(var_list, y):
     return clause_list, num_aux_var
 
 
-def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col_1, num_col_2, num_two_terms):
+def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col_1, num_col_2, num_two_terms, seed):
     """
     Generate a list of streamlining variables based on streamlining 3.
 
@@ -129,6 +129,14 @@ def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col
             raise ValueError(
                 f'Invalid length for cumulative_dict argument. It must be greater than or equal to 1.')
 
+        # Input validation and value check for seed
+        if seed is not None:
+            try:
+                int(seed)
+            except ValueError:
+                # Raise an exception if the conversion fails
+                raise ValueError(f'Invalid value for seed. It must be None or an integer.')
+
         # Check the allowed values for keys and values in 'cumulative_dict' argument
         for key, value in cumulative_dict.items():
             var_str = key[0]
@@ -169,7 +177,13 @@ def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col
 
         clause_list = []
 
+        # Set seed for random() function
+        random.seed(seed)
         random.shuffle(summand_list)  # Shuffle the list of summands
+
+        # Revert back to None(default) seed
+        random.seed(None)
+
         num_two_terms = int(num_two_terms)
         selected_summands = summand_list[:num_two_terms]  # Select the specified number of summands
         remaining_summands = summand_list[num_two_terms:]  # The remaining summands
