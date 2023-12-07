@@ -42,6 +42,15 @@ if __name__ == '__main__':
                                                                        sys.argv[4], sys.argv[5], sys.argv[10],
                                                                        sys.argv[14]))
 
+        if sys.argv[16] == "None":
+            seed = None
+        else:
+            try:
+                seed = int(sys.argv[16])
+            except ValueError:
+                # Raise an exception if the conversion fails
+                raise ValueError(f'Invalid value for seed. It must be None or an integer.')
+
         c = sys.argv[6].lower() == 'true'
         lo = sys.argv[7].lower() == 'true'
         s0 = sys.argv[8].lower() == 'true'
@@ -50,23 +59,11 @@ if __name__ == '__main__':
         s3 = sys.argv[13].lower() == 'true'
         sp2 = float(sys.argv[12])
         solver = sys.argv[15]
-        seed = sys.argv[16]
         file_path = sys.argv[17]
 
         # Value check for operation
         if operation != 1 and operation != 0:
             raise ValueError(f'Invalid value for operation. It must be equal to 1 or 0.')
-
-        # Value check for seed
-        if seed != "None":
-            try:
-                int(seed)
-            except ValueError:
-                # Raise an exception if the conversion fails
-                raise ValueError(f'Invalid value for seed. It must be None or an integer.')
-
-        if seed == "None":
-            seed = None
 
         # Specify parameters of the encoding
         encoding_str, cumulative_dict = encoding(number_of_operations, m, n, p, c, lo, s0, s1,
