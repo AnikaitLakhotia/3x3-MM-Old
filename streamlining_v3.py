@@ -129,17 +129,17 @@ def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col
             raise ValueError(
                 f'Invalid length for cumulative_dict argument. It must be greater than or equal to 1.')
 
-        # Input validation and value check for seed
-        if seed is not None:
-            try:
-                int(seed)
-            except ValueError:
-                # Raise an exception if the conversion fails
-                raise ValueError(f'Invalid value for seed. It must be None or an integer.')
+        # Check the type of the 'cumulative_dict' argument
+        if not isinstance(cumulative_dict, dict):
+            raise TypeError(f'The cumulative_dict argument must be a dict.')
+
+        # Check length of 'cumulative_dict' argument
+        elif len(cumulative_dict) < 1:
+            raise ValueError(f'Invalid length for cumulative_dict argument. It must be greater than or equal to 1.')
 
         # Check the allowed values for keys and values in 'cumulative_dict' argument
         for key, value in cumulative_dict.items():
-            var_str = key[0]
+            var_str = key[:2]
 
             if not isinstance(key, str):
                 raise TypeError(f'All keys in cumulative_dict argument must be strings, found: {key}.')
@@ -147,9 +147,10 @@ def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col
             elif not isinstance(value, int):
                 raise TypeError(f'All keys in cumulative_dict argument must be integers, found: {value}.')
 
-            elif var_str not in ["a", "b", "g", "s", "t"]:
+            elif var_str not in ["aa", "bb", "ab", "ba", "g_", "s_", "sa", "sb", "t_", "ta", "tb"]:
                 raise ValueError(f'Invalid key({key}) in cumulative_dict argument. It must start with'
-                                 f' a, b, g, s or t.')
+                                 f' aa, bb, ab, ba, s, sa, sb, t, ta, or tb.')
+
             elif value < 1:
                 raise ValueError(f'Invalid value({value}) in cumulative_dict argument. '
                                  f'It must be greater than or equal to 1')
