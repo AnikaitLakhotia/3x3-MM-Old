@@ -184,6 +184,8 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
                 num_var += num_added_aux_var
                 num_lex_clauses += num_added_clauses
 
+        streamlining_var_list = []
+
         # Add streamlining clauses.
         if streamlining_1:
             streamlining_var_list = generate_streamlining_v1(seed)
@@ -198,17 +200,16 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
             streamlining_parameter = streamlining_parameter_1
             streamlining_var_list = streamlining_var_list[:streamlining_parameter]
         if streamlining_2:
-            streamlining_var_list = generate_streamlining_v2(num_t, num_row_1, num_col_1,
-                                                             num_col_2, streamlining_parameter_2, commutative, seed)
+            streamlining_var_list_extension = generate_streamlining_v2(num_t, num_row_1, num_col_1,
+                                                                       num_col_2, streamlining_parameter_2, commutative,
+                                                                       seed)
+            streamlining_var_list.extend(streamlining_var_list_extension)
         if streamlining_3:
             streamlining_clauses, num_aux_vars = generate_streamlining_v3(cumulative_dict, num_var, num_t,
                                                                           num_row_1, num_col_1, num_col_2,
                                                                           streamlining_parameter_3, seed)
             num_var += num_aux_vars
             cumulative_list.extend(streamlining_clauses)
-            streamlining_var_list = []
-        else:
-            streamlining_var_list = []
 
         num_clauses = len(cumulative_list)
         num_clauses += len(streamlining_var_list) + num_lex_clauses
