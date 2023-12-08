@@ -106,14 +106,17 @@ def verifier(sat_assignment, cumulative_dict, num_t, commutative):
         elif num_t < 2:
             raise ValueError(f'Invalid value for num_t argument. It must be greater than or equal to 2.')
 
+        # Check the type of the 'cumulative_dict' argument
+        if not isinstance(cumulative_dict, dict):
+            raise TypeError(f'The cumulative_dict argument must be a dict.')
+
         # Check length of 'cumulative_dict' argument
         elif len(cumulative_dict) < 1:
-            raise ValueError(
-                f'Invalid length for cumulative_dict argument. It must be greater than or equal to 1.')
+            raise ValueError(f'Invalid length for cumulative_dict argument. It must be greater than or equal to 1.')
 
         # Check the allowed values for keys and values in 'cumulative_dict' argument
         for key, value in cumulative_dict.items():
-            var_str = key[0]
+            var_str = key[:2]
 
             if not isinstance(key, str):
                 raise TypeError(f'All keys in cumulative_dict argument must be strings, found: {key}.')
@@ -121,9 +124,10 @@ def verifier(sat_assignment, cumulative_dict, num_t, commutative):
             elif not isinstance(value, int):
                 raise TypeError(f'All keys in cumulative_dict argument must be integers, found: {value}.')
 
-            elif var_str not in ["a", "b", "g", "s", "t"]:
+            elif var_str not in ["aa", "bb", "ab", "ba", "g_", "s_", "sa", "sb", "t_", "ta", "tb"]:
                 raise ValueError(f'Invalid key({key}) in cumulative_dict argument. It must start with'
-                                 f' a, b, g, s or t.')
+                                 f' aa, bb, ab, ba, s, sa, sb, t, ta, or tb.')
+
             elif value < 1:
                 raise ValueError(f'Invalid value({value}) in cumulative_dict argument. '
                                  f'It must be greater than or equal to 1')
