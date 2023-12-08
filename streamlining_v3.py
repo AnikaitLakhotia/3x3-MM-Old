@@ -147,7 +147,7 @@ def generate_streamlining_v3(cumulative_dict, num_var, num_t, num_row_1, num_col
             elif not isinstance(value, int):
                 raise TypeError(f'All keys in cumulative_dict argument must be integers, found: {value}.')
 
-            elif var_str not in ["aa", "a_", "bb", "b_", "g_", "s_", "sa", "sb", "t_", "ta", "tb"]:
+            elif var_str not in ["aa", "a_", "bb", "b_", "ab", "ba", "g_", "s_", "sa", "sb", "t_", "ta", "tb"]:
                 raise ValueError(f'Invalid key({key}) in cumulative_dict argument. It must start with'
                                  f' aa, a, bb, b, ab, ba, s, sa, sb, t, ta, or tb.')
 
