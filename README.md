@@ -36,7 +36,14 @@ Note: if any of the parameters are not specified, the default values will be use
 ### CNF Encoding
 1. MapleSAT
 2. CaDiCaL
+3. YalSAT
 ### PB Encoding
 1. MapleSAT
 2. CaDiCaL
 3. RoundingSat
+
+## Directory Structure
+---- 3x3-MM\
+---- maplesat\
+---- cadical\
+---- yalsat
