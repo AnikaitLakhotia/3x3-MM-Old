@@ -41,8 +41,14 @@ def get_scheme(seed):
         if not sub_folders:
             raise SchemeError("No sub folders found within 'schemes'.")
 
+        # Set seed for random() function
+        random.seed(seed)
+
         # Choose a random sub folder within 'schemes'
         random_sub_folder = random.choice(sub_folders)
+
+        # Revert back to None(default) seed
+        random.seed(None)
 
         # Navigate to the randomly chosen sub folder
         sub_folder_path = os.path.join(schemes_dir, random_sub_folder)
