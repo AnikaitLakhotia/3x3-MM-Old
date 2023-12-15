@@ -54,7 +54,7 @@ class PB:
         self.file_name = f"{logs_directory}/{encoding_description}.opb"
         self.opb_file = open(self.file_name, 'w')
         self.schemes_folder = "./schemes"
-        self.encoding = []
+        self.constraints = []
 
     def get_new_var(self):
         """
@@ -87,6 +87,10 @@ class PB:
         if j == k and i == m and l == n:
             return 1
         return 0
+    
+    def get_number_of_variables(self):
+        return self.multiplications*2*(self.m*self.n + self.n*self.p + self.m*self.p) + \
+            self.m*self.n*self.n*self.p*self.m*self.p*self.multiplications*8
 
     def streamlining1(self, alpha_beta_gamma_to_var_num):
         def pick_random_file():
@@ -112,6 +116,8 @@ class PB:
 
             random_file = random.choice(files_in_subfolder)
 
+            print(f"Scheme chosen: {random_file}")
+
             return os.path.join(self.schemes_folder, random_subfolder, random_file)
 
         def parse_file(file_path):
@@ -128,8 +134,8 @@ class PB:
                     brent_variables = assignment.split("*")
 
                     for brent_variable in brent_variables:
+                        brent_variable = brent_variable.replace(" ", "")
                         matches = re.findall(r'([+-]?\w+)', brent_variable)
-
                         for match in matches:
                             if match[0] == '-':
                                 negative_numbers.add(
@@ -180,13 +186,13 @@ class PB:
             node_entry = (row_val, col_val, iota)
             brent_variable = alpha_beta_gamma_to_var_num[node_entry][brent_var]
             if val == -1:
-                self.write_to_file(
+                self.constraints.append(
                     f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = -1;\n")
             elif val == 1:
-                self.write_to_file(
+                self.constraints.append(
                     f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = 1;\n")
             else:
-                self.write_to_file(
+                self.constraints.append(
                     f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = 0;\n")
 
     def streamlining2(self, alpha_beta_gamma_to_var_num):
@@ -215,7 +221,7 @@ class PB:
         for variables in zero_variables:
             random_number = round(random.uniform(0, 2))
             variable = variables[random_number]
-            self.write_to_file(
+            self.constraints.append(
                 f"1 x{variable.first_var} -1 x{variable.second_var} = 0;\n")
 
     def streamlining3(self, alpha_beta_gamma_to_var_num):
@@ -246,12 +252,16 @@ class PB:
                                     random.shuffle(summands)
                                     for _ in range(19):
                                         variables = summands.pop()
-                                        self.write_to_file(
+                                        self.constraints.append(
                                             "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 1;\n".format(*variables))
                                     for _ in range(4):
                                         variables = summands.pop()
-                                        self.write_to_file(
+                                        self.constraints.append(
                                             "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 2;\n".format(*variables))
+    
+    def write_all_constraints(self):
+        for constraint in self.constraints:
+            self.write_to_file(constraint)
 
     def write_to_file(self, constraint):
         """
@@ -309,12 +319,6 @@ class PB:
         Other functions called:
             create_variables, create_alpha_beta_gamma_constraints, kronecker_delta_values
         """
-        number_of_variables = self.multiplications*2*(self.m*self.n + self.n*self.p + self.m*self.p) + \
-            self.m*self.n*self.n*self.p*self.m*self.p*self.multiplications*8
-        number_of_constraints = self.m*self.n*self.n*self.p*self.m*self.p * \
-            self.multiplications*8*4 + self.m*self.n*self.n*self.p*self.m*self.p
-        self.write_to_file(
-            f"* #variable= {number_of_variables} #constraint= {number_of_constraints}\n")
         # (row, column, iota) -> {alpha: Node, beta: Node, gamma: Node)
         alpha_beta_gamma_to_var_num = self.create_variables()
         for i in range(self.m):
@@ -348,14 +352,20 @@ class PB:
                                 # Creates constraint for the summation of all alpha, beta, gamma products (long list of z) for all iotas
                                 total_contraint = " ".join(
                                     clause for sub_constraint in total_alpha_beta_gamma_constraint for clause in sub_constraint)
-                                self.write_to_file(
+                                self.constraints.append(
                                     f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};\n")
+                                # return
         if self.streamlining == 1:
             self.streamlining1(alpha_beta_gamma_to_var_num)
         elif self.streamlining == 2:
             self.streamlining2(alpha_beta_gamma_to_var_num)
         elif self.streamlining == 3:
             self.streamlining3(alpha_beta_gamma_to_var_num)
+
+        self.write_to_file(
+            f"* #variable= {self.get_number_of_variables()} #constraint= {len(self.constraints)}\n* \n")
+
+        self.write_all_constraints()
 
         self.opb_file.close()
 
@@ -405,9 +415,10 @@ class PB:
         """
         # ~z + p >= 1
         for alpha_beta_or_gamma_variable in variables[:-1]:
-            self.write_to_file(
-                f"1 ~x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 1;\n")
+            self.constraints.append(
+                f"-1 x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 0;\n")
 
         # ~p + ~r + ~u + z >= 1
-        self.write_to_file(
-            "1 ~x{} 1 ~x{} 1 ~x{} 1 x{} >= 1;\n".format(*variables))
+        self.constraints.append(
+            "-1 x{} -1 x{} -1 x{} 1 x{} >= -2;\n".format(*variables))
+        return
