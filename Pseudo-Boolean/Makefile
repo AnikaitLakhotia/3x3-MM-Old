@@ -7,7 +7,11 @@
 # Structure your directory as follows:
 # ---- 3x3-MM
 #   ---- Pseudo-Boolean
-#   ---- roundingsat
+#   ---- minisat+
+#   ---- pblib
+#   ---- drat-trim
+#   ---- cadical
+
 
 # op = number of multiplications
 op ?= 23
@@ -18,9 +22,11 @@ n ?= 3
 # number of cols in matrix B
 p ?= 3
 # streamlining 
-s ?= 0
+s ?= 1
 # percentage of changes from streamlining
-c ?= 0
+c ?= 100
+# translator library: 1. minisat+, 2. pblib
+t ?= 0
 
 run:
-	@./pb.sh $(op) $(m) $(n) $(p) $(s) $(c)
+	@./pb.sh $(op) $(m) $(n) $(p) $(s) $(c) $(t)

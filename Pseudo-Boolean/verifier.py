@@ -6,31 +6,20 @@ ALPHA = "alpha"
 BETA = "beta"
 GAMMA = "gamma"
 
-
 class Verifier:
     def __init__(self, multiplications, m, n, p, streamlining, percentage) -> None:
         self.m = m
         self.n = n
         self.p = p
         self.multiplications = multiplications
-        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{streamlining}_{percentage}"
-        logs_directory = f"./opb/{encoding_description}"
-        self.assignment_file = f"{logs_directory}/{encoding_description}_assignment.txt"
+        self.encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{streamlining}_{percentage}"
+        self.logs_directory = f"./opb/{self.encoding_description}"
+        self.opb_encoding_file = f"{self.logs_directory}/{self.encoding_description}.opb"
+        self.assignment_file = f"{self.logs_directory}/{self.encoding_description}_solver_result.txt"
         self.assignment_mapping = collections.defaultdict(int)
         self.PB = PB(self.multiplications, self.m,
                      self.n, self.p, streamlining, percentage)
-
-    def get_compliment(self, curr_variable):
-        if curr_variable == 0:
-            return 1
-        return 0
-
-    def get_variable_value(self, curr_variable):
-        if curr_variable not in self.assignment_mapping:
-            raise Exception(
-                f"{curr_variable} does not exist in assignment mapping")
-        return self.assignment_mapping[curr_variable]
-
+        
     def create_assignment_mapping(self):
         with open(self.assignment_file, 'r') as file:
             for line in file:
@@ -38,14 +27,30 @@ class Verifier:
                 if line.startswith("v"):
                     assignments = line[2:].split(" ")
                     for assignment in assignments:
-                        assignment = assignment.split("x")
-                        if len(assignment) > 1:
-                            if assignment[0] == "-":
-                                self.assignment_mapping[int(assignment[1])] = 0
-                            else:
-                                self.assignment_mapping[int(assignment[1])] = 1
+                        variable_number = 0
+                        if assignment[0] == "-":
+                            variable_number = int(assignment[1:])
+                            self.assignment_mapping[int(assignment[1:])] = 0
                         else:
-                            raise Exception("Issue with spliting assignment")
+                            variable_number = int(assignment)
+                            self.assignment_mapping[int(assignment)] = 1
+                        if variable_number >= self.PB.get_number_of_variables():
+                            return
+                        
+    def get_variable_value(self, curr_variable):
+        if curr_variable not in self.assignment_mapping:
+            raise Exception(
+                f"{curr_variable} does not exist in assignment mapping")
+        return self.assignment_mapping[curr_variable]
+
+class Verifier1(Verifier):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_compliment(self, curr_variable):
+        if curr_variable == 0:
+            return 1
+        return 0
 
     def verify_against_brent_equations(self):
         self.create_assignment_mapping()
@@ -113,44 +118,15 @@ class Verifier:
                 f"Could not satisfy ~{variables[0]} + ~{variables[1]} + ~{variables[2]} + {z_variable} >= 1")
 
 
-class Verifier2:
-    def __init__(self, multiplications, m, n, p, streamlining, percentage) -> None:
-        self.m = m
-        self.n = n
-        self.p = p
-        self.multiplications = multiplications
-        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{streamlining}_{percentage}"
-        logs_directory = f"./opb/{encoding_description}"
-        self.assignment_file = f"{logs_directory}/{encoding_description}_assignment.txt"
-        self.multiplication_verification_file = f"{logs_directory}/{encoding_description}_verifier2.txt"
+class Verifier2(Verifier):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.multiplication_verification_file = f"{self.logs_directory}/{self.encoding_description}_verifier2.txt"
         self.verification_file = open(
             f"{self.multiplication_verification_file}", 'w+')
-        self.assignment_mapping = collections.defaultdict(int)
-        self.PB = PB(self.multiplications, self.m,
-                     self.n, self.p, streamlining, percentage)
         self.scalar_multiplication = collections.defaultdict(dict)
         self.alpha_beta_gamma_to_var_num = self.PB.create_variables()
-
-    def get_variable_value(self, curr_variable):
-        if curr_variable not in self.assignment_mapping:
-            raise Exception(f"{curr_variable} does not exist in assignment mapping")
-        return self.assignment_mapping[curr_variable]
-
-    def create_assignment_mapping(self):
-        with open(self.assignment_file, 'r') as file:
-            for line in file:
-                line = line.strip()
-                if line.startswith("v"):
-                    assignments = line[2:].split(" ")
-                    for assignment in assignments:
-                        assignment = assignment.split("x")
-                        if len(assignment) > 1:
-                            if assignment[0] == "-":
-                                self.assignment_mapping[int(assignment[1])] = 0
-                            else:
-                                self.assignment_mapping[int(assignment[1])] = 1
-                        else:
-                            raise Exception("Issue with spliting assignment")
 
     def write_to_file(self, string):
         self.verification_file.write(string)
@@ -257,10 +233,79 @@ class Verifier2:
 
         return output_matrix
 
+class Schemes(Verifier):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.scheme_file_name = f"{self.logs_directory}/{self.encoding_description}_scheme.txt"
+        self.scheme_file = open(
+            f"{self.scheme_file_name}", 'w+')
+        self.scalar_multiplication = collections.defaultdict(dict)
+        self.alpha_beta_gamma_to_var_num = self.PB.create_variables()
+
+    def create_scheme(self):
+        self.create_assignment_mapping()
+        row_col_multiplications = {
+            ALPHA: [self.m, self.n, "a"],
+            BETA: [self.n, self.p, "b"],
+            GAMMA: [self.m, self.p, "c"]
+        }
+        scheme_by_multiplication = []
+        for multiplication in range(self.multiplications):
+            current_multiplications = []
+            for brent_var, [rows, cols, scheme_letter] in row_col_multiplications.items():
+                scheme_for_var = []
+                if GAMMA != brent_var:
+                    for row in range(rows):
+                        for col in range(cols):
+                            row_col_iota_tuple = tuple((row, col, multiplication))
+                            first_var = self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var].first_var
+                            second_var = self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var].second_var
+                            difference = self.get_variable_value(first_var) - self.get_variable_value(second_var)
+                            row_value = row + 1 
+                            col_value = col + 1 
+                            sign = "-" if difference < 0 else "" 
+                            if difference != 0:
+                                scheme_for_var.append(sign + f"{scheme_letter}{row_value}{col_value}")
+                    current_multiplications.append(scheme_for_var)
+                else:
+                    for col in range(cols):
+                        for row in range(rows):
+                            row_col_iota_tuple = tuple((row, col, multiplication))
+                            first_var = self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var].first_var
+                            second_var = self.alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var].second_var
+                            difference = self.get_variable_value(first_var) - self.get_variable_value(second_var)
+                            row_value = row + 1 
+                            col_value = col + 1
+                            sign = "-" if difference < 0 else "" 
+                            if difference != 0:
+                                scheme_for_var.append(sign + f"{scheme_letter}{col_value}{row_value}")
+                    current_multiplications.append(scheme_for_var)
+            scheme_by_multiplication.append(current_multiplications)
+        for current_multiplication in scheme_by_multiplication:
+            scheme_to_output = []
+            for alpha_beta_gamma in current_multiplication:
+                if not len(alpha_beta_gamma):
+                    continue
+                curr_var_scheme_output = ["("]
+                for curr_brent_var in range(len(alpha_beta_gamma)):
+                    if curr_brent_var != 0 and alpha_beta_gamma[curr_brent_var][0] != "-":
+                        curr_var_scheme_output.append("+" + alpha_beta_gamma[curr_brent_var])
+                    else:
+                        curr_var_scheme_output.append(alpha_beta_gamma[curr_brent_var])
+                curr_var_scheme_output.append(")")
+                current_scheme = "".join(curr_var_scheme_output)
+                scheme_to_output.append(current_scheme)
+            scheme_for_curr_multiplication = "*".join(scheme_to_output)
+            self.scheme_file.write(f"{scheme_for_curr_multiplication}\n")
+        
+
+
+
 
 if __name__ == "__main__":
     _, number_of_multiplications, m, n, p, s, c = sys.argv
-    verifier = Verifier(int(number_of_multiplications),
+    verifier = Verifier1(int(number_of_multiplications),
                         int(m), int(n), int(p), int(s), int(c))
     print("Running verifier 1!")
     if not verifier.verify_against_brent_equations():
@@ -271,4 +316,9 @@ if __name__ == "__main__":
                           int(m), int(n), int(p), int(s), int(c))
     if not verifier2.verify_scheme():
         raise Exception("Could not verify multiplication scheme")
-    print("Verifier 2 has verified scheme against naive method!")
+    print("Verifier 2 has verified sc(eme against naive method!")
+    print("Writing scheme to file!")
+    scheme = Schemes(int(number_of_multiplications),
+                          int(m), int(n), int(p), int(s), int(c))
+    scheme.create_scheme()
+    print("Scheme was written to the file!")
