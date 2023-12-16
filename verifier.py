@@ -204,6 +204,6 @@ def verifier(sat_assignment, cumulative_dict, num_t, commutative):
 
     except Exception as e:
         # Handle any unexpected exceptions
-        raise RuntimeError(f'An error occurred wile running verifier: {e}')
+        raise RuntimeError(f'An error occurred while running verifier: {e}')
 
     return 1
