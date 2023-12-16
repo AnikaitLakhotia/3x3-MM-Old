@@ -32,8 +32,10 @@ def at_most_two(var_list, y):
             if not isinstance(var, int):
                 raise TypeError(f'Found invalid variable({var}) in var_list. '
                                 f'It must be an integer')
+
         if len(var_list) != len(set(var_list)):
-            raise ValueError("Duplicate values found in the cumulative_dict argument.")
+            print(var_list)
+            raise ValueError("Duplicate values found in the var_list argument.")
 
         num_var = len(var_list)
         num_aux_var = 0  # Initialize the number of auxiliary variables to 0
@@ -151,78 +153,297 @@ def create_encoding_list_v2(cumulative_dict, num_t, num_row_1, num_col_1, num_co
         move = 0
         clause_list = []
 
+        # Create ranges based on the variable string
         val_i1_range = val_k1_range = range(1, num_row_1 + 1)  # Create ranges for 'i1' and 'k1' values
         val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
         val_j2_range = val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'j2' and 'k2' values
 
+        val_i1a_range = val_j1a_range = val_k1a_range = range(1, num_row_1 + 1)  # Create ranges for
+        # 'i1', 'j1', and 'k1' values
+        val_i2a_range = val_j2a_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j2' values
+        val_k2a_range = range(1, num_col_2 + 1)  # Create ranges for 'k2' values
+
+        val_i1b_range = val_j1b_range = range(1, num_col_1 + 1)  # Create ranges for 'i1' and 'j1' values
+        val_i2b_range = val_j2b_range = val_k2b_range = range(1, num_col_2 + 1)  # Create ranges for
+        # 'i2', 'j2', and 'k2' values
+        val_k1b_range = range(1, num_row_1 + 1)  # Create ranges for 'k1' values
+
         y = len(cumulative_dict) + 1
 
-        if commutative:
-            var_str_list = ['t', 'ta', 'tb']
-        else:
-            var_str_list = ['t']
+        for i1 in val_i1_range:
+            for i2 in val_i2_range:
+                for j1 in val_j1_range:
+                    for j2 in val_j2_range:
+                        for k1 in val_k1_range:
+                            for k2 in val_k2_range:
+                                list_var = []
+                                if i2 != j1 or k2 != j2 or k1 != i1:
+                                    for key, value in cumulative_dict.items():
+                                        if (key.startswith(f't_') and
+                                                key.endswith(f'{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')):
+                                            list_var.append(value)
 
-        for var_str in var_str_list:
-            for i1 in val_i1_range:
-                for i2 in val_i2_range:
-                    for j1 in val_j1_range:
-                        for j2 in val_j2_range:
-                            for k1 in val_k1_range:
-                                for k2 in val_k2_range:
-                                    list_var = []
+                                    # Generate clauses with one variable negated for all such
+                                    # combinations of variables
+                                    for i in range(len(list_var)):
+                                        negated_list = list_var.copy()
+                                        negated_list[i] = -(negated_list[i])
+                                        clause_list.append(negated_list)
+                                    at_most_two_clauses, num_added_aux_var = at_most_two(list_var, y)
+                                    y += num_added_aux_var
+                                    num_aux_var += num_added_aux_var
 
-                                    if var_str == 'ta' or var_str == 'tb' or i2 != j1 or k2 != j2 or k1 != i1:
-                                        for key, value in cumulative_dict.items():
-                                            if (key.startswith(f'{var_str}_') and
-                                                    key.endswith(f'{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')):
-                                                list_var.append(value)
+                                    # Add at most two constraints to the clause list
+                                    for list_clause in at_most_two_clauses:
+                                        for clause in list_clause:
+                                            clause_list.append(clause)
 
-                                        # Generate clauses with one variable negated for all such
-                                        # combinations of variables
-                                        for i in range(len(list_var)):
-                                            negated_list = list_var.copy()
-                                            negated_list[i] = -(negated_list[i])
-                                            clause_list.append(negated_list)
-                                        if len(list_var) == 0:
-                                            print(var_str, i1, i2, j1, j2, k1, k2)
-                                        at_most_two_clauses, num_added_aux_var = at_most_two(list_var, y)
-                                        y += num_added_aux_var
-                                        num_aux_var += num_added_aux_var
+                                else:
+                                    list_aux = []
 
-                                        # Add at most two constraints to the clause list
-                                        for list_clause in at_most_two_clauses:
-                                            for clause in list_clause:
-                                                clause_list.append(clause)
-
-                                    else:
-                                        list_aux = []
-
-                                        for i in range(1, num_t):
-                                            list_var.append(
-                                                cumulative_dict[f't_{i}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}'])
-                                            list_aux.append(aux_list[i - 1 + move])
-
+                                    for i in range(1, num_t):
                                         list_var.append(
-                                            cumulative_dict[f't_{num_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}'])
+                                            cumulative_dict[f't_{i}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}'])
+                                        list_aux.append(aux_list[i - 1 + move])
 
-                                        list_var[0] = -list_var[0]
+                                    list_var.append(
+                                        cumulative_dict[f't_{num_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}'])
 
-                                        # Generate clauses with one variable negated for all such
-                                        # combinations of variables
-                                        for i in range(len(list_var)):
-                                            negated_list = list_var.copy()
-                                            negated_list[i] = -(negated_list[i])
-                                            clause_list.append(negated_list)
+                                    list_var[0] = -list_var[0]
 
-                                        at_most_two_clauses, num_added_aux_var = at_most_two(list_var, y)
-                                        y += num_added_aux_var
-                                        num_aux_var += num_added_aux_var
+                                    # Generate clauses with one variable negated for all such
+                                    # combinations of variables
+                                    for i in range(len(list_var)):
+                                        negated_list = list_var.copy()
+                                        negated_list[i] = -(negated_list[i])
+                                        clause_list.append(negated_list)
+                                    at_most_two_clauses, num_added_aux_var = at_most_two(list_var, y)
+                                    y += num_added_aux_var
+                                    num_aux_var += num_added_aux_var
 
-                                        # Add at most two constraints to the clause list
-                                        for list_clause in at_most_two_clauses:
-                                            for clause in list_clause:
-                                                clause_list.append(clause)
-        if not commutative:
+                                    # Add at most two constraints to the clause list
+                                    for list_clause in at_most_two_clauses:
+                                        for clause in list_clause:
+                                            clause_list.append(clause)
+
+        if commutative:
+            for i1 in val_i1a_range:
+                for i2 in val_i2a_range:
+                    for j1 in val_j1a_range:
+                        for j2 in val_j2a_range:
+                            for k1 in val_k1a_range:
+                                for k2 in val_k2a_range:
+                                    list_var = []
+                                    for key, value in cumulative_dict.items():
+                                        if (key.startswith(f'ta_') and
+                                                key.endswith(f'{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')):
+                                            list_var.append(value)
+
+                                    # Generate clauses with one variable negated for all such
+                                    # combinations of variables
+                                    for i in range(len(list_var)):
+                                        negated_list = list_var.copy()
+                                        negated_list[i] = -(negated_list[i])
+                                        clause_list.append(negated_list)
+                                    at_most_two_clauses, num_added_aux_var = at_most_two(list_var, y)
+                                    y += num_added_aux_var
+                                    num_aux_var += num_added_aux_var
+
+                                    # Add at most two constraints to the clause list
+                                    for list_clause in at_most_two_clauses:
+                                        for clause in list_clause:
+                                            clause_list.append(clause)
+
+            for i1 in val_i1b_range:
+                for i2 in val_i2b_range:
+                    for j1 in val_j1b_range:
+                        for j2 in val_j2b_range:
+                            for k1 in val_k1b_range:
+                                for k2 in val_k2b_range:
+                                    list_var = []
+                                    for key, value in cumulative_dict.items():
+                                        if (key.startswith(f'tb_') and
+                                                key.endswith(f'{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')):
+                                            list_var.append(value)
+
+                                    # Generate clauses with one variable negated for all such
+                                    # combinations of variables
+                                    for i in range(len(list_var)):
+                                        negated_list = list_var.copy()
+                                        negated_list[i] = -(negated_list[i])
+                                        clause_list.append(negated_list)
+                                    at_most_two_clauses, num_added_aux_var = at_most_two(list_var, y)
+                                    y += num_added_aux_var
+                                    num_aux_var += num_added_aux_var
+
+                                    # Add at most two constraints to the clause list
+                                    for list_clause in at_most_two_clauses:
+                                        for clause in list_clause:
+                                            clause_list.append(clause)
+            for key in cumulative_dict:
+                # Check if the key starts with "s"
+                if key.startswith("s"):
+                    val_t, u, v, x, y = key.split("_")[1:]
+
+                    # Check if the key starts with "s_"
+                    if key.startswith("s_"):
+                        # Generate clauses for the commutative encoding constraints
+                        clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                            cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                            -cumulative_dict[key]])
+                        clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                            cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                            -cumulative_dict[key]])
+
+                    # Check if the key starts with "sa_"
+                    elif key.startswith("sa_"):
+                        # Generate clauses for the commutative encoding constraints
+                        if u != x or v != y:
+                            clause_list.append([-cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[key]])
+                            clause_list.append([-cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                                cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                                cumulative_dict[key]])
+                            clause_list.append([-cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                                cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                                cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                                cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                                cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'aa_{val_t}_{x}_{y}'],
+                                                cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                                cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                                cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'ba_{val_t}_{u}_{v}'],
+                                                cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[key]])
+                        else:
+                            clause_list.append([-cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                                cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'aa_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'ba_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[key]])
+
+                    # Check if the key starts with "sb_"
+                    elif key.startswith("sb_"):
+                        # Generate clauses for the commutative encoding constraints
+                        if u != x or v != y:
+                            clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[key]])
+                            clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                                cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                                cumulative_dict[key]])
+                            clause_list.append([-cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                                cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                                cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                                cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                                cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'ab_{val_t}_{x}_{y}'],
+                                                cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                                cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                                cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'bb_{val_t}_{u}_{v}'],
+                                                cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[key]])
+                        else:
+                            clause_list.append([-cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                                cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'ab_{val_t}_{u}_{v}'],
+                                                -cumulative_dict[key]])
+                            clause_list.append([cumulative_dict[f'bb_{val_t}_{x}_{y}'],
+                                                -cumulative_dict[key]])
+
+            # Iterate over the keys in cumulative_dict again
+            for key in cumulative_dict:
+                if key.startswith("t"):
+                    val_t, u, v, x, y, i, j = key.split("_")[1:]
+
+                    # Check if the key starts with "t_"
+                    if key.startswith("t_"):
+                        # Generate clauses for the commutative encoding constraints for 's' and 'g' variables
+                        clause_list.append([-cumulative_dict[key], cumulative_dict[f's_{val_t}_{u}_{v}_{x}_{y}']])
+                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'g_{val_t}_{i}_{j}']])
+                        clause_list.append([cumulative_dict[key], -cumulative_dict[f's_{val_t}_{u}_{v}_{x}_{y}'],
+                                            -cumulative_dict[f'g_{val_t}_{i}_{j}']])
+
+                    # Check if the key starts with "ta_"
+                    elif key.startswith("ta_"):
+                        # Generate clauses for the commutative encoding constraints for 'sa' and 'g' variables
+                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'sa_{val_t}_{u}_{v}_{x}_{y}']])
+                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'g_{val_t}_{i}_{j}']])
+                        clause_list.append([cumulative_dict[key], -cumulative_dict[f'sa_{val_t}_{u}_{v}_{x}_{y}'],
+                                            -cumulative_dict[f'g_{val_t}_{i}_{j}']])
+
+                    # Check if the key starts with "tb_"
+                    elif key.startswith("tb_"):
+                        # Generate clauses for the commutative encoding constraints for 'sb' and 'g' variables
+                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'sb_{val_t}_{u}_{v}_{x}_{y}']])
+                        clause_list.append([-cumulative_dict[key], cumulative_dict[f'g_{val_t}_{i}_{j}']])
+                        clause_list.append([cumulative_dict[key], -cumulative_dict[f'sb_{val_t}_{u}_{v}_{x}_{y}'],
+                                            -cumulative_dict[f'g_{val_t}_{i}_{j}']])
+
+        else:
             # Add clauses for 's' variables
             for key in cumulative_dict:
                 if key.startswith("s"):
