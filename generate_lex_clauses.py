@@ -68,7 +68,7 @@ def generate_lex_encoding(vector_1, vector_2, num_var):
             aux_var = i + num_var
             encoding_list += [f'-{vector_1[i]} {vector_2[i]} -{aux_var} 0 \n']
 
-        encoding_string = "".join(encoding_list)
+        encoding_string += "".join(encoding_list)
 
         num_clauses = encoding_string.count(' 0 \n')
 
