@@ -79,7 +79,7 @@ def generate_lex_encoding(vector_1, vector_2, num_var):
     return encoding_string, num_aux_var, num_clauses
 
 
-def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict):
+def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict, commutative):
     """
     Generate vectors for lex ordering.
 
@@ -90,6 +90,7 @@ def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict):
         num_col_2 (int): Number of columns in the second matrix.
         cumulative_dict (dict): A dict containing all the variables in the encoding(as keys) and their
                                 corresponding unique integer values.
+        commutative (bool): Commutative encoding is used if True and non-commutative if False.
 
     Returns:
         tuple: A tuple containing two lists - 'vectors_col_wise' and 'vectors_row_wise'.
@@ -135,6 +136,10 @@ def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict):
             elif len(cumulative_dict.values()) != len(set(cumulative_dict.values())):
                 raise ValueError("Duplicate values found in the cumulative_dict argument.")
 
+        # Input validation for commutative argument
+        if not isinstance(commutative, bool):
+            raise TypeError(f'The commutative argument must be a bool.')
+
         vectors_col_wise = []
         vectors_row_wise = []
         val_t_range = range(1, num_t + 1)  # Create a range for 't' values
@@ -142,29 +147,57 @@ def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict):
         val_i2_range = val_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i2' and 'j1' values
         val_j2_range = val_k2_range = range(1, num_col_2 + 1)  # Create ranges for 'j2' and 'k2' values
 
-        # Generate column-wise vectors
-        for val_t in val_t_range:
-            vector = []
-            prefixes = [f'a_{val_t}_', f'b_{val_t}_', f'g_{val_t}_']
-            for var, value in cumulative_dict.items():
-                if any(var.startswith(prefix) for prefix in prefixes):
-                    vector.append(value)
-            vectors_col_wise.append(vector)
+        if not commutative:
+            # Generate column-wise vectors
+            for val_t in val_t_range:
+                vector = []
+                prefixes = [f'a_{val_t}_', f'b_{val_t}_', f'g_{val_t}_']
+                for var, value in cumulative_dict.items():
+                    if any(var.startswith(prefix) for prefix in prefixes):
+                        vector.append(value)
+                vectors_col_wise.append(vector)
 
-        # Generate row-wise vectors
-        for i1 in val_i1_range:
-            for i2 in val_i2_range:
-                for j1 in val_j1_range:
-                    for j2 in val_j2_range:
-                        for k1 in val_k1_range:
-                            for k2 in val_k2_range:
-                                vector = []
-                                for var, value in cumulative_dict.items():
-                                    if ((var.startswith('a_') and var.endswith(f'{i1}_{i2}')) or
-                                            (var.startswith('b_') and var.endswith(f'{j1}_{j2}')) or
-                                            (var.startswith('g_') and var.endswith(f'{k1}_{k2}'))):
-                                        vector.append(value)
-                                vectors_row_wise.append(vector)
+            # Generate row-wise vectors
+            for i1 in val_i1_range:
+                for i2 in val_i2_range:
+                    for j1 in val_j1_range:
+                        for j2 in val_j2_range:
+                            for k1 in val_k1_range:
+                                for k2 in val_k2_range:
+                                    vector = []
+                                    for var, value in cumulative_dict.items():
+                                        if ((var.startswith('a_') and var.endswith(f'{i1}_{i2}')) or
+                                                (var.startswith('b_') and var.endswith(f'{j1}_{j2}')) or
+                                                (var.startswith('g_') and var.endswith(f'{k1}_{k2}'))):
+                                            vector.append(value)
+                                    vectors_row_wise.append(vector)
+
+        elif commutative:
+            # Generate column-wise vectors
+            for val_t in val_t_range:
+                vector = []
+                prefixes = [f'aa_{val_t}_', f'bb_{val_t}_', f'g_{val_t}_', f'ab_{val_t}_', f'ba_{val_t}_']
+                for var, value in cumulative_dict.items():
+                    if any(var.startswith(prefix) for prefix in prefixes):
+                        vector.append(value)
+                vectors_col_wise.append(vector)
+
+            # Generate row-wise vectors
+            for i1 in val_i1_range:
+                for i2 in val_i2_range:
+                    for j1 in val_j1_range:
+                        for j2 in val_j2_range:
+                            for k1 in val_k1_range:
+                                for k2 in val_k2_range:
+                                    vector = []
+                                    for var, value in cumulative_dict.items():
+                                        if ((var.startswith('aa_') and var.endswith(f'{i1}_{i2}')) or
+                                                (var.startswith('bb_') and var.endswith(f'{j1}_{j2}')) or
+                                                (var.startswith('g_') and var.endswith(f'{k1}_{k2}')) or
+                                                (var.startswith('ab_') and var.endswith(f'{j1}_{j2}')) or
+                                                (var.startswith('ba_') and var.endswith(f'{i1}_{i2}'))):
+                                            vector.append(value)
+                                    vectors_row_wise.append(vector)
 
     except Exception as e:
         # Handle any unexpected exceptions

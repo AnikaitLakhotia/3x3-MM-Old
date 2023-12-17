@@ -10,7 +10,6 @@ from streamlining_v3 import generate_streamlining_v3
 from generate_lex_clauses import generate_lex_encoding, generate_var_list
 import random
 
-
 def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
              streamlining_0, streamlining_1, streamlining_parameter_1, streamlining_2,
              streamlining_parameter_2, streamlining_3, streamlining_parameter_3, seed):
@@ -176,7 +175,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         if lex_order:
             # Generate vectors for lex ordering.
             vectors_col_wise, vectors_row_wise = generate_var_list(num_t, num_row_1, num_col_1,
-                                                                   num_col_2, cumulative_dict)
+                                                                   num_col_2, cumulative_dict, commutative)
 
             # Generate lex ordering clauses.
             for i in range(1, len(vectors_col_wise)):
