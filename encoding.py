@@ -174,19 +174,13 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
 
         if lex_order:
             # Generate vectors for lex ordering.
-            vectors_col_wise, vectors_row_wise = generate_var_list(num_t, num_row_1, num_col_1,
+            vectors_col_wise = generate_var_list(num_t, num_row_1, num_col_1,
                                                                    num_col_2, cumulative_dict, commutative)
 
             # Generate lex ordering clauses.
-            for i in range(1, len(vectors_col_wise) + 1):
+            for i in range(1, len(vectors_col_wise)):
                 lex_addition, num_added_aux_var, num_added_clauses = generate_lex_encoding(vectors_col_wise[i - 1],
-                                                                                           vectors_col_wise[i - 1], num_var)
-                lex_string += lex_addition
-                num_var += num_added_aux_var
-                num_lex_clauses += num_added_clauses
-            for i in range(1, len(vectors_row_wise) + 1):
-                lex_addition, num_added_aux_var, num_added_clauses = generate_lex_encoding(vectors_row_wise[i - 1],
-                                                                                           vectors_row_wise[i - 1], num_var)
+                                                                                           vectors_col_wise[i], num_var)
                 lex_string += lex_addition
                 num_var += num_added_aux_var
                 num_lex_clauses += num_added_clauses
