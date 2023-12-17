@@ -46,11 +46,13 @@ def generate_lex_encoding(vector_1, vector_2, num_var):
 
         # Add initial clauses to encoding_string
         encoding_string += (
-            f'-{vector_1[0]} {vector_2[0]} {num_var + 1} 0 \n'
-            f'{vector_1[0]} -{vector_2[0]} {num_var + 1} 0 \n'
-            f'{vector_1[0]} {vector_2[0]} -{num_var + 1} 0 \n'
+            f'-{vector_1[0]} {vector_2[0]} -{num_var + 1} 0 \n'
+            f'{vector_1[0]} -{vector_2[0]} -{num_var + 1} 0 \n'
+            f'-{vector_1[0]} -{vector_2[0]} {num_var + 1} 0 \n'
             f'{vector_1[0]} {vector_2[0]} {num_var + 1} 0 \n'
         )
+
+        encoding_string += (f'{vector_1[0]} -{vector_2[0]} 0 \n')
 
         # Loop through auxiliary variables and add clauses to encoding_list
         for i in range(1, num_aux_var):
@@ -66,7 +68,9 @@ def generate_lex_encoding(vector_1, vector_2, num_var):
         # Add clauses for auxiliary variables
         for i in range(1, num_aux_var + 1):
             aux_var = i + num_var
-            encoding_list += [f'-{vector_1[i]} {vector_2[i]} -{aux_var} 0 \n']
+            encoding_list += [f'{vector_1[i]} -{vector_2[i]} -{aux_var} 0 \n']
+            encoding_list += [f'-{vector_1[i]} {aux_var} 0 \n']
+            encoding_list += [f'{vector_2[i]} {aux_var} 0 \n']
 
         encoding_string += "".join(encoding_list)
 
@@ -207,5 +211,4 @@ def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict, c
     except Exception as e:
         # Handle any unexpected exceptions
         raise RuntimeError(f'An error occurred while running generate_var_list: {e}')
-
     return vectors_col_wise, vectors_row_wise
