@@ -122,19 +122,24 @@ def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict, c
 
         # Check the allowed values for keys and values in 'cumulative_dict' argument
         for key, value in cumulative_dict.items():
-            var_str = key[0]
+            var_str = key[:2]
+
             if not isinstance(key, str):
-                raise TypeError(f'All keys in cumulative dict argument must be strings, found: {key}.')
+                raise TypeError(f'All keys in cumulative_dict argument must be strings, found: {key}.')
+
             elif not isinstance(value, int):
-                raise TypeError(f'All keys in cumulative dict argument must be integers, found: {value}.')
-            elif var_str not in ["a", "b", "g", "s", "t"]:
+                raise TypeError(f'All keys in cumulative_dict argument must be integers, found: {value}.')
+
+            elif var_str not in ["aa", "a_", "bb", "b_", "ab", "ba", "g_", "s_", "sa", "sb", "t_", "ta", "tb"]:
                 raise ValueError(f'Invalid key({key}) in cumulative_dict argument. It must start with'
-                                 f' a, b, g, s or t.')
+                                 f' aa, a, bb, b, ab, ba, s, sa, sb, t, ta, or tb.')
+
             elif value < 1:
                 raise ValueError(f'Invalid value({value}) in cumulative_dict argument. '
                                  f'It must be greater than or equal to 1')
-            elif len(cumulative_dict.values()) != len(set(cumulative_dict.values())):
-                raise ValueError("Duplicate values found in the cumulative_dict argument.")
+
+        if len(cumulative_dict.values()) != len(set(cumulative_dict.values())):
+            raise ValueError("Duplicate values found in the cumulative_dict argument.")
 
         # Input validation for commutative argument
         if not isinstance(commutative, bool):
