@@ -27,7 +27,7 @@ echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15}
 python3 main.py 1 $number_of_operations $m $n $p $c $lo $s0 $s1 $sp1 $s2 $sp2 $s3 $sp3 $solver $seed $cnf_path
 
 if [[ "${14}" == "cadical" ]]; then :
-  ../cadical/build/cadical $cnf_path > $result --phase=false
+  ../cadical/build/cadical $cnf_path > $result --phase=false --no-binary
 
   # Check if "UNSATISFIABLE" is in cadicalResult.txt
   if grep -q "UNSATISFIABLE" $result; then :
