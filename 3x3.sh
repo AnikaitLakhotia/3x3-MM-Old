@@ -30,7 +30,7 @@ mkdir -p "$directory"
 cnf_path="${directory}instance_${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}_${solver}_${seed}.cnf"
 result="${directory}result_${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}_${solver}_${seed}.txt"
 
-if [ "$test" == "0" ]; then
+if [ "$test" != "0" ]; then
   echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15}
 fi
 
@@ -45,9 +45,9 @@ if [[ "${solver}" == "cadical" ]]; then :
 
       if [ "$test" != "1" ]; then
         echo "UNSATISFIABLE"
-      elif [ "$test" == "1" ] && { [ "$exp" == "0" ] || [ "$exp" == "0" ]; }; then
+      elif [ "$test" != "1" ] && { [ "$exp" == "0" ] || [ "$exp" == "0" ]; }; then
         echo "Test (${tc}/123) passed."
-      elif [ "$test" == "1" ] && { [ "$exp" != "0" ] && [ "$exp" != "0" ]; }; then
+      elif [ "$test" != "1" ] && { [ "$exp" != "0" ] && [ "$exp" != "0" ]; }; then
         echo "Test (${tc}/123) failed."
       fi
 
@@ -66,7 +66,7 @@ if [[ "${solver}" == "cadical" ]]; then :
       verifier="${directory}verifier_${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}_${solver}_${seed}.txt"
       verifier_v2="${directory}verifier_v2_${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}_${solver}_${seed}.txt"
 
-      if [ "$test" == "0" ]; then
+      if [ "$test" != "1" ]; then
         if grep -q "1" "$verifier" && grep -q "1" "$verifier_v2"; then
         message="Both verifications passed."
         elif grep -q "1" "$verifier" && grep -q "0" "$verifier_v2"; then
