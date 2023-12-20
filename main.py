@@ -2,6 +2,7 @@ import sys
 from encoding import encoding
 from verifier import verifier
 from verifier_v2 import verifier_v2
+import os
 
 if __name__ == '__main__':
     try:
@@ -61,6 +62,8 @@ if __name__ == '__main__':
         solver = sys.argv[15]
         file_path = sys.argv[17]
 
+        test = int(os.environ.get('test', 0))
+
         # Value check for operation
         if operation != 1 and operation != 0:
             raise ValueError(f'Invalid value for operation. It must be equal to 1 or 0.')
@@ -73,13 +76,18 @@ if __name__ == '__main__':
         if len(encoding_str) < 1:
             raise ValueError("CNF instance file is empty")
 
+        if test == 0:
+            logs_path = "logs"
+        elif test == 1:
+            logs_path = "tests/logs"
+
         if operation:
             # Write encoding to file
             with open(file_path, "w") as file:
                 file.write(encoding_str)
         else:
             # If solver outputs SAT, insert the SAT assignment
-            assignment_output_string = f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" \
+            assignment_output_string = f"{logs_path}/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" \
                                        f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}/"\
                                        f"assignment_{number_of_operations}_" \
                                        f"{m}_{n}_{p}_{c}_{lo}_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}.txt"
@@ -105,13 +113,13 @@ if __name__ == '__main__':
             if len(str(verifier_v2_output)) < 1:
                 raise ValueError("No output by verifier 2")
 
-            with open(f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
+            with open(f"{logs_path}/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
                       f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}/"
                       f"verifier_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
                       f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}.txt", "w") as file:
                 file.write(str(verifier_output))
 
-            with open(f"logs/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
+            with open(f"{logs_path}/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
                       f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}/"
                       f"verifier_v2_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
                       f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}.txt", "w") as file:
