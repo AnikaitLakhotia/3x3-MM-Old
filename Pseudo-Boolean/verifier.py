@@ -156,11 +156,11 @@ class Verifier2(Verifier):
         matrix_b = [[0 for _ in range(self.p)] for _ in range(self.n)]
         for i in range(self.m):
             for j in range(self.n):
-                matrix_a[i][j] = random.randint(0, 1)
+                matrix_a[i][j] = random.randint(-100, 100)
 
         for i in range(self.n):
             for j in range(self.p):
-                matrix_b[i][j] = random.randint(0, 1)
+                matrix_b[i][j] = random.randint(-100, 100)
 
         return matrix_a, matrix_b
 
@@ -169,7 +169,7 @@ class Verifier2(Verifier):
         for i in range(self.m):
             for j in range(self.p):
                 for k in range(self.n):
-                    output_matrix[i][j] ^= a_matrix_values[i][k] & \
+                    output_matrix[i][j] += a_matrix_values[i][k] * \
                         b_matrix_values[k][j]
 
         return [val for row in output_matrix for val in row]
@@ -207,13 +207,13 @@ class Verifier2(Verifier):
             alpha_sum = beta_sum = 0
 
             for i in range(alpha_matrix_size):
-                alpha_sum ^= alpha_anstaz_portion[i] & a_matrix_values[i]
+                alpha_sum += alpha_anstaz_portion[i] * a_matrix_values[i]
 
             beta_matrix_size = self.n*self.p
             for i in range(beta_matrix_size):
-                beta_sum ^= beta_anstaz_portion[i] & b_matrix_values[i]
+                beta_sum += beta_anstaz_portion[i] * b_matrix_values[i]
 
-            m_values[multiplication] = alpha_sum & beta_sum
+            m_values[multiplication] = alpha_sum * beta_sum
         return m_values
 
     def calculate_matrix(self, a_matrix_values, b_matrix_values):
@@ -227,8 +227,8 @@ class Verifier2(Verifier):
                     gamma_var = (i, j, multiplication)
                     gamma_node = self.alpha_beta_gamma_to_var_num[gamma_var][GAMMA]
                     u, v = gamma_node.first_var, gamma_node.second_var
-                    tot_sum ^= (self.get_variable_value(
-                        u) - self.get_variable_value(v)) & m_values[multiplication]
+                    tot_sum += (self.get_variable_value(
+                        u) - self.get_variable_value(v)) * m_values[multiplication]
                 output_matrix.append(tot_sum)
 
         return output_matrix
@@ -312,7 +312,7 @@ if __name__ == "__main__":
                           int(m), int(n), int(p), int(s), int(c))
     if not verifier2.verify_scheme():
         raise Exception("Could not verify multiplication scheme")
-    print("Verifier 2 has verified sc(eme against naive method!")
+    print("Verifier 2 has verified scheme against naive method!")
     print("Writing scheme to file!")
     scheme = Schemes(int(number_of_multiplications),
                           int(m), int(n), int(p), int(s), int(c))

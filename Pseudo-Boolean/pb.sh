@@ -19,6 +19,7 @@ opb_path="${path_to_encoding}.opb"
 drat_path="${path_to_encoding}.drat"
 cnf_path="${path_to_encoding}.cnf"
 drat_output="${path_to_encoding}_drat_output.txt"
+scheme_generated="${path_to_encoding}_scheme.txt"
 
 echo "Running main.py..."
 python3 main.py "$op" "$m" "$n" "$p" "$s" "$c"
@@ -36,7 +37,7 @@ fi
 
 
 echo "Running cadical..."
-./cadical/build/cadical $cnf_path $drat_path > $solver_result_file
+./cadical/build/cadical $cnf_path $drat_path > $solver_result_file --phase=false
 
 
 echo "Checking if satisfiable..."
@@ -52,6 +53,7 @@ if grep -q "UNSATISFIABLE" $solver_result_file; then
 elif grep -q "SATISFIABLE" $solver_result_file; then
     echo "The encoding is SATISFIABLE."
     python3 verifier.py "$op" "$m" "$n" "$p" "$s" "$c"
+    python3 schemecheck.py "$scheme_generated"
 else
     echo "The result is unknown."
 fi

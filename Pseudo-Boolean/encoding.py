@@ -147,8 +147,7 @@ class PB:
 
             return positive_numbers, negative_numbers
 
-        postitive_variables, negative_variables = parse_file(
-            pick_random_file())
+        postitive_variables, negative_variables = parse_file(pick_random_file())
         variable_assignments = []
         row_col_multiplications = {
             ALPHA: [self.m, self.n, "a"],
