@@ -63,7 +63,7 @@ def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob, 
                         for j2 in val_j2_range:
                             for k1 in val_k1_range:
                                 for k2 in val_k2_range:
-                                    if i2 != j1 or j2 != k2 or k1 != i1:
+                                    if i2 == j1 or j2 == k2 or k1 == i1:
                                         streamlining_list.append(f'-t_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')
         if commutative:
             vala_i1_range = vala_j1_range = vala_k1_range = range(1, num_row_1 + 1)  # Create ranges for
@@ -79,7 +79,7 @@ def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob, 
                             for j2 in vala_j2_range:
                                 for k1 in vala_k1_range:
                                     for k2 in vala_k2_range:
-                                        if i2 != j1 or j2 != k2 or k1 != i1:
+                                        if i2 == j1 or j2 == k2 or k1 == i1:
                                             streamlining_list.append(f'-ta_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')
 
             valb_i1_range = valb_j1_range = range(1, num_col_1 + 1)  # Create ranges for 'i1' and 'j1' values
@@ -94,7 +94,7 @@ def generate_streamlining_v2(num_t, num_row_1, num_col_1, num_col_2, zero_prob, 
                             for j2 in valb_j2_range:
                                 for k1 in valb_k1_range:
                                     for k2 in valb_k2_range:
-                                        if i2 != j1 or j2 != k2 or k1 != i1:
+                                        if i2 == j1 or j2 == k2 or k1 == i1:
                                             streamlining_list.append(f'-tb_{val_t}_{i1}_{i2}_{j1}_{j2}_{k1}_{k2}')
 
         random.seed(seed)
