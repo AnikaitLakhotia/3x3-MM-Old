@@ -40,7 +40,7 @@ Class variables:
 
 
 class PB:
-    def __init__(self, multiplications, m, n, p, streamlining, percentage) -> None:
+    def __init__(self, multiplications, m, n, p, streamlining, percentage, translator_type, encoding_type, id) -> None:
         self.curr_variable = 0
         self.m = m
         self.n = n
@@ -48,7 +48,7 @@ class PB:
         self.multiplications = multiplications
         self.streamlining = streamlining
         self.percentage_of_variables_changed = percentage
-        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{self.streamlining}_{self.percentage_of_variables_changed}"
+        encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{self.streamlining}_{self.percentage_of_variables_changed}_{translator_type}_{encoding_type}_{id}"
         logs_directory = f"./opb/{encoding_description}"
         os.makedirs(logs_directory, exist_ok=True)
         self.file_name = f"{logs_directory}/{encoding_description}.opb"
@@ -87,10 +87,6 @@ class PB:
         if j == k and i == m and l == n:
             return 1
         return 0
-    
-    def get_number_of_variables(self):
-        return self.multiplications*2*(self.m*self.n + self.n*self.p + self.m*self.p) + \
-            self.m*self.n*self.n*self.p*self.m*self.p*self.multiplications*8
 
     def streamlining1(self, alpha_beta_gamma_to_var_num):
         def pick_random_file():
@@ -147,7 +143,8 @@ class PB:
 
             return positive_numbers, negative_numbers
 
-        postitive_variables, negative_variables = parse_file(pick_random_file())
+        postitive_variables, negative_variables = parse_file(
+            pick_random_file())
         variable_assignments = []
         row_col_multiplications = {
             ALPHA: [self.m, self.n, "a"],
@@ -186,13 +183,13 @@ class PB:
             brent_variable = alpha_beta_gamma_to_var_num[node_entry][brent_var]
             if val == -1:
                 self.constraints.append(
-                    f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = -1;\n")
+                    f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = -1;")
             elif val == 1:
                 self.constraints.append(
-                    f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = 1;\n")
+                    f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = 1;")
             else:
                 self.constraints.append(
-                    f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = 0;\n")
+                    f"1 x{brent_variable.first_var} -1 x{brent_variable.second_var} = 0;")
 
     def streamlining2(self, alpha_beta_gamma_to_var_num):
         zero_variables = []
@@ -221,7 +218,7 @@ class PB:
             random_number = round(random.uniform(0, 2))
             variable = variables[random_number]
             self.constraints.append(
-                f"1 x{variable.first_var} -1 x{variable.second_var} = 0;\n")
+                f"1 x{variable.first_var} -1 x{variable.second_var} = 0;")
 
     def streamlining3(self, alpha_beta_gamma_to_var_num):
         for i in range(self.m):
@@ -252,15 +249,16 @@ class PB:
                                     for _ in range(19):
                                         variables = summands.pop()
                                         self.constraints.append(
-                                            "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 1;\n".format(*variables))
+                                            "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 1;".format(*variables))
                                     for _ in range(4):
                                         variables = summands.pop()
                                         self.constraints.append(
-                                            "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 2;\n".format(*variables))
-    
+                                            "1 x{} -1 x{} 1 x{} -1 x{} 1 x{} -1 x{} = 2;".format(*variables))
+
     def write_all_constraints(self):
         for constraint in self.constraints:
-            self.write_to_file(constraint)
+            self.write_to_file(f"{constraint}\n")
+        self.opb_file.close()
 
     def write_to_file(self, constraint):
         """
@@ -304,6 +302,15 @@ class PB:
                         variable_node = Node(first_new_var, second_new_var)
                         local_alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var] = variable_node
         return local_alpha_beta_gamma_to_var_num
+
+
+class NaiveEncoding(PB):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_number_of_variables(self):
+        return self.multiplications*2*(self.m*self.n + self.n*self.p + self.m*self.p) + \
+            self.m*self.n*self.n*self.p*self.m*self.p*self.multiplications*8
 
     def create_encoding(self):
         """
@@ -352,21 +359,35 @@ class PB:
                                 total_contraint = " ".join(
                                     clause for sub_constraint in total_alpha_beta_gamma_constraint for clause in sub_constraint)
                                 self.constraints.append(
-                                    f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};\n")
-                                # return
+                                    f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};")
         if self.streamlining == 1:
             self.streamlining1(alpha_beta_gamma_to_var_num)
         elif self.streamlining == 2:
             self.streamlining2(alpha_beta_gamma_to_var_num)
         elif self.streamlining == 3:
             self.streamlining3(alpha_beta_gamma_to_var_num)
-
+        # row_col_multiplications = {
+        #     ALPHA: [self.m, self.n],
+        #     BETA: [self.n, self.p],
+        #     GAMMA: [self.m, self.p]
+        # }
+        # temp = []
+        # for brent_var, (rows, cols) in row_col_multiplications.items():
+        #     for row in range(rows):
+        #         for col in range(cols):
+        #             for iota in range(self.multiplications):
+        #                 row_col_iota_tuple = tuple((row, col, iota))
+        #                 first_var1 = alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var].first_var
+        #                 second_var1 = alpha_beta_gamma_to_var_num[row_col_iota_tuple][brent_var].second_var
+        #                 temp.append(f"1 x{first_var1} -1 x{second_var1}")
+        # constraint = " ".join(
+        #                             constraint for constraint in temp)
+        # self.constraints.append(f"{constraint} >= -36;")
         self.write_to_file(
-            f"* #variable= {self.get_number_of_variables()} #constraint= {len(self.constraints)}\n* \n")
-
+            f"* #variable= {self.get_number_of_variables()} #constraint= {len(self.constraints)}\n*\n")
+        
         self.write_all_constraints()
 
-        self.opb_file.close()
 
     def create_alpha_beta_gamma_constraints(self, alpha_variables, beta_variables, gamma_variables):
         """
@@ -415,9 +436,125 @@ class PB:
         # ~z + p >= 1
         for alpha_beta_or_gamma_variable in variables[:-1]:
             self.constraints.append(
-                f"-1 x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 0;\n")
+                f"-1 x{variables[-1]} 1 x{alpha_beta_or_gamma_variable} >= 0;")
 
         # ~p + ~r + ~u + z >= 1
         self.constraints.append(
-            "-1 x{} -1 x{} -1 x{} 1 x{} >= -2;\n".format(*variables))
+            "-1 x{} -1 x{} -1 x{} 1 x{} >= -2;".format(*variables))
         return
+
+
+class OptimizedEncoding(PB):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def create_encoding(self):
+        alpha_beta_gamma_to_var_num = self.create_variables()
+
+        if self.streamlining == 1:
+            self.streamlining1(alpha_beta_gamma_to_var_num)
+        elif self.streamlining == 2:
+            self.streamlining2(alpha_beta_gamma_to_var_num)
+        elif self.streamlining == 3:
+            self.streamlining3(alpha_beta_gamma_to_var_num)
+
+        for i in range(self.m):
+            for j in range(self.n):
+                for k in range(self.n):
+                    for l in range(self.p):
+                        for m in range(self.m):
+                            for n in range(self.p):
+                                summation_constraint = []
+                                for iota in range(self.multiplications):
+                                    alpha_coord = (i, j, iota)
+                                    beta_coord = (k, l, iota)
+                                    gamma_coord = (m, n, iota)
+                                    p_for_alpha = alpha_beta_gamma_to_var_num[
+                                        alpha_coord][ALPHA].first_var
+                                    q_for_alpha = alpha_beta_gamma_to_var_num[
+                                        alpha_coord][ALPHA].second_var
+                                    r_for_beta = alpha_beta_gamma_to_var_num[beta_coord][BETA].first_var
+                                    s_for_beta = alpha_beta_gamma_to_var_num[beta_coord][BETA].second_var
+                                    u_for_gamma = alpha_beta_gamma_to_var_num[gamma_coord][GAMMA].first_var
+                                    v_for_gamma = alpha_beta_gamma_to_var_num[gamma_coord][GAMMA].second_var
+                                    
+                                    m_val = self.get_new_var()
+                                    n_val = self.get_new_var()
+
+                                    self.multiplication_constraints([p_for_alpha, q_for_alpha], [r_for_beta, s_for_beta], [u_for_gamma, v_for_gamma], [m_val, n_val])
+
+                                    summation_constraint.append(f"1 x{m_val} -1 x{n_val}")
+                                total_contraint = " ".join(
+                                    constraint for constraint in summation_constraint)
+                                self.constraints.append(
+                                    f"{total_contraint} = {self.get_kronecker_delta_value(i, j, k, l, m, n)};")
+                                
+                                
+        # row_col_multiplications = {
+        #     ALPHA: [self.m, self.n],
+        #     BETA: [self.n, self.p],
+        #     GAMMA: [self.m, self.p]
+        # }
+        # temp = []
+        # for brent_var, (rows, cols) in row_col_multiplications.items():
+        #     for row in range(rows):
+        #         for col in range(cols):
+        #             for iota in range(self.multiplications):
+        #                 row_col_iota_tuple = tuple((row, col, iota))
+        #                 first_var1 = row_col_multiplications[row_col_iota_tuple][brent_var].first_var
+        #                 second_var1 = row_col_multiplications[row_col_iota_tuple][brent_var].second_var
+        #                 temp.append(f"{first_var1} -1 {second_var1}")
+        # constraint = " ".join(
+        #                             constraint for constraint in temp)
+        # self.constraints.append(f"{constraint} <= 5;\n")
+                        
+        self.write_to_file(
+            f"* #variable= {self.get_number_of_variables()} #constraint= {len(self.constraints)}\n*\n")
+        
+
+        self.write_all_constraints()
+
+    def get_number_of_variables(self):
+        return self.multiplications*2*(self.m*self.n + self.n*self.p + self.m*self.p) + self.m * self.n * self.p * self.m * self.n *self.p * self.multiplications * 2
+
+    def not_both_zero_constraint(self, variables):
+        for var_1, var_2 in variables:
+            self.constraints.append(f"1 x{var_1} 1 x{var_2} >= 1;")
+    
+    def difference_equals_zero_constraint(self, brent_variable, multiplication_aux_vars):
+        self.constraints.append(f"-1 x{brent_variable[0]} -1 x{brent_variable[1]} 1 x{multiplication_aux_vars[0]} >= -1;")
+        self.constraints.append(f"-1 x{brent_variable[0]} -1 x{brent_variable[1]} 1 x{multiplication_aux_vars[1]} >= -1;")
+
+    def difference_negative_one_constraint(self, alpha_aux_vars, beta_aux_vars, gamma_aux_vars, multiplication_aux_vars):
+        p, q = alpha_aux_vars
+        u, v = beta_aux_vars
+        s, t = gamma_aux_vars
+        _, n = multiplication_aux_vars
+
+        self.constraints.append(f"1 x{q} 1 x{v} 1 x{t} -1 x{n} >= 0;")
+        self.constraints.append(f"1 x{q} 1 x{u} 1 x{s} -1 x{n} >= 0;")
+        self.constraints.append(f"1 x{p} 1 x{v} 1 x{s} -1 x{n} >= 0;")
+        self.constraints.append(f"1 x{p} 1 x{u} 1 x{t} -1 x{n} >= 0;")
+
+    def difference_positive_one_constraint(self, alpha_aux_vars, beta_aux_vars, gamma_aux_vars, multiplication_aux_vars):
+        p, q = alpha_aux_vars
+        u, v = beta_aux_vars
+        s, t = gamma_aux_vars
+        m, _ = multiplication_aux_vars
+
+        self.constraints.append(f"1 x{p} 1 x{u} 1 x{s} -1 x{m} >= 0;")
+        self.constraints.append(f"1 x{p} 1 x{v} 1 x{t} -1 x{m} >= 0;")
+        self.constraints.append(f"1 x{q} 1 x{u} 1 x{t} -1 x{m} >= 0;")
+        self.constraints.append(f"1 x{q} 1 x{v} 1 x{s} -1 x{m} >= 0;")
+
+
+    def multiplication_constraints(self, alpha_aux_vars, beta_aux_vars, gamma_aux_vars, multiplication_aux_vars):
+        self.not_both_zero_constraint([alpha_aux_vars, beta_aux_vars, gamma_aux_vars, multiplication_aux_vars])
+
+        self.difference_equals_zero_constraint(alpha_aux_vars, multiplication_aux_vars)
+        self.difference_equals_zero_constraint(beta_aux_vars, multiplication_aux_vars)
+        self.difference_equals_zero_constraint(gamma_aux_vars, multiplication_aux_vars)
+
+        self.difference_negative_one_constraint(alpha_aux_vars, beta_aux_vars, gamma_aux_vars, multiplication_aux_vars)
+
+        self.difference_positive_one_constraint(alpha_aux_vars, beta_aux_vars, gamma_aux_vars, multiplication_aux_vars)
