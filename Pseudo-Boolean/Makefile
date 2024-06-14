@@ -13,19 +13,23 @@
 #   ---- cadical
 
 # op = number of multiplications
-op ?= 23
+op ?= 4
 # number of rows in matrix A
-m ?= 3
+m ?= 1
 # number of cols in matrix A and rows in matrix B
-n ?= 3
+n ?= 2
 # number of cols in matrix B
-p ?= 3
+p ?= 2
 # streamlining 
-s ?= 1
+s ?= 0
 # percentage of changes from streamlining
-c ?= 100
-# translator library: 1. minisat+, 2. pblib
-t ?= 0
+c ?= 0
+# translator library: 0. no translator (instance is solved with roundingsat), 1. minisat+, 2. pblib
+t ?= 2
+# encoding type: 0. naive, 1. optimized
+e ?= 0
+# expirement identifier
+id ?= 0
 
 run:
-	@./pb.sh $(op) $(m) $(n) $(p) $(s) $(c) $(t)
+	@./pb.sh $(op) $(m) $(n) $(p) $(s) $(c) $(t) $(e) $(id)
