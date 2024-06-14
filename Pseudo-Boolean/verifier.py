@@ -1,4 +1,4 @@
-from encoding import PB
+from encoding import OptimizedEncoding
 import collections
 import sys
 import random
@@ -7,19 +7,19 @@ BETA = "beta"
 GAMMA = "gamma"
 
 class Verifier:
-    def __init__(self, multiplications, m, n, p, streamlining, percentage) -> None:
+    def __init__(self, multiplications, m, n, p, streamlining, percentage, translator_type, encoding_type, id) -> None:
         self.m = m
         self.n = n
         self.p = p
         self.multiplications = multiplications
-        self.encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{streamlining}_{percentage}"
+        self.encoding_description = f"{self.m}x{self.n}_{self.n}x{self.p}_{self.multiplications}_{streamlining}_{percentage}_{translator_type}_{encoding_type}_{id}"
         self.logs_directory = f"./opb/{self.encoding_description}"
-        self.opb_encoding_file = f"{self.logs_directory}/{self.encoding_description}.opb"
         self.assignment_file = f"{self.logs_directory}/{self.encoding_description}_solver_result.txt"
         self.assignment_mapping = collections.defaultdict(int)
-        self.PB = PB(self.multiplications, self.m,
-                     self.n, self.p, streamlining, percentage)
-        
+        self.PB = OptimizedEncoding(self.multiplications, self.m,
+                     self.n, self.p, streamlining, percentage, translator_type, translator_type, id)
+        self.is_opb = translator_type
+
     def create_assignment_mapping(self):
         with open(self.assignment_file, 'r') as file:
             for line in file:
@@ -29,9 +29,11 @@ class Verifier:
                     for assignment in assignments:
                         variable_number = 0
                         if assignment[0] == "-":
-                            variable_number = int(assignment[1:])
-                            self.assignment_mapping[int(assignment[1:])] = 0
+                            assignment = assignment[1:] if self.is_opb else assignment[2:]
+                            variable_number = int(assignment)
+                            self.assignment_mapping[int(assignment)] = 0
                         else:
+                            assignment = assignment if self.is_opb else assignment[1:]
                             variable_number = int(assignment)
                             self.assignment_mapping[int(assignment)] = 1
                         if variable_number >= self.PB.get_number_of_variables():
@@ -78,11 +80,11 @@ class Verifier1(Verifier):
                                         gamma_coord][GAMMA].second_var
                                     total_sum_of_alpha_beta_gamma += self.verify_alpha_beta_gamma_constraints([p_for_alpha, q_for_alpha], [
                                         r_for_beta, s_for_beta], [u_for_gamma, v_for_gamma])
+
                                 if total_sum_of_alpha_beta_gamma != self.PB.get_kronecker_delta_value(i, j, k, l, m, n):
                                     raise Exception(
-                                        "Kronecker delta values are not satisfied")
+                                        f"Kronecker delta values are not satisfied. {total_sum_of_alpha_beta_gamma} != {self.PB.get_kronecker_delta_value(i, j, k, l, m, n)}. For i: {i}, j: {j}, k: {k}, l: {l}, m: {m}, n: {n}")
         return True
-
     def verify_alpha_beta_gamma_constraints(self, alpha_variables, beta_variables, gamma_variables):
         sum_of_z_variables = 0
         is_negative = {1, 2, 4, 7}
@@ -90,9 +92,6 @@ class Verifier1(Verifier):
         for alpha_var in alpha_variables:
             for beta_var in beta_variables:
                 for gamma_var in gamma_variables:
-                    z_variable = self.PB.get_new_var()
-                    self.verify_aux_variable_constraint(
-                        [alpha_var, beta_var, gamma_var, z_variable])
                     aux_var_products.append(self.get_variable_value(
                         alpha_var)*self.get_variable_value(beta_var)*self.get_variable_value(gamma_var))
         for index, product in enumerate(aux_var_products):
@@ -100,22 +99,6 @@ class Verifier1(Verifier):
                 product *= -1
             sum_of_z_variables += product
         return sum_of_z_variables
-
-    def verify_aux_variable_constraint(self, variables):
-        z_variable = variables[-1]
-        z_variable_value = self.get_variable_value(z_variable)
-        for alpha_beta_or_gamma_variable in variables[:-1]:
-            alpha_beta_or_gamma_variable_value = self.get_variable_value(
-                alpha_beta_or_gamma_variable)
-            if not (self.get_compliment(z_variable_value) + alpha_beta_or_gamma_variable_value >= 1):
-                raise Exception(
-                    f"Could not satisfy ~{z_variable} + {alpha_beta_or_gamma_variable} >= 1")
-
-        variable_values = [self.get_variable_value(var) for var in variables]
-
-        if not (self.get_compliment(variable_values[0]) + self.get_compliment(variable_values[1]) + self.get_compliment(variable_values[2]) + variable_values[3] >= 1):
-            raise Exception(
-                f"Could not satisfy ~{variables[0]} + ~{variables[1]} + ~{variables[2]} + {z_variable} >= 1")
 
 
 class Verifier2(Verifier):
@@ -129,7 +112,11 @@ class Verifier2(Verifier):
         self.alpha_beta_gamma_to_var_num = self.PB.create_variables()
 
     def write_to_file(self, string):
-        self.verification_file.write(string)
+        try:
+            self.verification_file.write(string)
+            self.verification_file.flush()
+        except Exception as e:
+            print(f"Error writing to file: {e}")
 
     def verify_scheme(self):
         self.create_assignment_mapping()
@@ -149,6 +136,7 @@ class Verifier2(Verifier):
             self.write_to_file(
                 f"Scheme number: {schemes_tested}. Matrix A x Matrix B: {matrix_a} x {matrix_b}. Naive scheme result {naive_matrix_result}. Brent equations scheme result {brent_matrix_scheme}\n")
             schemes_tested += 1
+
         return True
 
     def randomly_generate_matrix(self):
@@ -196,7 +184,6 @@ class Verifier2(Verifier):
 
             self.scalar_multiplication[multiplication][ALPHA] = alpha_anstaz
             self.scalar_multiplication[multiplication][BETA] = beta_anstaz
-
     def get_M_values(self, a_matrix_values, b_matrix_values):
         m_values = [0] * self.multiplications
 
@@ -300,21 +287,21 @@ class Schemes(Verifier):
             self.scheme_file.write(f"{scheme_for_curr_multiplication}\n")
         
 if __name__ == "__main__":
-    _, number_of_multiplications, m, n, p, s, c = sys.argv
-    verifier = Verifier1(int(number_of_multiplications),
-                        int(m), int(n), int(p), int(s), int(c))
+    _, number_of_multiplications, m, n, p, s, c, translator_type, encoding_type, id = sys.argv
+    verifier = Verifier1(int(number_of_multiplications), int(
+    m), int(n), int(p), int(s), int(c), int(translator_type), int(encoding_type), id)
     print("Running verifier 1!")
     if not verifier.verify_against_brent_equations():
         raise Exception("Could not verify PB encoding against Brent equations")
     print("Verifier 1 has verifier SAT assignment against the Brent equations!")
     print("Running verifier 2!")
-    verifier2 = Verifier2(int(number_of_multiplications),
-                          int(m), int(n), int(p), int(s), int(c))
+    verifier2 = Verifier2(int(number_of_multiplications), int(
+    m), int(n), int(p), int(s), int(c), int(translator_type), int(encoding_type), id)
     if not verifier2.verify_scheme():
         raise Exception("Could not verify multiplication scheme")
     print("Verifier 2 has verified scheme against naive method!")
     print("Writing scheme to file!")
-    scheme = Schemes(int(number_of_multiplications),
-                          int(m), int(n), int(p), int(s), int(c))
+    scheme = Schemes(int(number_of_multiplications), int(
+    m), int(n), int(p), int(s), int(c), int(translator_type), int(encoding_type), id)
     scheme.create_scheme()
     print("Scheme was written to the file!")
