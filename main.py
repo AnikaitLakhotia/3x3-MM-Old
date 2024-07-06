@@ -2,6 +2,7 @@ import sys
 from encoding import encoding
 from verifier import verifier
 from verifier_v2 import verifier_v2
+from scheme import scheme
 import os
 
 if __name__ == '__main__':
@@ -99,6 +100,16 @@ if __name__ == '__main__':
 
             # Removes trailing 0
             assignment_string = assignment_string[:-1]
+
+
+            # Output scheme in human readable format
+            scheme = scheme(assignment_string, cumulative_dict, number_of_operations, m, n, p, c)
+
+            with open(f"{logs_path}/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}/"
+                      f"scheme_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}.txt", "w") as file:
+                file.write(scheme)
 
             # Perform verifications
             verifier_output = verifier(assignment_string, cumulative_dict, number_of_operations, c)
