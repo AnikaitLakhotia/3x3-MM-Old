@@ -13,9 +13,9 @@
 #   ---- cadical
 
 # op = number of multiplications
-op ?= 4
+op ?= 8
 # number of rows in matrix A
-m ?= 1
+m ?= 2
 # number of cols in matrix A and rows in matrix B
 n ?= 2
 # number of cols in matrix B
@@ -27,7 +27,7 @@ c ?= 0
 # translator library: 0. no translator (instance is solved with roundingsat), 1. minisat+, 2. pblib
 t ?= 2
 # encoding type: 0. naive, 1. optimized
-e ?= 0
+e ?= 1
 # expirement identifier
 id ?= 0
 
