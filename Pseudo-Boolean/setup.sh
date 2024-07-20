@@ -11,9 +11,6 @@ TARGET_DIR="$ROOT_DIR/Pseudo-Boolean"
 echo "Cloning cadical..."
 git clone https://github.com/arminbiere/cadical.git "$TARGET_DIR/cadical"
 
-echo "Cloning pblib..."
-git clone https://github.com/aayushkapoor1/pblib.git "$TARGET_DIR/pblib"
-
 echo "Cloning drat-trim..."
 git clone https://github.com/marijnheule/drat-trim.git "$TARGET_DIR/drat-trim"
 
