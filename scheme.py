@@ -38,13 +38,14 @@ def scheme(sat_assignment, cumulative_dict, num_t, num_row_1, num_col_1, num_col
                     if var != 'g':
                         out_list.append("| ")  # Add separator "|" except for 'g'
                 out_list.append("\n")  # Add newline at the end of each row
-            
-            out_list.append(3*(horizontal_length**2)*"-")  # Add a horizontal line after each time step
+                
+            dashes = 3*(horizontal_length**2)*"-"
+            out_list.append(dashes)  # Add a horizontal line after each tensor
             if t < num_t:
-                out_list.append("\n")  # Add newline if not the last time step
+                out_list.append("\n")  # Add newline if not the last tensor
 
         # Join all elements in out_list into a single string
-        out = ''.join([' '.join(map(str, innerlist)) for innerlist in out_list])
+        out = ''.join([''.join(map(str, innerlist)) for innerlist in out_list])
         return out  # Return the final output string
 
     except Exception as e:
