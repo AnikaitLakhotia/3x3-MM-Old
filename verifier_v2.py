@@ -186,6 +186,7 @@ def multiply_matrices(matrix_a, matrix_b, num_row_1, num_col_1, num_col_2):
 
 
 def verifier_v2(sat_assignment, cumulative_dict, num_t, num_row_1, num_col_1, num_col_2, commutative):
+    1
     """
     Verify the correctness of matrix multiplication using the scheme by comparing it to the output of
     standard matrix multiplication for all possible matrices of orders under consideration.

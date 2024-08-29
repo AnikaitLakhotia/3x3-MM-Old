@@ -71,8 +71,14 @@ def important_tensors(num_t, freq_threshold):
         bin_list = []
 
         for scheme in schemes:
+            split_line = "" # Delimiter for splitting tensors
+
+            for line in scheme.split("\n"):
+                if line.startswith("--"):
+                    split_line = line
+
             # Split the scheme into tensors based on the delimiter
-            tensors = scheme.split('---------+---------+----------')
+            tensors = scheme.split(split_line)
             tensors = tensors[:-1]  # Remove the last empty string after the split
             var_chars = ['a', 'b', 'g']  # Characters representing variable types
             var_list = []

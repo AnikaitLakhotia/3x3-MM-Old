@@ -8,12 +8,12 @@ import os
 if __name__ == '__main__':
     try:
         # Input validation and value checks
-        if len(sys.argv) != 18:
+        if len(sys.argv) != 21:
             raise ValueError("Incorrect number of arguments. Usage: make op= m= "
                              "n= p= c= lo= s0= s1= sp1= s2= sp2= s3= sp3= solver= seed=")
 
         # Indices of command line arguments that should be integers
-        int_arg_indices = [1, 2, 3, 4, 5, 10, 14]
+        int_arg_indices = [1, 2, 3, 4, 5, 10, 14, 17]
 
         # Indices of command line arguments that should be bools
         bool_arg_indices = [6, 7, 8, 9, 11, 13]
@@ -39,6 +39,14 @@ if __name__ == '__main__':
         except ValueError:
             # Raise an exception if the conversion fails
             raise TypeError(f'Error: Argument at index 12 should be a float.')
+        
+        try:
+            # Try to convert argument 12 to a float
+            str(sys.argv[18])
+
+        except ValueError:
+            # Raise an exception if the conversion fails
+            raise TypeError(f'Error: Argument at index 18 should be a string.')
 
         operation, number_of_operations, m, n, p, sp1, sp3 = map(int, (sys.argv[1], sys.argv[2], sys.argv[3],
                                                                        sys.argv[4], sys.argv[5], sys.argv[10],
@@ -61,7 +69,10 @@ if __name__ == '__main__':
         s3 = sys.argv[13].lower() == 'true'
         sp2 = float(sys.argv[12])
         solver = sys.argv[15]
-        file_path = sys.argv[17]
+        iteration = sys.argv[17]
+        var_str = sys.argv[18]
+        prev_seed = sys.argv[19]
+        file_path = sys.argv[20]
 
         test = int(os.environ.get('test', 0))
 
@@ -71,7 +82,7 @@ if __name__ == '__main__':
 
         # Specify parameters of the encoding
         encoding_str, cumulative_dict = encoding(number_of_operations, m, n, p, c, lo, s0, s1,
-                                                 sp1, s2, sp2, s3, sp3, seed)
+                                                 sp1, s2, sp2, s3, sp3, seed, iteration, var_str, prev_seed)
 
         # Value check for encoding_str
         if len(encoding_str) < 1:
@@ -89,9 +100,9 @@ if __name__ == '__main__':
         else:
             # If solver outputs SAT, insert the SAT assignment
             assignment_output_string = f"{logs_path}/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" \
-                                       f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}/"\
+                                       f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}_{iteration}_{var_str}/"\
                                        f"assignment_{number_of_operations}_" \
-                                       f"{m}_{n}_{p}_{c}_{lo}_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}.txt"
+                                       f"{m}_{n}_{p}_{c}_{lo}_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}_{iteration}_{var_str}.txt"
 
             with open(assignment_output_string, 'r') as file:
                 assignment_string = file.read().rstrip('\n')
@@ -106,9 +117,20 @@ if __name__ == '__main__':
             scheme = scheme(assignment_string, cumulative_dict, number_of_operations, m, n, p, c)
 
             with open(f"{logs_path}/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}/"
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}_{iteration}_{var_str}/"
                       f"scheme_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}.txt", "w") as file:
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}_{iteration}_{var_str}.txt", "w") as file:
+                file.write(scheme)
+
+            # Define the file path
+            file_path = (f"current_schemes/scheme_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}"
+                        f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}_{iteration}_{var_str}.txt")
+
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+            # Write to the file
+            with open(file_path, "w") as file:
                 file.write(scheme)
 
             # Perform verifications
@@ -125,15 +147,15 @@ if __name__ == '__main__':
                 raise ValueError("No output by verifier 2")
 
             with open(f"{logs_path}/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}/"
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}_{iteration}_{var_str}/"
                       f"verifier_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}.txt", "w") as file:
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}_{iteration}_{var_str}.txt", "w") as file:
                 file.write(str(verifier_output))
 
             with open(f"{logs_path}/{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}/"
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}_{iteration}_{var_str}/"
                       f"verifier_v2_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}" 
-                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}.txt", "w") as file:
+                      f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}_{iteration}_{var_str}.txt", "w") as file:
                 file.write(str(verifier_v2_output))
 
     except Exception as e:

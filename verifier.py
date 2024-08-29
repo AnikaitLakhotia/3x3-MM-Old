@@ -136,6 +136,18 @@ def verifier(sat_assignment, cumulative_dict, num_t, commutative):
             raise ValueError("Duplicate values found in the cumulative_dict argument.")
 
         result = reverse_map(sat_assignment, cumulative_dict)
+        
+        blocking_clause = ""
+        for key, value in result.items():
+            if key.startswith("a") or key.startswith("b") or key.startswith("g"):
+                if value == 1:
+                    blocking_clause += f'-{cumulative_dict[key]} '
+                else:
+                    blocking_clause += f'{cumulative_dict[key]} '
+        blocking_clause += "0\n"
+
+        with open('blocking_clauses.txt', 'a+') as file:\
+            file.write(blocking_clause)
 
         for key, value in result.items():
             if key.startswith(f"t_1_"):

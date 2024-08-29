@@ -12,7 +12,7 @@ import random
 
 def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
              streamlining_0, streamlining_1, streamlining_parameter_1, streamlining_2,
-             streamlining_parameter_2, streamlining_3, streamlining_parameter_3, seed):
+             streamlining_parameter_2, streamlining_3, streamlining_parameter_3, seed, iter, var_str, prev_seed):
     """
     Generate the complete SAT encoding for the given parameters.
 
@@ -31,6 +31,8 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         streamlining_3 (bool): Streamlining 3 is used if True.
         streamlining_parameter_3 (int): The parameter associated with the streamlining 3.
         seed (None or int): Seed for random() function.
+        var_str (str): The type of variables to streamline.
+        iter (int): Iteration number.
 
     Returns:
         str: SAT encoding in CNF format.
@@ -95,20 +97,19 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
                 raise ValueError(f'Invalid value for seed. It must be None or an integer.')
 
         shift = 0  # Initialize the shift value for variable indices
+        dict_a = create_var(num_t, num_row_1, num_col_1, shift, "a")
+        shift = shift + len(dict_a)
+        dict_b = create_var(num_t, num_col_1, num_col_2, shift, "b")
+        shift = shift + len(dict_b)
+        dict_g = create_var(num_t, num_row_1, num_col_2, shift, "g")
+        shift = shift + len(dict_g)
         dict_t = create_t(num_t, num_row_1, num_col_1, num_col_2, shift, "t")
         shift = shift + len(dict_t)
         dict_s = create_s(num_t, num_row_1, num_col_1, num_col_2, shift, "s")
-        shift = shift + len(dict_s)
-        dict_g = create_var(num_t, num_row_1, num_col_2, shift, "g")
         cumulative_dict = {}  # Initialize an empty dictionary to store cumulative variable mappings
 
         if not commutative:
-            shift = shift + len(dict_g)
-            dict_a = create_var(num_t, num_row_1, num_col_1, shift, "a")
-            shift = shift + len(dict_a)
-            dict_b = create_var(num_t, num_col_1, num_col_2, shift, "b")
-
-            dict_list = [dict_t, dict_s, dict_g, dict_a, dict_b]
+            dict_list = [dict_a, dict_b, dict_g, dict_t, dict_s]
 
             # Combine variable dictionaries from dict_list into cumulative_dict
             for inner_dict in dict_list:
@@ -175,7 +176,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         if lex_order:
             # Generate vectors for lex ordering.
             vectors_col_wise = generate_var_list(num_t, num_row_1, num_col_1,
-                                                                   num_col_2, cumulative_dict, commutative)
+                                                                   num_col_2, cumulative_dict, commutative, var_str)
 
             # Generate lex ordering clauses.
             for i in range(1, len(vectors_col_wise)):
@@ -189,17 +190,25 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
 
         # Add streamlining clauses.
         if streamlining_1:
-            streamlining_var_list = generate_streamlining_v1(seed)
+            if int(iter) != -1:
+                streamlining_var_list = generate_streamlining_v1(num_t, num_row_1, num_col_1, num_col_2, seed, var_str, prev_seed)
 
-            # Set seed for random() function
-            random.seed(seed)
-            random.shuffle(streamlining_var_list)
+                # Set seed for random() function
+                random.seed(seed)
+                random.shuffle(streamlining_var_list)
 
-            # Revert back to None(default) seed
-            random.seed(None)
+                # Revert back to None(default) seed
+                random.seed(None)
 
-            streamlining_parameter = streamlining_parameter_1
-            streamlining_var_list = streamlining_var_list[:streamlining_parameter]
+            else:
+                streamlining_var_list = generate_streamlining_v1(num_t, num_row_1, num_col_1, num_col_2, seed, "n", prev_seed)
+                streamlining_parameter = streamlining_parameter_1
+                streamlining_var_list = streamlining_var_list[:streamlining_parameter]
+
+
+        else:
+            streamlining_var_list = []
+
         if streamlining_2:
             streamlining_var_list_extension = generate_streamlining_v2(num_t, num_row_1, num_col_1,
                                                                        num_col_2, streamlining_parameter_2, commutative,
@@ -214,13 +223,28 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
 
         num_clauses = len(cumulative_list)
         num_clauses += len(streamlining_var_list) + num_lex_clauses
+        blocking_clauses = ""
 
-        encoding_string = f'p cnf {num_var} {num_clauses} \n'
+        with open('blocking_clauses.txt', 'a+') as file:
+            file.seek(0)
+            blocking_clauses += file.read()
+
+        if blocking_clauses != "":
+            encoding_string = f'p cnf {num_var} {num_clauses + blocking_clauses.count("\n")} \n'
+        else:
+            encoding_string = f'p cnf {num_var} {num_clauses} \n'
+
         # Convert the clauses into CNF format, append them to
         # the encoding string and add streamlining clauses and lex string.
+        if streamlining_var_list == []:
+            encoding_string = f'p cnf {num_var} {num_clauses + blocking_clauses.count("\n") + 2} \n'
+            encoding_string += "-1 0\n"
+            encoding_string += "1 0\n"
         encoding_string += ''.join([' '.join(map(str, innerlist)) + ' 0 \n' for innerlist in cumulative_list])
         encoding_string += streamline(streamlining_var_list, cumulative_dict)
         encoding_string += lex_string
+
+        encoding_string += blocking_clauses
 
     except Exception as e:
         # Handle any unexpected exceptions

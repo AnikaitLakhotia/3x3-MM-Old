@@ -81,7 +81,7 @@ def generate_lex_encoding(vector_1, vector_2, num_var):
     return encoding_string, num_aux_var, num_clauses
 
 
-def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict, commutative):
+def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict, commutative, var_str):
     """
     Generate vectors for lex ordering.
 
@@ -93,6 +93,7 @@ def generate_var_list(num_t, num_row_1, num_col_1, num_col_2, cumulative_dict, c
         cumulative_dict (dict): A dict containing all the variables in the encoding(as keys) and their
                                 corresponding unique integer values.
         commutative (bool): Commutative encoding is used if True and non-commutative if False.
+        var_str (str): The type of variables to streamline.
 
     Returns:
         tuple: A tuple containing two lists - 'vectors_col_wise' and 'vectors_row_wise'.
