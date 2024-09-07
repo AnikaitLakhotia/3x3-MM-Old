@@ -236,7 +236,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
 
         # Convert the clauses into CNF format, append them to
         # the encoding string and add streamlining clauses and lex string.
-        if streamlining_var_list == []:
+        if streamlining_var_list == [] and str(streamlining_1) == "True":
             encoding_string = f'p cnf {num_var} {num_clauses + blocking_clauses.count("\n") + 2} \n'
             encoding_string += "-1 0\n"
             encoding_string += "1 0\n"
