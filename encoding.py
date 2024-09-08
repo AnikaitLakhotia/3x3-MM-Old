@@ -12,7 +12,7 @@ import random
 
 def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
              streamlining_0, streamlining_1, streamlining_parameter_1, streamlining_2,
-             streamlining_parameter_2, streamlining_3, streamlining_parameter_3, seed, iter, var_str, prev_seed):
+             streamlining_parameter_2, streamlining_3, streamlining_parameter_3, seed, iter, var_str, prev_seed, solver):
     """
     Generate the complete SAT encoding for the given parameters.
 
@@ -33,6 +33,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         seed (None or int): Seed for random() function.
         var_str (str): The type of variables to streamline.
         iter (int): Iteration number.
+        solver (str): Name of solver.
 
     Returns:
         str: SAT encoding in CNF format.
@@ -225,7 +226,7 @@ def encoding(num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order,
         num_clauses += len(streamlining_var_list) + num_lex_clauses
         blocking_clauses = ""
 
-        with open('blocking_clauses.txt', 'a+') as file:
+        with open(f'blocking_clauses_{num_t}_{num_row_1}_{num_col_1}_{num_col_2}_{lex_order}_{streamlining_1}_{solver}.txt', 'a+') as file:
             file.seek(0)
             blocking_clauses += file.read()
 

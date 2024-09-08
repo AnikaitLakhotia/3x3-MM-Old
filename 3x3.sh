@@ -23,14 +23,34 @@ index=0
 iter=0
 prev_seed=1
 
+#!/bin/bash
+
+# Define the directories
+initial_schemes="initial_schemes"
+schemes="schemes"
+
+# Define the directories
+initial_schemes="initial_schemes"
+schemes="schemes"
+
+if [ ! -d "$schemes" ]; then
+  mkdir -p "$schemes"
+  echo "Created the $schemes directory."
+fi
+
+if [ "$(ls -A "$initial_schemes" 2>/dev/null)" ]; then
+  mv "$initial_schemes"/* "$schemes"/
+  echo "Moved all schemes from $initial_schemes to $schemes."
+fi
+
 while true; do
   var_str=${var_strs[$index]}
   seed=$((seed + 1))
   
   if [ "$test" == "1" ]; then
-  directory_base="tests/logs/${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}_${solver}_${seed}_${iter}_${var_str}"
+  directory_base="tests/logs/${number_of_operations}_${m}_${n}_${p}_${lo}_${s1}_${solver}/${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}_${solver}_${seed}_${iter}_${var_str}"
   else
-    directory_base="logs/${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}_${solver}_${seed}_${iter}_${var_str}"
+    directory_base="logs/${number_of_operations}_${m}_${n}_${p}_${lo}_${s1}_${solver}/${number_of_operations}_${m}_${n}_${p}_${c}_${lo}_${s0}_${s1}_${sp1}_${s2}_${sp2}_${s3}_${sp3}_${solver}_${seed}_${iter}_${var_str}"
   fi
 
   directory="${directory_base}/"
@@ -63,8 +83,8 @@ while true; do
         iter=$((iter + 1))
         index=0
         prev_seed=1
-        mv current_schemes/* schemes/
-        mv current_schemes/* schemes_final/
+        mv current_schemes/${number_of_operations}_${m}_${n}_${p}_${lo}_${s1}_${solver}/* schemes/${number_of_operations}_${m}_${n}_${p}_${lo}_${s1}_${solver}/
+        mv current_schemes/${number_of_operations}_${m}_${n}_${p}_${lo}_${s1}_${solver}/* schemes_final/${number_of_operations}_${m}_${n}_${p}_${lo}_${s1}_${solver}/
         continue
       fi
       var_list=("a" "b" "g")

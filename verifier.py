@@ -71,7 +71,7 @@ def reverse_map(sat_assignment, cumulative_dict):
     return result_dict
 
 
-def verifier(sat_assignment, cumulative_dict, num_t, commutative):
+def verifier(sat_assignment, cumulative_dict, num_t, num_row_1, num_col_1, num_col_2, commutative, lex_order, streamlining_1, solver):
     """
     Verify if the sat_assignment obeys the rules of the Brent equations.
 
@@ -79,7 +79,13 @@ def verifier(sat_assignment, cumulative_dict, num_t, commutative):
         sat_assignment (str): A space-separated string of values.
         cumulative_dict (dict): A dictionary mapping keys to values.
         num_t (int): Number of 't's in each Brent equation.
+        num_row_1 (int): Number of rows in the first matrix.
+        num_col_1 (int): Number of columns in the first matrix.
+        num_col_2 (int): Number of columns in the second matrix.
         commutative (bool): Commutative encoding is used if True and non-commutative if False.
+        lex_order (bool): Lexicographical Ordering Constraints are used if True.
+        streamlining_1 (bool): Streamlining 1 is used if True.
+        solver (str): Name of solver.
 
     Returns:
         int: 1 if the conditions are satisfied, 0 otherwise.
@@ -146,7 +152,7 @@ def verifier(sat_assignment, cumulative_dict, num_t, commutative):
                     blocking_clause += f'{cumulative_dict[key]} '
         blocking_clause += "0\n"
 
-        with open('blocking_clauses.txt', 'a+') as file:\
+        with open(f'blocking_clauses_{num_t}_{num_row_1}_{num_col_1}_{num_col_2}_{lex_order}_{streamlining_1}_{solver}.txt', 'a+') as file:\
             file.write(blocking_clause)
 
         for key, value in result.items():

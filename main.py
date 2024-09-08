@@ -82,16 +82,16 @@ if __name__ == '__main__':
 
         # Specify parameters of the encoding
         encoding_str, cumulative_dict = encoding(number_of_operations, m, n, p, c, lo, s0, s1,
-                                                 sp1, s2, sp2, s3, sp3, seed, iteration, var_str, prev_seed)
+                                                 sp1, s2, sp2, s3, sp3, seed, iteration, var_str, prev_seed, solver)
 
         # Value check for encoding_str
         if len(encoding_str) < 1:
             raise ValueError("CNF instance file is empty")
 
         if test == 0:
-            logs_path = "logs"
+            logs_path = f"logs/{number_of_operations}_{m}_{n}_{p}_{lo}_{s1}_{solver}"
         elif test == 1:
-            logs_path = "tests/logs"
+            logs_path = f"tests/logs/{number_of_operations}_{m}_{n}_{p}_{lo}_{s1}_{solver}"
 
         if operation:
             # Write encoding to file
@@ -123,7 +123,7 @@ if __name__ == '__main__':
                 file.write(scheme)
 
             # Define the file path
-            file_path = (f"current_schemes/scheme_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}"
+            file_path = (f"current_schemes/{number_of_operations}_{m}_{n}_{p}_{lo}_{s1}_{solver}/scheme_{number_of_operations}_{m}_{n}_{p}_{c}_{lo}"
                         f"_{s0}_{s1}_{sp1}_{s2}_{sp2}_{s3}_{sp3}_{solver}_{seed}_{iteration}_{var_str}.txt")
 
             # Ensure the directory exists
@@ -134,7 +134,7 @@ if __name__ == '__main__':
                 file.write(scheme)
 
             # Perform verifications
-            verifier_output = verifier(assignment_string, cumulative_dict, number_of_operations, c)
+            verifier_output = verifier(assignment_string, cumulative_dict, number_of_operations, m, n, p, c, lo, s1, solver)
 
             # Value check for verifier_output
             if len(str(verifier_output)) < 1:
